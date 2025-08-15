@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . '/_bootstrap.php'; ?>
 <?php
 session_start();
 // If logged in, send user to dashboard (unless explicitly previewing landing)

@@ -1,12 +1,5 @@
+<?php require_once __DIR__ . '/_bootstrap.php'; ?>
 <?php require __DIR__ . '/../includes/auth.php'; ?>
-<?php 
-  require_once __DIR__ . '/../includes/bootstrap.php';
-  if (auth_role() === 'admin') {
-    include INC_PATH . '/partials/admin_header.php';
-  } else {
-    include INC_PATH . '/partials/user_header.php';
-  }
-?>
 <?php
 // ------------------------------------------------------
 // Dashboard data
