@@ -1,17 +1,13 @@
 <?php
-// اسمح بتخطّي الجارد في هذه الصفحة
 define('SKIP_AUTH_GUARD', true);
-
-// حمّل البوتستراب العام
-require_once __DIR__ . '/_bootstrap.php';
-
-// مخرجات نصية بسيطة
-header('Content-Type: text/plain; charset=utf-8');
+require __DIR__ . '/../includes/bootstrap.php';
 
 try {
-    $x = db()->query("SELECT 1")->fetchColumn();
-    echo "OK " . (int)$x;
+    $pdo = db();
+    $ok = (int) $pdo->query('SELECT 1')->fetchColumn();
+    header('Content-Type: text/plain; charset=utf-8');
+    echo "OK {$ok}\n";
 } catch (Throwable $e) {
-    http_response_code(500);
-    echo "ERR: " . $e->getMessage();
+    header('Content-Type: text/plain; charset=utf-8');
+    echo "DB connection error: " . $e->getMessage();
 }

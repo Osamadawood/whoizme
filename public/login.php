@@ -1,114 +1,38 @@
-<?php require __DIR__ . "/_bootstrap.php"; ?>
 <?php
-if (session_status() !== PHP_SESSION_ACTIVE) session_start();
-require_once __DIR__ . '/../app/helpers.php';
+// public/login.php
 
-if (empty($_SESSION['csrf'])) $_SESSION['csrf'] = bin2hex(random_bytes(16));
+$bootstrap = __DIR__ . '/_bootstrap.php';
+if (is_file($bootstrap)) { require $bootstrap; }
+else { require __DIR__ . '/../includes/bootstrap.php'; }
 
-// تحديد المود: من الكويري أو من فلاش (عند الريدايركت بعد خطأ)
-$mode = ($_GET['mode'] ?? '') === 'signup' ? 'signup' : 'login';
-$forced = flash('form_mode');
-if ($forced) $mode = $forced;
-
-// احفظ مسار الرجوع بشكل آمن (منع open redirect)
-$next_raw = $_GET['next'] ?? '/dashboard.php';
-$next = preg_match('/^\\/[A-Za-z0-9_\\-\\/\\.]*$/', $next_raw) ? $next_raw : '/dashboard.php';
-
-// لو المستخدم داخل بالفعل، رجّعه على طول (بيحترم next)
-if (!empty($_SESSION['uid'])) {
-  header('Location: ' . $next);
-  exit;
+// لو داخل بالفعل → روح للداشبورد
+if (current_user_id() > 0) {
+    redirect('/dashboard.php');
 }
 
-$page_title = ($mode === 'signup' ? 'Create account' : 'Login') . ' · Whoiz.me';
-require __DIR__ . '/partials/landing_header.php';
-
-$errs = errors(); clear_errors();
-?>
-<div class="grid">
-  <div class="card">
-    <div class="tabs">
-      <a class="tablink <?= $mode==='login'?'active':'' ?>" href="/login.php?mode=login&amp;next=<?= htmlspecialchars($next) ?>">Login</a>
-      <a class="tablink <?= $mode==='signup'?'active':'' ?>" href="/login.php?mode=signup&amp;next=<?= htmlspecialchars($next) ?>">Create account</a>
-    </div>
-
-    <?php if ($msg = flash('flash_ok')): ?>
-      <div class="alert ok"><?= htmlspecialchars($msg) ?></div>
-    <?php endif; ?>
-    <?php if ($msg = flash('flash_error')): ?>
-      <div class="alert error"><?= htmlspecialchars($msg) ?></div>
-    <?php endif; ?>
-
-    <?php if ($mode==='login'): ?>
-      <form method="post" action="/do_login.php" novalidate>
-        <input type="hidden" name="csrf" value="<?= htmlspecialchars($_SESSION['csrf']) ?>">
-        <input type="hidden" name="next" value="<?= htmlspecialchars($next) ?>">
-
-        <div class="field">
-          <label>Email</label>
-          <input type="email" name="email" value="<?= old('email') ?>" autocomplete="email" required>
-          <?php if ($e = $errs['email'] ?? null): ?><div class="field-error"><?= htmlspecialchars($e) ?></div><?php endif; ?>
-        </div>
-
-        <div class="field">
-          <label>Password</label>
-          <input type="password" name="password" autocomplete="current-password" required>
-          <?php if ($e = $errs['password'] ?? null): ?><div class="field-error"><?= htmlspecialchars($e) ?></div><?php endif; ?>
-        </div>
-
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px">
-          <button class="btn" type="submit">Login</button>
-          <a class="muted" href="/reset.php">Forgot password?</a>
-        </div>
-      </form>
-
-    <?php else: ?>
-      <form method="post" action="/register.php" novalidate>
-        <input type="hidden" name="csrf" value="<?= htmlspecialchars($_SESSION['csrf']) ?>">
-        <input type="hidden" name="next" value="<?= htmlspecialchars($next) ?>">
-
-        <div class="field">
-          <label>Name</label>
-          <input type="text" name="name" value="<?= old('name') ?>" autocomplete="name" required>
-          <?php if ($e = $errs['name'] ?? null): ?><div class="field-error"><?= htmlspecialchars($e) ?></div><?php endif; ?>
-        </div>
-
-        <div class="field">
-          <label>Email</label>
-          <input type="email" name="email" value="<?= old('email') ?>" autocomplete="email" required>
-          <?php if ($e = $errs['email'] ?? null): ?><div class="field-error"><?= htmlspecialchars($e) ?></div><?php endif; ?>
-        </div>
-
-        <div class="field">
-          <label>Password <span class="muted">At least 8 characters.</span></label>
-          <input type="password" name="password" minlength="8" autocomplete="new-password" required>
-          <?php if ($e = $errs['password'] ?? null): ?><div class="field-error"><?= htmlspecialchars($e) ?></div><?php endif; ?>
-        </div>
-
-        <div class="field">
-          <label>Confirm password</label>
-          <input type="password" name="password2" minlength="8" autocomplete="new-password" required>
-          <?php if ($e = $errs['password2'] ?? null): ?><div class="field-error"><?= htmlspecialchars($e) ?></div><?php endif; ?>
-        </div>
-
-        <label class="checkbox" style="margin-top:12px">
-          <input type="checkbox" name="agree" value="1" <?= old('agree') ? 'checked' : '' ?>>
-          <span>I agree to the <a href="/terms.php" target="_blank">terms</a> and <a href="/privacy.php" target="_blank">privacy</a>.</span>
-        </label>
-        <?php if ($e = $errs['agree'] ?? null): ?><div class="field-error" style="margin-top:6px"><?= htmlspecialchars($e) ?></div><?php endif; ?>
-
-        <div style="margin-top:12px">
-          <button class="btn" type="submit">Create account</button>
-        </div>
-      </form>
-    <?php endif; ?>
-  </div>
-
-  <div class="card">
-    <h3><?= $mode==='signup' ? 'Create your account' : 'Welcome back' ?></h3>
-    <p class="muted">Quickly generate and manage QR codes & short links. Your public profile is one click away.</p>
-  </div>
+// Login مؤقت: أي POST يـسجل uid=1
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $_SESSION['uid'] = 1;
+    redirect('/dashboard.php');
+}
+?><!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Login</title>
+<style>
+ body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:#f7f7fb;margin:0;padding:40px}
+ .card{max-width:420px;margin:40px auto;background:#fff;border:1px solid #e8e8ef;border-radius:12px;padding:24px;box-shadow:0 6px 24px rgba(16,23,40,.06)}
+ h1{margin:0 0 16px;font-size:20px} label{display:block;font-size:13px;margin:12px 0 4px;color:#444}
+ input{width:100%;padding:10px 12px;border:1px solid #d9dbe9;border-radius:8px;font-size:14px}
+ button{margin-top:16px;width:100%;padding:12px 14px;border:0;border-radius:10px;background:#2859ff;color:#fff;font-weight:600}
+ .link{display:block;margin-top:12px;text-align:center;font-size:13px}
+</style></head><body>
+<div class="card">
+  <h1>Sign in</h1>
+  <form method="post" action="/login.php" autocomplete="off">
+    <label>Email</label><input type="email" name="email" required>
+    <label>Password</label><input type="password" name="password" required>
+    <button type="submit">Continue</button>
+  </form>
+  <a class="link" href="/forgot.php">Forgot password?</a>
 </div>
-<?php
-clear_old();
-require __DIR__ . '/partials/landing_footer.php';
+</body></html>

@@ -1,16 +1,9 @@
-Options -Indexes
 RewriteEngine On
+RewriteBase /
 
-# لو الملف/المجلد موجود فعلاً.. سيبه يمر عادي
+# قدم الملف/المجلد لو موجود
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 
-# نظافة روابط
-RewriteRule ^link-stats$ link_stats.php [L,QSA]
-RewriteRule ^link-visits/([A-Za-z0-9_-]+)$ link_visits.php?code=$1 [L,QSA]
-
-RewriteRule ^qr$ qr/index.php [L,QSA]
-RewriteRule ^qr/view/([0-9]+)$ qr/view.php?id=$1 [L,QSA]
-
-RewriteRule ^u/([A-Za-z0-9_-]+)$ u.php?user=$1 [L,QSA]
+# مفيش تحويلات إضافية هنا
