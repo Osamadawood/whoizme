@@ -1,13 +1,14 @@
 <?php
+declare(strict_types=1);
 define('SKIP_AUTH_GUARD', true);
-require __DIR__ . '/../includes/bootstrap.php';
+require_once __DIR__ . '/_bootstrap.php';
+
+header('Content-Type: text/plain; charset=utf-8');
 
 try {
     $pdo = db();
-    $ok = (int) $pdo->query('SELECT 1')->fetchColumn();
-    header('Content-Type: text/plain; charset=utf-8');
-    echo "OK {$ok}\n";
+    $ok  = (int)$pdo->query('SELECT 1')->fetchColumn();
+    echo $ok === 1 ? "OK 1\n" : "FAIL\n";
 } catch (Throwable $e) {
-    header('Content-Type: text/plain; charset=utf-8');
-    echo "DB connection error: " . $e->getMessage();
+    echo "DB connection error: " . $e->getMessage() . "\n";
 }

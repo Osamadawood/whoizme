@@ -1,5 +1,7 @@
 <?php
-// public/r/index.php
+declare(strict_types=1);
+require_once __DIR__ . '/../_bootstrap.php';
+require_once __DIR__ . '/../r.php';
 
 // Debug on local
 ini_set('display_errors', 1);
