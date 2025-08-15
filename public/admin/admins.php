@@ -1,3 +1,4 @@
+<?php require __DIR__ . "/../_bootstrap.php"; ?>
 <?php
 // public/admin/admins.php
 require __DIR__ . '/../../includes/admin_auth.php';
