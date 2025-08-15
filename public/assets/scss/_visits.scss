@@ -1,0 +1,46 @@
+@use 'variables' as *;
+@use 'mixins' as m;
+
+.visits-wrap {
+    display: grid;
+    gap: 12px;
+}
+
+/* Header stats chips */
+.kpi {
+    @include m.card;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+
+    .label {
+        color: $muted;
+        font-weight: 600;
+    }
+
+    .num {
+        font-weight: 800;
+        font-size: 1.4rem;
+        color: $ink;
+    }
+}
+
+/* Table of visits */
+.visits-table {
+    @extend .table !optional;
+}
+
+/* Filters (reuse global .filters if موجودة على الصفحة) */
+.visits-filters {
+    @extend .filters !optional;
+}
+
+/* Empty state */
+.empty {
+    @include m.card;
+    padding: 16px;
+    text-align: center;
+    color: $muted;
+    background: #fff;
+}

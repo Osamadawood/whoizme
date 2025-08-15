@@ -1,0 +1,112 @@
+@use 'variables' as *;
+@use 'mixins' as m;
+
+/* Bitly-like list */
+.links-list {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.link-row {
+    @include m.card;
+    padding: 14px;
+    border-radius: $radius-12;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 14px;
+
+    &:hover {
+        box-shadow: $shadow-1;
+    }
+}
+
+.row-main {
+    display: flex;
+    gap: 12px;
+}
+
+.favicon {
+    flex: 0 0 auto;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    background: #f3f4f6;
+    border: 1px solid #e6e8eb;
+
+    img {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+.row-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.row-title {
+    font-weight: 600;
+    font-size: 15px;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .badge {
+        font-size: 12px;
+        padding: 2px 8px;
+        background: $chip;
+        color: $chip-ink;
+        border-radius: 999px;
+    }
+}
+
+.row-short {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+
+    a {
+        color: $brand;
+        text-decoration: none;
+        word-break: break-all;
+    }
+}
+
+.row-long {
+    color: #64748b;
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.row-meta {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    color: #475569;
+    font-size: 12px;
+    margin-top: 6px;
+
+    .dot {
+        width: 4px;
+        height: 4px;
+        background: #cbd5e1;
+        border-radius: 50%;
+    }
+}
+
+.row-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}

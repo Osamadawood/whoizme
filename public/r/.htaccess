@@ -1,0 +1,9 @@
+# public/r/.htaccess
+RewriteEngine On
+RewriteBase /r/
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# أي شيء تاني يروح لـ index.php مع الكود
+RewriteRule ^(.+)$ index.php?c=$1 [L,QSA]

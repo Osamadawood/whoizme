@@ -1,0 +1,23 @@
+// Color tokens
+$brand: #2563eb;
+$brand-600: #1d4ed8;
+$bg: #f4f6f9;
+$panel: #ffffff;
+$ink: #0b1220;
+$muted: #6b7280;
+$border: #e5e7eb;
+$chip: #eef2ff;
+$chip-ink: #3730a3;
+
+// Shadows / radii / sizes
+$shadow-1: 0 6px 14px rgba(16, 24, 40, .06);
+$shadow-2: 0 8px 20px rgba(2, 6, 23, .08);
+$radius-8: 8px;
+$radius-10: 10px;
+$radius-12: 12px;
+
+// Layout
+$container-max: 1100px;
+$sidebar-w: 76px; // collapsed rail
+$sidebar-w-lg: 240px; // expanded
+$topbar-h: 56px;

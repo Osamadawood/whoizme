@@ -1,0 +1,281 @@
+@use 'variables' as *;
+@use 'mixins' as m;
+
+/* Body paddings to make room for topbar + sidebar */
+body {
+    padding-top: $topbar-h;
+    transition: padding-left .2s ease;
+}
+
+body.with-user-sidebar {
+    padding-left: $sidebar-w;
+}
+
+body.with-user-sidebar.expanded {
+    padding-left: $sidebar-w-lg;
+}
+
+body.no-sidebar {
+    padding-left: 0;
+}
+
+@media (max-width: 992px) {
+
+    body.with-user-sidebar,
+    body.with-user-sidebar.expanded {
+        padding-left: 0;
+    }
+}
+
+/* Top dark header (matches header.php markup) */
+.user-topbar {
+    height: $topbar-h;
+    background: #fff;
+    border-bottom: 1px solid $border;
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 1030;
+    display: flex;
+    align-items: center;
+
+    .topHeader {
+        width: 100%;
+        margin: 0 24px;
+    }
+
+    .right-actions {
+        margin-left: auto;
+    }
+}
+
+/* Sidebar rail */
+.user-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: $sidebar-w;
+    background: #fff;
+    border-right: 1px solid $border;
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+    gap: 10px;
+    transition: width .2s ease, transform .2s ease;
+}
+
+.user-sidebar.expanded {
+    width: $sidebar-w-lg;
+}
+
+.user-sidebar.collapsed {
+    transform: none;
+    width: $sidebar-w;
+}
+
+// rail always visible
+@media (max-width: 992px) {
+    .user-sidebar {
+        display: none
+    }
+}
+
+/* Sidebar top logo bar (sticky) */
+.user-sidebar .side-head {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: #fff;
+    padding: 10px 4px 8px;
+    border-bottom: 1px solid #eef2f7;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 52px;
+    margin: -12px -12px 8px;
+    padding-inline: 12px;
+}
+
+.user-sidebar .side-head img {
+    display: block;
+    height: 32px;
+    width: auto;
+    transition: height .2s ease;
+}
+
+.user-sidebar:not(.expanded) .side-head img {
+    height: 28px;
+}
+
+.user-sidebar.expanded .side-head img {
+    height: 36px;
+}
+
+/* Create button */
+.create-btn {
+    @include m.card;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .55rem;
+    background: #0b3bde;
+    border-color: #0b3bde;
+    color: #fff;
+    box-shadow: 0 10px 22px rgba(11, 59, 222, .25);
+    font-weight: 700;
+    text-decoration: none;
+
+    .txt {
+        display: none;
+    }
+}
+
+.user-sidebar.expanded .create-btn {
+    justify-content: flex-start;
+    padding-inline: 14px;
+
+    .txt {
+        display: inline
+    }
+}
+
+/* Menu list */
+.sb-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.sb-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 44px;
+    border-radius: 4px 8px 8px 4px;
+    padding-inline: 12px;
+    text-decoration: none;
+    color: $ink;
+    background: #fff;
+    // border: 1px solid $border;
+    transition: all .15s ease;
+    position: relative;
+
+    &:hover {
+        background: #f7f9ff;
+        border-color: #e3e9ff;
+    }
+
+    &.active {
+        background: #eef2ff;
+        border-color: #dbeafe;
+        color: #0b3bde;
+
+        i {
+            color: #0b3bde;
+        }
+    }
+
+    &.active::before {
+        content: '';
+        position: absolute;
+        left: 6px;
+        top: 12px;
+        bottom: 12px;
+        width: 4px;
+        border-radius: 2px;
+        background: $brand;
+    }
+
+    .ico {
+        width: 28px;
+        min-width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        color: $ink
+    }
+
+    .txt {
+        font-weight: 600;
+        white-space: nowrap
+    }
+}
+
+.user-sidebar:not(.expanded) .sb-item .txt {
+    display: none;
+}
+
+/* Bottom section (settings/logout) */
+.section-bottom {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* Floating toggle bubble */
+.sb-toggle {
+    position: fixed;
+    top: 38px;
+    left: calc(#{$sidebar-w} - 12px);
+    z-index: 9999999;
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border: 1px solid $border;
+    box-shadow: $shadow-2;
+    color: #334155;
+    cursor: pointer;
+    transition: left .2s ease;
+}
+
+.sb-toggle.collapsed {
+    left: calc(#{$sidebar-w} - 16px);
+}
+
+.sb-toggle.expanded {
+    left: calc(#{$sidebar-w-lg} - 16px);
+}
+
+/* Main container */
+main {
+    max-width: $container-max;
+    margin: 18px auto;
+    padding: 0 16px;
+}
+
+
+.soon {
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+.landingBox {
+    position: relative;
+
+    &:hover {
+        box-shadow: none !important;
+    }
+
+    .landingBoxContent {
+        pointer-events: none;
+        opacity: 0.5;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .badge-soon {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+    }
+}

@@ -1,0 +1,52 @@
+@use 'variables' as *;
+
+.table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #fff;
+    border: 1px solid $border;
+    border-radius: 10px;
+    overflow: hidden;
+
+    thead th {
+        background: #f3f4f6;
+        text-align: left;
+        padding: 10px 12px;
+        border-bottom: 1px solid $border;
+        font-weight: 600;
+    }
+
+    tbody td {
+        padding: 10px 12px;
+        border-top: 1px solid $border;
+        vertical-align: top;
+    }
+
+    tbody tr:nth-child(even) {
+        background: #fcfdff;
+    }
+
+    tbody tr:hover {
+        background: #f9fbff;
+    }
+}
+
+.pagination {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+
+    a,
+    span {
+        padding: .35rem .65rem;
+        border: 1px solid $border;
+        border-radius: 8px;
+        text-decoration: none;
+    }
+
+    span {
+        background: #f3f4f6;
+    }
+}
