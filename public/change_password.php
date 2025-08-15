@@ -1,3 +1,4 @@
+<?php require __DIR__ . "/_bootstrap.php"; ?>
 <?php
 // public/change_password.php
 if (session_status() !== PHP_SESSION_ACTIVE) session_start();

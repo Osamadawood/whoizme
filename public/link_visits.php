@@ -1,3 +1,4 @@
+<?php require __DIR__ . "/_bootstrap.php"; ?>
 <?php
 // Visits page for a specific short link code (list + filters + pagination + CSV)
 require __DIR__ . '/../includes/auth.php';

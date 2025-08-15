@@ -1,3 +1,4 @@
+<?php require __DIR__ . "/_bootstrap.php"; ?>
 <?php
 $root = dirname(__DIR__);
 $config = require $root . '/app/config.php';

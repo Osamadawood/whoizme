@@ -1,3 +1,4 @@
+<?php require __DIR__ . "/_bootstrap.php"; ?>
 <?php require __DIR__ . '/../includes/auth.php'; ?>
 <?php
 ini_set('display_errors',1); error_reporting(E_ALL);

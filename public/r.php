@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . '/../_bootstrap.php'; ?>
 <?php
 // public/r.php
 if (session_status() !== PHP_SESSION_ACTIVE) session_start();
