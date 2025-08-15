@@ -1,4 +1,4 @@
-<?php require_once __DIR__ . "/../_bootstrap.php"; ?>
+<?php require_once __DIR__ . '../_bootstrap.php'; ?>
 require __DIR__ . '/../inc/db.php';
 require __DIR__ . '/../inc/auth.php';
 
