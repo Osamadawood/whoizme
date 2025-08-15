@@ -1,0 +1,18 @@
+# macOS
+.DS_Store
+
+# Logs
+storage/logs/*
+!storage/logs/.gitkeep
+
+# Local secrets (اترك example فقط)
+includes/config.php
+
+# Archives / zips
+*.zip
+
+# Composer vendor (لو هتستعمل composer محليًا)
+# vendor/
+
+# Node (لو ظهر مستقبلًا)
+node_modules/
