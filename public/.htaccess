@@ -1,9 +1,41 @@
+# public/.htaccess
+DirectoryIndex index.php
 RewriteEngine On
-RewriteBase /
 
-# قدم الملف/المجلد لو موجود
+# قدّم الملفات/المجلدات الموجودة كما هي
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 
-# مفيش تحويلات إضافية هنا
+# ✅ SEO: لو حد فتح *.php نحوله لنفس الصفحة بدون .php
+RewriteCond %{THE_REQUEST} \s/+(.+?)\.php[\s?] [NC]
+RewriteRule ^ %1 [R=301,L]
+
+# صفحات عامة خاصة بالمشروع
+RewriteRule ^u/([A-Za-z0-9_-]+)/?$           u.php?u=$1                   [L,QSA]
+RewriteRule ^r/([A-Za-z0-9_-]+)/?$           r/index.php?c=$1             [L,QSA]
+
+# ✅ مسارات بشكل جميل (شرطات) لملفات أسماؤها بـ underscores
+RewriteRule ^dashboard/?$                    dashboard.php                 [L,QSA]
+RewriteRule ^link-stats/?$                   link_stats.php                [L,QSA]
+RewriteRule ^link-visits/([A-Za-z0-9_-]+)/?$ link_visits.php?code=$1       [L,QSA]
+RewriteRule ^link-visits/?$                  link_visits.php               [L,QSA]
+RewriteRule ^link-edit/?$                    link_edit.php                 [L,QSA]
+RewriteRule ^link-create/?$                  link_create.php               [L,QSA]
+RewriteRule ^settings/?$                     profile_edit.php              [L,QSA]
+RewriteRule ^qr-codes/?$                     qr/index.php                  [L,QSA]
+RewriteRule ^forgot-password/?$              forgot.php                    [L,QSA]
+RewriteRule ^reset-password/?$               reset.php                     [L,QSA]
+RewriteRule ^login/?$                        login.php                     [L,QSA]
+RewriteRule ^logout/?$                       logout.php                    [L,QSA]
+RewriteRule ^register/?$                     register.php                  [L,QSA]
+
+# ✅ قاعدة عامة: لو فيه ملف PHP بنفس الاسم… اشتغل عليه بدون .php
+# مثال: /help → help.php (لو موجود)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{DOCUMENT_ROOT}/$1.php -f
+RewriteRule ^(.+?)/?$ $1.php [L,QSA]
+
+# آخر حل: الهبوط على الصفحة الرئيسية
+RewriteRule ^ index.php [QSA,L]

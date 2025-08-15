@@ -1,12 +1,18 @@
-<?php require_once __DIR__ . '/_bootstrap.php'; ?>
 <?php
-session_start();
+require_once __DIR__ . '/_bootstrap.php';
+
+// Determine login state from existing session (bootstrap defines current_user_id())
+$uid = function_exists('current_user_id')
+    ? (int) current_user_id()
+    : (int) ($_SESSION['uid'] ?? $_SESSION['user_id'] ?? 0);
+
+$IS_LOGGED_IN = $uid > 0;
+
 // If logged in, send user to dashboard (unless explicitly previewing landing)
-if (!empty($_SESSION['user_id']) && empty($_GET['preview'])) {
-  header('Location: /dashboard.php');
-  exit;
+if ($IS_LOGGED_IN && empty($_GET['preview'])) {
+    header('Location: /dashboard');
+    exit;
 }
-$IS_LOGGED_IN = isset($_SESSION['user_id']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
