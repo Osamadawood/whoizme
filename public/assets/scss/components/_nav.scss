@@ -1,0 +1,16 @@
+@use "../core/mixins" as *;
+
+@mixin apply() {
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position:sticky; inset-block-start:0; z-index:10;
+  }
+  .topbar__inner { @include container(xl); display:flex; align-items:center; gap:1rem; padding-block:.75rem; }
+  .brand { font-weight: var(--fw-bold); }
+  .nav { margin-inline-start:auto; display:flex; gap:.75rem; }
+  .nav a {
+    color: var(--text-muted); text-decoration:none; padding:.5rem .75rem; border-radius: var(--radius-sm);
+    &:hover { background: color-mix(in oklab, var(--surface), white 3%); color: var(--text); }
+  }
+}

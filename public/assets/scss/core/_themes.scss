@@ -1,36 +1,11 @@
-/* core/_themes.scss */
-@use "sass:map";
-@use "brand" as brand;
-/* إحنا داخل نفس مجلد core */
+@use "brand";
 
-/* Light (default) */
-:root {
-    --font-sans: #{brand.$font-sans};
-
-    --space-xs: #{map.get(brand.$space, xs)};
-    --space-sm: #{map.get(brand.$space, sm)};
-    --space-md: #{map.get(brand.$space, md)};
-    --space-lg: #{map.get(brand.$space, lg)};
-    --space-xl: #{map.get(brand.$space, xl)};
-
-    --radius-sm: #{map.get(brand.$radius, sm)};
-    --radius-md: #{map.get(brand.$radius, md)};
-    --radius-lg: #{map.get(brand.$radius, lg)};
-
-    --color-page: #{map.get(brand.$colors-light, page)};
-    --color-card: #{map.get(brand.$colors-light, card)};
-    --color-text: #{map.get(brand.$colors-light, text)};
-    --color-muted: #{map.get(brand.$colors-light, subtext)};
-    --color-border: #{map.get(brand.$colors-light, border)};
-    --color-primary: #{map.get(brand.$colors-light, primary)};
-}
-
-/* Dark */
-[data-theme="dark"] {
-    --color-page: #{map.get(brand.$colors-dark, page)};
-    --color-card: #{map.get(brand.$colors-dark, card)};
-    --color-text: #{map.get(brand.$colors-dark, text)};
-    --color-muted: #{map.get(brand.$colors-dark, subtext)};
-    --color-border: #{map.get(brand.$colors-dark, border)};
-    --color-primary: #{map.get(brand.$colors-dark, primary)};
+@mixin emit() {
+  :root,
+  [data-theme="dark"] {
+    @include brand.emit-vars(brand.$dark-palette);
+  }
+  [data-theme="light"] {
+    @include brand.emit-vars(brand.$light-palette);
+  }
 }

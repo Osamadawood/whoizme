@@ -1,18 +1,19 @@
-/* components/_layout.scss */
-@use "../core/mixins" as mixins;
+@use "../core/mixins" as *;
 
-.app-shell {
-    min-height: 100dvh;
-    background: var(--color-page);
-    color: var(--color-text);
-}
-
-.header-bar {
-    @include mixins.card;
-    margin-block: var(--space-md);
-    padding: var(--space-md);
-}
-
-.page-container {
-    @include mixins.container(1200px);
+@mixin apply() {
+  .container { @include container(xl); }
+  .page-section { padding-block: var(--sp-10); }
+  .hero {
+    position:relative; overflow:hidden; border-radius: var(--radius-xl);
+    background: linear-gradient(180deg, color-mix(in oklab, var(--brand), transparent 85%) 0%, transparent 60%),
+                var(--surface);
+    border:1px solid var(--border);
+    box-shadow: var(--shadow-lg);
+  }
+  .grid { display:grid; gap: var(--sp-6);
+    &--2 { grid-template-columns: 1fr; }
+    &--3 { grid-template-columns: 1fr; }
+    @media (min-width: 768px){
+      &--2 { grid-template-columns: repeat(2, 1fr); }
+      &--3 { grid-template-columns: repeat(3, 1fr); } } }
 }

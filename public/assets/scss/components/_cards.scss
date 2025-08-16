@@ -1,0 +1,11 @@
+@use "../core/mixins" as *;
+
+@mixin apply() {
+  .card { @include card(); }
+  .card--glass {
+    background: color-mix(in oklab, var(--surface), transparent 30%);
+    backdrop-filter: saturate(120%) blur(8px);
+  }
+  .card__title { font-weight: var(--fw-semibold); font-size: var(--fs-lg); margin-bottom: var(--sp-3); }
+  .card__meta { color: var(--text-muted); font-size: var(--fs-sm); }
+}

@@ -1,55 +1,52 @@
 <?php
-// لا تعمل session_start هنا — اللودر بيتكفّل
 declare(strict_types=1);
 
-/** 
- * متغيرات بسيطة
- * $title: عنوان الصفحة (اختياري)
- * $active: اسم اللينك النشط في الناف (اختياري) [dashboard|links|qr|help]
- */
-$title  = $title  ?? 'Whoizme';
-$active = $active ?? '';
+$title = $title ?? 'Dashboard · Whoizme';
+$theme = $theme ?? 'dark';
+$APP_CSS = '/assets/css/app.min.css';
 
-$base   = rtrim(BASE_URL ?? '/', '/');              // من includes/bootstrap.php
-$asset  = $base . '/assets';                        // مجلد الأصول
-$nav    = [
-  ['href' => $base . '/dashboard',   'key' => 'dashboard', 'label' => 'Dashboard'],
-  ['href' => $base . '/links',       'key' => 'links',     'label' => 'Links'],
-  ['href' => $base . '/qr-codes',    'key' => 'qr',        'label' => 'QR Codes'],
-  ['href' => $base . '/help',        'key' => 'help',      'label' => 'Help'],
-];
+// حراسة الدخول
+if (!function_exists('current_user_id') || !current_user_id()) {
+  header('Location: /login');
+  exit;
+}
+
+$uid = (int)current_user_id();
+
+// مساعدة بسيطة لاكتشاف الصفحة النشطة
+$__path = strtok($_SERVER['REQUEST_URI'] ?? '/', '?');
+$active = function(string $slug) use ($__path): string {
+  return rtrim($__path, '/') === $slug ? ' aria-current="page"' : '';
+};
 ?>
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
+<!doctype html>
+<html lang="en" dir="ltr" data-theme="<?= htmlspecialchars($theme) ?>">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title><?= htmlspecialchars($title) ?></title>
 
-  <!-- ملف CSS موحّد (بدون هاردكود للدومين) -->
-  <link rel="preload" href="<?= $asset ?>/css/app.min.css" as="style">
-  <link rel="stylesheet" href="<?= $asset ?>/css/app.min.css">
-
-  <!-- أي ميتا/أيقونات مستقبلًا -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="<?= $APP_CSS ?>?v=<?= time() ?>"/>
 </head>
-<body class="app">
-  <header class="topbar">
-    <div class="container topbar__inner">
-      <a class="brand" href="<?= $base ?>/">Whoizme</a>
+<body>
 
-      <nav class="mainnav" aria-label="Primary">
-        <?php foreach ($nav as $item): ?>
-          <a 
-            class="mainnav__link <?= $active === $item['key'] ? 'is-active' : '' ?>" 
-            href="<?= $item['href'] ?>"
-          ><?= htmlspecialchars($item['label']) ?></a>
-        <?php endforeach; ?>
-      </nav>
+<!-- Top bar -->
+<header class="topbar">
+  <div class="topbar__inner">
+    <a class="brand" href="/dashboard"><span class="sr-only">Whoizme</span>Whoizme</a>
+    <nav class="nav">
+      <a href="/dashboard"<?= $active('/dashboard') ?>>Overview</a>
+      <a href="/link-stats"<?= $active('/link-stats') ?>>Links</a>
+      <a href="/qr-codes"<?= $active('/qr-codes') ?>>QR Codes</a>
+      <a href="/link-visits"<?= $active('/link-visits') ?>>Analytics</a>
+      <a class="btn btn--ghost" href="/settings"<?= $active('/settings') ?>>Settings</a>
+      <a class="btn btn--danger" href="/logout">Logout</a>
+    </nav>
+  </div>
+</header>
 
-      <div class="usernav">
-        <a class="btn btn-ghost" href="<?= $base ?>/logout">Logout</a>
-      </div>
-    </div>
-  </header>
-
-  <div class="container page">
+<!-- App shell -->
+<div class="page-section">
+  <div class="container">
