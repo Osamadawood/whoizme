@@ -1,0 +1,7 @@
+@mixin apply() {
+  .state { padding:.75rem 1rem; border-radius: var(--radius-md, .75rem); border:1px solid transparent; }
+  .state--success { background:#052e20; color:#86efac; border-color:#064e3b; }
+  .state--warning { background:#2a1905; color:#fdba74; border-color:#7c2d12; }
+  .state--danger  { background:#3a0a0a; color:#fecaca; border-color:#7f1d1d; }
+  .state--info    { background:#0b1933; color:#93c5fd; border-color:#1e3a8a; }
+}

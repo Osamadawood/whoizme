@@ -1,0 +1,19 @@
+/* components/_logo.scss */
+@mixin apply() {
+  .logo {
+    display: inline-flex; align-items: center; gap: .6rem;
+    color: var(--text, #e5e7eb);
+    text-decoration: none;
+  }
+  .logo__mark {
+    inline-size: 1.75rem; block-size: 1.75rem; border-radius: .45rem;
+    background:
+      radial-gradient(120% 120% at 0% 0%, color-mix(in oklab, var(--brand, #7c3aed), #fff 10%), transparent 60%),
+      linear-gradient(135deg, color-mix(in oklab, var(--brand, #7c3aed), #000 10%), color-mix(in oklab, var(--brand, #7c3aed), #fff 10%));
+    box-shadow: var(--shadow-2, 0 4px 12px rgba(0,0,0,.2));
+  }
+  .logo__text {
+    font-weight: 700; letter-spacing: .2px;
+    font-size: 1.05rem; line-height: 1;
+  }
+}

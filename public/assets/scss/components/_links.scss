@@ -1,0 +1,13 @@
+@use "../core/brand" as brand;
+
+@mixin apply() {
+  a {
+    color: var(--brand, #6d28d9);
+    text-decoration: none;
+    transition: color .15s ease, text-decoration-color .15s ease;
+  }
+  a:hover { color: color-mix(in oklab, var(--brand), #fff 16%); }
+  a:focus-visible { outline: 2px solid color-mix(in oklab, var(--brand), #fff 25%); outline-offset: 2px; }
+  .link-muted { color: var(--muted, #94a3b8); }
+  .link-underline { text-decoration: underline; text-decoration-color: color-mix(in oklab, var(--brand), #000 25%); }
+}

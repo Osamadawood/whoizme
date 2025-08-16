@@ -19,6 +19,29 @@
 /* Entry point: compile to /public/assets/css/app(.min).css */
 /* === Core @use must come first (no rules before them) === */
 /* components/_layout.scss */
+/* Entry point: compile to /public/assets/css/app(.min).css */
+/* === Core @use must come first (no rules before them) === */
+/* Entry point: compile to /public/assets/css/app(.min).css */
+/* === Core @use must come first (no rules before them) === */
+/* public/assets/scss/components/_avatars.scss */
+/* Entry point: compile to /public/assets/css/app(.min).css */
+/* === Core @use must come first (no rules before them) === */
+/* Entry point: compile to /public/assets/css/app(.min).css */
+/* === Core @use must come first (no rules before them) === */
+/* Entry point: compile to /public/assets/css/app(.min).css */
+/* === Core @use must come first (no rules before them) === */
+/* components/_icons.scss
+   - مساعد بسيط للأيقونات يعتمد على CSS variables الموجودة في الثيم
+   - بدون أي @use لتفادي الـ loops، ويشتغل مباشرة مع app.scss
+*/
+/* core/_shadows.scss */
+/* components/_logo.scss */
+/* components/_iconfont.scss
+   جهّزناه لو هتضيف Icon Font لاحقًا. غيّر --icon-font-name عند الربط. */
+/* components/_popups.scss */
+/* components/_breadcrumbs.scss */
+/* components/_pagination.scss */
+/* components/_prose.scss */
 /* === Utilities === */
 /* === Emit layers & tokens (order matters slightly) === */
 /* 1) color tokens */
@@ -491,45 +514,1206 @@ textarea {
           backdrop-filter: blur(6px);
 }
 
-/* 5) utilities (last) */
-.grid-2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--sp-6);
+a {
+  color: var(--brand, #6d28d9);
+  text-decoration: none;
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
 }
 
-.flex {
+a:hover {
+  color: color-mix(in oklab, var(--brand), #fff 16%);
+}
+
+a:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--brand), #fff 25%);
+  outline-offset: 2px;
+}
+
+.link-muted {
+  color: var(--muted, #94a3b8);
+}
+
+.link-underline {
+  text-decoration: underline;
+  text-decoration-color: color-mix(in oklab, var(--brand), #000 25%);
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.list > li {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid color-mix(in oklab, var(--surface, #0f172a), #fff 10%);
+}
+
+.list > li:last-child {
+  border-bottom: 0;
+}
+
+.list--inline {
   display: flex;
-}
-
-.items-center {
+  gap: 0.75rem;
   align-items: center;
 }
 
-.justify-between {
+.list--bullet {
+  list-style: disc;
+  padding-inline-start: 1.25rem;
+}
+
+.list--bullet > li {
+  padding: 0.25rem 0;
+  border: 0;
+}
+
+.avatar {
+  inline-size: 40px;
+  block-size: 40px;
+  border-radius: 999px;
+  overflow: hidden;
+  display: inline-block;
+  /* خلفية وحدود متناغمة مع سطح الثيم */
+  background: color-mix(in oklab, var(--surface, #0f172a), #fff 6%);
+  border: 1px solid color-mix(in oklab, var(--surface, #0f172a), #fff 12%);
+}
+
+.avatar--sm {
+  inline-size: 28px;
+  block-size: 28px;
+}
+
+.avatar--lg {
+  inline-size: 56px;
+  block-size: 56px;
+}
+
+/* شارة الحالة (أونلاين مثلاً) */
+.avatar-badge {
+  position: relative;
+}
+
+.avatar-badge::after {
+  content: "";
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  inline-size: 10px;
+  block-size: 10px;
+  border-radius: 999px;
+  /* نستخدم متغير حالة لو موجود، وإلا فـ fallback أخضر */
+  background: var(--success, #16a34a);
+  border: 2px solid var(--page-bg, #0b1220);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* كومة أفاتارات متداخلة */
+.avatar-stack {
+  display: inline-flex;
+  align-items: center;
+}
+
+.avatar-stack > .avatar {
+  margin-inline-start: -10px;
+  border: 2px solid var(--page-bg, #0b1220);
+}
+
+.avatar-stack > .avatar:first-child {
+  margin-inline-start: 0;
+}
+
+.state {
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md, 0.75rem);
+  border: 1px solid transparent;
+}
+
+.state--success {
+  background: #052e20;
+  color: #86efac;
+  border-color: #064e3b;
+}
+
+.state--warning {
+  background: #2a1905;
+  color: #fdba74;
+  border-color: #7c2d12;
+}
+
+.state--danger {
+  background: #3a0a0a;
+  color: #fecaca;
+  border-color: #7f1d1d;
+}
+
+.state--info {
+  background: #0b1933;
+  color: #93c5fd;
+  border-color: #1e3a8a;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  line-height: 1;
+  padding: 0.4rem 0.6rem;
+  border-radius: var(--radius-sm, 0.5rem);
+  background: color-mix(in oklab, var(--surface, #0f172a), #fff 8%);
+  border: 1px solid color-mix(in oklab, var(--surface, #0f172a), #fff 16%);
+  color: var(--text, #e5e7eb);
+}
+
+.badge--brand {
+  background: color-mix(in oklab, var(--brand, #6d28d9), #000 20%);
+  color: #fff;
+  border-color: transparent;
+}
+
+.badge--muted {
+  color: var(--muted, #94a3b8);
+}
+
+.badge--ghost {
+  background: transparent;
+  border-color: color-mix(in oklab, var(--surface, #0f172a), #fff 16%);
+}
+
+.tooltip {
+  position: relative;
+}
+
+.tooltip[data-tip]::after {
+  content: attr(data-tip);
+  position: absolute;
+  inset-inline-start: 50%;
+  translate: -50% -8px;
+  bottom: 100%;
+  white-space: nowrap;
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.5rem;
+  background: #0b1220;
+  color: #e5e7eb;
+  border: 1px solid #1f2a44;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -4px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.tooltip:hover::after {
+  opacity: 1;
+  transform: translate(-50%, -8px);
+}
+
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 1px solid color-mix(in oklab, var(--surface), #fff 12%);
+}
+
+.tab {
+  padding: 0.6rem 0.9rem;
+  border-radius: 0.5rem 0.5rem 0 0;
+  color: var(--muted, #94a3b8);
+}
+
+.tab.is-active {
+  color: var(--text, #e5e7eb);
+  background: color-mix(in oklab, var(--surface, #0f172a), #fff 6%);
+  border: 1px solid color-mix(in oklab, var(--surface, #0f172a), #fff 14%);
+  border-bottom-color: transparent;
+}
+
+.accordion {
+  border-radius: var(--radius-md, 0.75rem);
+  border: 1px solid color-mix(in oklab, var(--surface), #fff 12%);
+  overflow: hidden;
+}
+
+.accordion__item + .accordion__item {
+  border-top: 1px solid color-mix(in oklab, var(--surface), #fff 12%);
+}
+
+.accordion__head {
+  padding: 0.9rem 1rem;
+  display: flex;
+  align-items: center;
   justify-content: space-between;
+  cursor: pointer;
 }
 
-.gap-4 {
-  gap: var(--sp-4);
+.accordion__body {
+  padding: 0.9rem 1rem;
+  display: none;
 }
 
-.mt-4 {
-  margin-top: var(--sp-4);
+.accordion__item.is-open .accordion__body {
+  display: block;
 }
 
-.mt-6 {
-  margin-top: var(--sp-6);
+.note {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  background: color-mix(in oklab, var(--surface, #0f172a), #fff 6%);
+  border: 1px solid color-mix(in oklab, var(--surface, #0f172a), #fff 14%);
+  border-radius: var(--radius-lg, 1rem);
+  padding: 0.9rem 1rem;
 }
 
-.mb-6 {
-  margin-bottom: var(--sp-6);
+.note--success {
+  border-color: #14532d;
+  background: #052e20;
+  color: #86efac;
 }
 
-.rounded {
-  border-radius: var(--radius-md);
+.note--warning {
+  border-color: #7c2d12;
+  background: #2a1905;
+  color: #fdba74;
 }
 
-.shadow {
-  box-shadow: var(--shadow-md);
+.note--danger {
+  border-color: #7f1d1d;
+  background: #3a0a0a;
+  color: #fecaca;
+}
+
+/* أيقونة عامة: إما <svg class="icon"> أو <i class="icon"></i> */
+.icon {
+  display: inline-block;
+  inline-size: 1.125rem; /* 18px */
+  block-size: 1.125rem;
+  line-height: 1;
+  color: var(--text, #e5e7eb);
+  vertical-align: middle;
+}
+
+/* أحجام إضافية */
+.icon--sm {
+  inline-size: 0.875rem;
+  block-size: 0.875rem;
+} /* 14px */
+.icon--lg {
+  inline-size: 1.375rem;
+  block-size: 1.375rem;
+} /* 22px */
+/* ضبط الـ SVG ليرث اللون والحجم */
+.icon svg {
+  inline-size: 100%;
+  block-size: 100%;
+  display: block;
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+/* زر أيقونة (دائري/مربع صغير) */
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  inline-size: 2.25rem; /* 36px */
+  block-size: 2.25rem;
+  border-radius: var(--radius-sm, 0.5rem);
+  border: 1px solid color-mix(in oklab, var(--surface, #0f172a), #fff 14%);
+  background: color-mix(in oklab, var(--surface, #0f172a), #fff 4%);
+  color: var(--text, #e5e7eb);
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+.icon-btn:hover {
+  background: color-mix(in oklab, var(--surface, #0f172a), #fff 8%);
+  border-color: color-mix(in oklab, var(--surface, #0f172a), #fff 18%);
+  transform: translateY(-1px);
+}
+
+.icon-btn:active {
+  transform: translateY(0);
+}
+
+.icon-btn:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--brand, #7c3aed), #fff 15%);
+  outline-offset: 2px;
+}
+
+/* حالات لونية اختيارية */
+.icon--muted {
+  color: var(--muted, #94a3b8);
+}
+
+.icon--brand {
+  color: var(--brand, #7c3aed);
+}
+
+.icon--danger {
+  color: #ef4444;
+}
+
+.icon--success {
+  color: #22c55e;
+}
+
+.icon--warning {
+  color: #f59e0b;
+}
+
+:root {
+  --shadow-1: 0 1px 2px color-mix(in oklab, #000, #fff 10%);
+  --shadow-2: 0 4px 12px color-mix(in oklab, #000, #fff 14%), 0 1px 2px color-mix(in oklab, #000, #fff 12%);
+  --shadow-3: 0 12px 24px color-mix(in oklab, #000, #fff 18%), 0 4px 8px color-mix(in oklab, #000, #fff 14%);
+}
+
+.shadow-1 {
+  box-shadow: var(--shadow-1);
+}
+
+.shadow-2 {
+  box-shadow: var(--shadow-2);
+}
+
+.shadow-3 {
+  box-shadow: var(--shadow-3);
+}
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--text, #e5e7eb);
+  text-decoration: none;
+}
+
+.logo__mark {
+  inline-size: 1.75rem;
+  block-size: 1.75rem;
+  border-radius: 0.45rem;
+  background: radial-gradient(120% 120% at 0% 0%, color-mix(in oklab, var(--brand, #7c3aed), #fff 10%), transparent 60%), linear-gradient(135deg, color-mix(in oklab, var(--brand, #7c3aed), #000 10%), color-mix(in oklab, var(--brand, #7c3aed), #fff 10%));
+  box-shadow: var(--shadow-2, 0 4px 12px rgba(0, 0, 0, 0.2));
+}
+
+.logo__text {
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
+:root {
+  --icon-font-name: "WhoizmeIcons";
+}
+
+/* مثال ربط لاحقًا:
+@font-face {
+  font-family: var(--icon-font-name);
+  src: url("/assets/fonts/whoizme-icons.woff2") format("woff2");
+  font-display: swap;
+}
+*/
+.if {
+  font-family: var(--icon-font-name), ui-sans-serif, system-ui;
+  font-style: normal;
+  font-weight: 400;
+}
+
+/* أمثلة: <i class="if"></i> أو <span class="if icon-home"></span> لو عندك mapping */
+.modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 60;
+}
+
+.modal.is-open {
+  display: flex;
+}
+
+.modal__overlay {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in oklab, #000, #fff 12%);
+  -webkit-backdrop-filter: blur(4px);
+          backdrop-filter: blur(4px);
+}
+
+.modal__panel {
+  position: relative;
+  z-index: 1;
+  inline-size: min(36rem, 92vw);
+  max-block-size: 85vh;
+  overflow: auto;
+  background: var(--surface, #0f172a);
+  color: var(--text, #e5e7eb);
+  border: 1px solid color-mix(in oklab, var(--surface), #fff 14%);
+  border-radius: var(--radius-lg, 1rem);
+  padding: 1.25rem;
+  box-shadow: var(--shadow-3);
+  animation: modalIn 0.18s ease both;
+}
+
+.modal__title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+}
+
+.modal__actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+@keyframes modalIn {
+  from {
+    transform: translateY(6px);
+    opacity: 0.001;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  font-size: 0.875rem;
+  color: var(--muted, #94a3b8);
+}
+
+.breadcrumbs a {
+  color: inherit;
+  text-decoration: none;
+  padding: 0.25rem 0.4rem;
+  border-radius: 0.375rem;
+}
+
+.breadcrumbs a:hover {
+  background: color-mix(in oklab, var(--surface, #0f172a), #fff 6%);
+  color: var(--text);
+}
+
+.breadcrumbs .current {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.breadcrumbs .sep {
+  opacity: 0.6;
+}
+
+.pagination {
+  display: inline-flex;
+  gap: 0.35rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.pagination .page,
+.pagination .prev,
+.pagination .next {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: 2rem;
+  block-size: 2rem;
+  padding-inline: 0.5rem;
+  border-radius: var(--radius-sm, 0.5rem);
+  border: 1px solid color-mix(in oklab, var(--surface, #0f172a), #fff 14%);
+  background: color-mix(in oklab, var(--surface, #0f172a), #fff 4%);
+  color: var(--text, #e5e7eb);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.pagination .page:hover,
+.pagination .prev:hover,
+.pagination .next:hover {
+  background: color-mix(in oklab, var(--surface), #fff 8%);
+  border-color: color-mix(in oklab, var(--surface), #fff 18%);
+}
+
+.pagination .is-active {
+  background: var(--brand, #7c3aed);
+  border-color: color-mix(in oklab, var(--brand), #000 10%);
+  color: #fff;
+}
+
+.pagination .is-disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.prose {
+  color: var(--text, #e5e7eb);
+  line-height: 1.7;
+  /* max width للمحتوى الطويل داخل صفحات Docs مثلا */
+  max-inline-size: 70ch;
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4 {
+  line-height: 1.25;
+  font-weight: 700;
+  margin: 1.25em 0 0.6em;
+}
+
+.prose h1 {
+  font-size: clamp(1.6rem, 1.2rem + 2vw, 2.25rem);
+}
+
+.prose h2 {
+  font-size: clamp(1.3rem, 1.05rem + 1.2vw, 1.6rem);
+}
+
+.prose h3 {
+  font-size: 1.125rem;
+}
+
+.prose p {
+  margin: 0.9em 0;
+}
+
+.prose a {
+  color: var(--brand, #7c3aed);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in oklab, var(--brand), #fff 30%);
+}
+
+.prose a:hover {
+  text-decoration-color: currentColor;
+}
+
+.prose ul, .prose ol {
+  padding-inline-start: 1.2em;
+  margin: 0.9em 0;
+}
+
+.prose li + li {
+  margin-top: 0.35em;
+}
+
+.prose blockquote {
+  margin: 1em 0;
+  padding: 0.8em 1em;
+  border-inline-start: 3px solid color-mix(in oklab, var(--brand, #7c3aed), #000 15%);
+  background: color-mix(in oklab, var(--surface, #0f172a), #fff 4%);
+  border-radius: var(--radius-md, 0.75rem);
+}
+
+.prose code {
+  background: color-mix(in oklab, var(--surface, #0f172a), #fff 8%);
+  border: 1px solid color-mix(in oklab, var(--surface), #fff 16%);
+  padding: 0.15em 0.4em;
+  border-radius: 0.4rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: 0.875em;
+}
+
+.prose pre {
+  overflow: auto;
+  padding: 0.9rem 1rem;
+  border-radius: var(--radius-lg, 1rem);
+  background: color-mix(in oklab, var(--surface, #0f172a), #fff 4%);
+  border: 1px solid color-mix(in oklab, var(--surface), #fff 14%);
+}
+
+/* 5) utilities (last) */
+/* مساحة/Spacing */
+:root {
+  --space-1:.25rem;
+  --space-2:.5rem;
+  --space-3:.75rem;
+  --space-4:1rem;
+  --space-5:1.25rem;
+  --space-6:1.5rem;
+  --space-8:2rem;
+  --space-10:2.5rem;
+  --space-12:3rem;
+}
+
+.u-container {
+  inline-size: min(1100px, 100%);
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+
+.u-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.u-flex {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.u-stack > * + * {
+  margin-block-start: 0.75rem;
+}
+
+/* margin utilities */
+.u-m-0 {
+  margin: 0 !important;
+}
+
+.u-mt-0 {
+  margin-top: 0 !important;
+}
+
+.u-mb-0 {
+  margin-bottom: 0 !important;
+}
+
+.u-m-1 {
+  margin: var(--space-1) !important;
+}
+
+.u-mt-1 {
+  margin-top: var(--space-1) !important;
+}
+
+.u-mb-1 {
+  margin-bottom: var(--space-1) !important;
+}
+
+.u-ml-1 {
+  margin-left: var(--space-1) !important;
+}
+
+.u-mr-1 {
+  margin-right: var(--space-1) !important;
+}
+
+.u-mx-1 {
+  margin-left: var(--space-1) !important;
+  margin-right: var(--space-1) !important;
+}
+
+.u-my-1 {
+  margin-top: var(--space-1) !important;
+  margin-bottom: var(--space-1) !important;
+}
+
+.u-m-2 {
+  margin: var(--space-2) !important;
+}
+
+.u-mt-2 {
+  margin-top: var(--space-2) !important;
+}
+
+.u-mb-2 {
+  margin-bottom: var(--space-2) !important;
+}
+
+.u-ml-2 {
+  margin-left: var(--space-2) !important;
+}
+
+.u-mr-2 {
+  margin-right: var(--space-2) !important;
+}
+
+.u-mx-2 {
+  margin-left: var(--space-2) !important;
+  margin-right: var(--space-2) !important;
+}
+
+.u-my-2 {
+  margin-top: var(--space-2) !important;
+  margin-bottom: var(--space-2) !important;
+}
+
+.u-m-3 {
+  margin: var(--space-3) !important;
+}
+
+.u-mt-3 {
+  margin-top: var(--space-3) !important;
+}
+
+.u-mb-3 {
+  margin-bottom: var(--space-3) !important;
+}
+
+.u-ml-3 {
+  margin-left: var(--space-3) !important;
+}
+
+.u-mr-3 {
+  margin-right: var(--space-3) !important;
+}
+
+.u-mx-3 {
+  margin-left: var(--space-3) !important;
+  margin-right: var(--space-3) !important;
+}
+
+.u-my-3 {
+  margin-top: var(--space-3) !important;
+  margin-bottom: var(--space-3) !important;
+}
+
+.u-m-4 {
+  margin: var(--space-4) !important;
+}
+
+.u-mt-4 {
+  margin-top: var(--space-4) !important;
+}
+
+.u-mb-4 {
+  margin-bottom: var(--space-4) !important;
+}
+
+.u-ml-4 {
+  margin-left: var(--space-4) !important;
+}
+
+.u-mr-4 {
+  margin-right: var(--space-4) !important;
+}
+
+.u-mx-4 {
+  margin-left: var(--space-4) !important;
+  margin-right: var(--space-4) !important;
+}
+
+.u-my-4 {
+  margin-top: var(--space-4) !important;
+  margin-bottom: var(--space-4) !important;
+}
+
+.u-m-5 {
+  margin: var(--space-5) !important;
+}
+
+.u-mt-5 {
+  margin-top: var(--space-5) !important;
+}
+
+.u-mb-5 {
+  margin-bottom: var(--space-5) !important;
+}
+
+.u-ml-5 {
+  margin-left: var(--space-5) !important;
+}
+
+.u-mr-5 {
+  margin-right: var(--space-5) !important;
+}
+
+.u-mx-5 {
+  margin-left: var(--space-5) !important;
+  margin-right: var(--space-5) !important;
+}
+
+.u-my-5 {
+  margin-top: var(--space-5) !important;
+  margin-bottom: var(--space-5) !important;
+}
+
+.u-m-6 {
+  margin: var(--space-6) !important;
+}
+
+.u-mt-6 {
+  margin-top: var(--space-6) !important;
+}
+
+.u-mb-6 {
+  margin-bottom: var(--space-6) !important;
+}
+
+.u-ml-6 {
+  margin-left: var(--space-6) !important;
+}
+
+.u-mr-6 {
+  margin-right: var(--space-6) !important;
+}
+
+.u-mx-6 {
+  margin-left: var(--space-6) !important;
+  margin-right: var(--space-6) !important;
+}
+
+.u-my-6 {
+  margin-top: var(--space-6) !important;
+  margin-bottom: var(--space-6) !important;
+}
+
+.u-m-8 {
+  margin: var(--space-8) !important;
+}
+
+.u-mt-8 {
+  margin-top: var(--space-8) !important;
+}
+
+.u-mb-8 {
+  margin-bottom: var(--space-8) !important;
+}
+
+.u-ml-8 {
+  margin-left: var(--space-8) !important;
+}
+
+.u-mr-8 {
+  margin-right: var(--space-8) !important;
+}
+
+.u-mx-8 {
+  margin-left: var(--space-8) !important;
+  margin-right: var(--space-8) !important;
+}
+
+.u-my-8 {
+  margin-top: var(--space-8) !important;
+  margin-bottom: var(--space-8) !important;
+}
+
+.u-m-10 {
+  margin: var(--space-10) !important;
+}
+
+.u-mt-10 {
+  margin-top: var(--space-10) !important;
+}
+
+.u-mb-10 {
+  margin-bottom: var(--space-10) !important;
+}
+
+.u-ml-10 {
+  margin-left: var(--space-10) !important;
+}
+
+.u-mr-10 {
+  margin-right: var(--space-10) !important;
+}
+
+.u-mx-10 {
+  margin-left: var(--space-10) !important;
+  margin-right: var(--space-10) !important;
+}
+
+.u-my-10 {
+  margin-top: var(--space-10) !important;
+  margin-bottom: var(--space-10) !important;
+}
+
+.u-m-12 {
+  margin: var(--space-12) !important;
+}
+
+.u-mt-12 {
+  margin-top: var(--space-12) !important;
+}
+
+.u-mb-12 {
+  margin-bottom: var(--space-12) !important;
+}
+
+.u-ml-12 {
+  margin-left: var(--space-12) !important;
+}
+
+.u-mr-12 {
+  margin-right: var(--space-12) !important;
+}
+
+.u-mx-12 {
+  margin-left: var(--space-12) !important;
+  margin-right: var(--space-12) !important;
+}
+
+.u-my-12 {
+  margin-top: var(--space-12) !important;
+  margin-bottom: var(--space-12) !important;
+}
+
+/* padding utilities */
+.u-p-0 {
+  padding: 0 !important;
+}
+
+.u-p-1 {
+  padding: var(--space-1) !important;
+}
+
+.u-pt-1 {
+  padding-top: var(--space-1) !important;
+}
+
+.u-pb-1 {
+  padding-bottom: var(--space-1) !important;
+}
+
+.u-pl-1 {
+  padding-left: var(--space-1) !important;
+}
+
+.u-pr-1 {
+  padding-right: var(--space-1) !important;
+}
+
+.u-px-1 {
+  padding-left: var(--space-1) !important;
+  padding-right: var(--space-1) !important;
+}
+
+.u-py-1 {
+  padding-top: var(--space-1) !important;
+  padding-bottom: var(--space-1) !important;
+}
+
+.u-p-2 {
+  padding: var(--space-2) !important;
+}
+
+.u-pt-2 {
+  padding-top: var(--space-2) !important;
+}
+
+.u-pb-2 {
+  padding-bottom: var(--space-2) !important;
+}
+
+.u-pl-2 {
+  padding-left: var(--space-2) !important;
+}
+
+.u-pr-2 {
+  padding-right: var(--space-2) !important;
+}
+
+.u-px-2 {
+  padding-left: var(--space-2) !important;
+  padding-right: var(--space-2) !important;
+}
+
+.u-py-2 {
+  padding-top: var(--space-2) !important;
+  padding-bottom: var(--space-2) !important;
+}
+
+.u-p-3 {
+  padding: var(--space-3) !important;
+}
+
+.u-pt-3 {
+  padding-top: var(--space-3) !important;
+}
+
+.u-pb-3 {
+  padding-bottom: var(--space-3) !important;
+}
+
+.u-pl-3 {
+  padding-left: var(--space-3) !important;
+}
+
+.u-pr-3 {
+  padding-right: var(--space-3) !important;
+}
+
+.u-px-3 {
+  padding-left: var(--space-3) !important;
+  padding-right: var(--space-3) !important;
+}
+
+.u-py-3 {
+  padding-top: var(--space-3) !important;
+  padding-bottom: var(--space-3) !important;
+}
+
+.u-p-4 {
+  padding: var(--space-4) !important;
+}
+
+.u-pt-4 {
+  padding-top: var(--space-4) !important;
+}
+
+.u-pb-4 {
+  padding-bottom: var(--space-4) !important;
+}
+
+.u-pl-4 {
+  padding-left: var(--space-4) !important;
+}
+
+.u-pr-4 {
+  padding-right: var(--space-4) !important;
+}
+
+.u-px-4 {
+  padding-left: var(--space-4) !important;
+  padding-right: var(--space-4) !important;
+}
+
+.u-py-4 {
+  padding-top: var(--space-4) !important;
+  padding-bottom: var(--space-4) !important;
+}
+
+.u-p-5 {
+  padding: var(--space-5) !important;
+}
+
+.u-pt-5 {
+  padding-top: var(--space-5) !important;
+}
+
+.u-pb-5 {
+  padding-bottom: var(--space-5) !important;
+}
+
+.u-pl-5 {
+  padding-left: var(--space-5) !important;
+}
+
+.u-pr-5 {
+  padding-right: var(--space-5) !important;
+}
+
+.u-px-5 {
+  padding-left: var(--space-5) !important;
+  padding-right: var(--space-5) !important;
+}
+
+.u-py-5 {
+  padding-top: var(--space-5) !important;
+  padding-bottom: var(--space-5) !important;
+}
+
+.u-p-6 {
+  padding: var(--space-6) !important;
+}
+
+.u-pt-6 {
+  padding-top: var(--space-6) !important;
+}
+
+.u-pb-6 {
+  padding-bottom: var(--space-6) !important;
+}
+
+.u-pl-6 {
+  padding-left: var(--space-6) !important;
+}
+
+.u-pr-6 {
+  padding-right: var(--space-6) !important;
+}
+
+.u-px-6 {
+  padding-left: var(--space-6) !important;
+  padding-right: var(--space-6) !important;
+}
+
+.u-py-6 {
+  padding-top: var(--space-6) !important;
+  padding-bottom: var(--space-6) !important;
+}
+
+.u-p-8 {
+  padding: var(--space-8) !important;
+}
+
+.u-pt-8 {
+  padding-top: var(--space-8) !important;
+}
+
+.u-pb-8 {
+  padding-bottom: var(--space-8) !important;
+}
+
+.u-pl-8 {
+  padding-left: var(--space-8) !important;
+}
+
+.u-pr-8 {
+  padding-right: var(--space-8) !important;
+}
+
+.u-px-8 {
+  padding-left: var(--space-8) !important;
+  padding-right: var(--space-8) !important;
+}
+
+.u-py-8 {
+  padding-top: var(--space-8) !important;
+  padding-bottom: var(--space-8) !important;
+}
+
+.u-p-10 {
+  padding: var(--space-10) !important;
+}
+
+.u-pt-10 {
+  padding-top: var(--space-10) !important;
+}
+
+.u-pb-10 {
+  padding-bottom: var(--space-10) !important;
+}
+
+.u-pl-10 {
+  padding-left: var(--space-10) !important;
+}
+
+.u-pr-10 {
+  padding-right: var(--space-10) !important;
+}
+
+.u-px-10 {
+  padding-left: var(--space-10) !important;
+  padding-right: var(--space-10) !important;
+}
+
+.u-py-10 {
+  padding-top: var(--space-10) !important;
+  padding-bottom: var(--space-10) !important;
+}
+
+.u-p-12 {
+  padding: var(--space-12) !important;
+}
+
+.u-pt-12 {
+  padding-top: var(--space-12) !important;
+}
+
+.u-pb-12 {
+  padding-bottom: var(--space-12) !important;
+}
+
+.u-pl-12 {
+  padding-left: var(--space-12) !important;
+}
+
+.u-pr-12 {
+  padding-right: var(--space-12) !important;
+}
+
+.u-px-12 {
+  padding-left: var(--space-12) !important;
+  padding-right: var(--space-12) !important;
+}
+
+.u-py-12 {
+  padding-top: var(--space-12) !important;
+  padding-bottom: var(--space-12) !important;
 }/*# sourceMappingURL=app.css.map */

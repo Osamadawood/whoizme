@@ -12,6 +12,23 @@
 @use "components/layout";
 @use "components/nav";
 @use "components/cards";
+@use "components/links";
+@use "components/lists";
+@use "components/avatars";
+@use "components/states";
+@use "components/badges";
+@use "components/tooltips";
+@use "components/tabs";
+@use "components/accordions";
+@use "components/notifications";
+@use "components/icons";
+@use "core/shadows";
+@use "components/logo";
+@use "components/iconfont";
+@use "components/popups";
+@use "components/breadcrumbs";
+@use "components/pagination";
+@use "components/prose";
 
 /* === Utilities === */
 @use "utilities/utilities";
@@ -33,6 +50,23 @@
 @include layout.apply();
 @include nav.apply();
 @include cards.apply();
+@include links.apply();
+@include lists.apply();
+@include avatars.apply();
+@include states.apply();
+@include badges.apply();
+@include tooltips.apply();
+@include tabs.apply();
+@include accordions.apply();
+@include notifications.apply();
+@include icons.apply();
+@include shadows.apply();
+@include logo.apply();
+@include iconfont.apply();
+@include popups.apply();
+@include breadcrumbs.apply();
+@include pagination.apply();
+@include prose.apply();
 
 /* 5) utilities (last) */
 @include utilities.apply();

@@ -1,0 +1,9 @@
+@use "../core/brand" as brand;
+
+@mixin apply() {
+  .accordion { border-radius: var(--radius-md, .75rem); border:1px solid color-mix(in oklab, var(--surface), #fff 12%); overflow:hidden; }
+  .accordion__item + .accordion__item { border-top: 1px solid color-mix(in oklab, var(--surface), #fff 12%); }
+  .accordion__head { padding: .9rem 1rem; display:flex; align-items:center; justify-content:space-between; cursor:pointer; }
+  .accordion__body { padding: .9rem 1rem; display:none; }
+  .accordion__item.is-open .accordion__body { display:block; }
+}

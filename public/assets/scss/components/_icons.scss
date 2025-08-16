@@ -1,0 +1,64 @@
+/* components/_icons.scss
+   - مساعد بسيط للأيقونات يعتمد على CSS variables الموجودة في الثيم
+   - بدون أي @use لتفادي الـ loops، ويشتغل مباشرة مع app.scss
+*/
+
+@mixin apply() {
+  /* أيقونة عامة: إما <svg class="icon"> أو <i class="icon"></i> */
+  .icon {
+    display: inline-block;
+    inline-size: 1.125rem;  /* 18px */
+    block-size: 1.125rem;
+    line-height: 1;
+    color: var(--text, #e5e7eb);
+    vertical-align: middle;
+  }
+
+  /* أحجام إضافية */
+  .icon--sm { inline-size: .875rem; block-size: .875rem; }   /* 14px */
+  .icon--lg { inline-size: 1.375rem; block-size: 1.375rem; } /* 22px */
+
+  /* ضبط الـ SVG ليرث اللون والحجم */
+  .icon svg {
+    inline-size: 100%;
+    block-size: 100%;
+    display: block;
+    fill: currentColor;
+    stroke: currentColor;
+  }
+
+  /* زر أيقونة (دائري/مربع صغير) */
+  .icon-btn {
+    display: inline-grid;
+    place-items: center;
+    inline-size: 2.25rem;   /* 36px */
+    block-size: 2.25rem;
+    border-radius: var(--radius-sm, .5rem);
+    border: 1px solid color-mix(in oklab, var(--surface, #0f172a), #fff 14%);
+    background: color-mix(in oklab, var(--surface, #0f172a), #fff 4%);
+    color: var(--text, #e5e7eb);
+    transition: background .15s ease, border-color .15s ease, color .15s ease, transform .15s ease;
+  }
+
+  .icon-btn:hover {
+    background: color-mix(in oklab, var(--surface, #0f172a), #fff 8%);
+    border-color: color-mix(in oklab, var(--surface, #0f172a), #fff 18%);
+    transform: translateY(-1px);
+  }
+
+  .icon-btn:active {
+    transform: translateY(0);
+  }
+
+  .icon-btn:focus-visible {
+    outline: 2px solid color-mix(in oklab, var(--brand, #7c3aed), #fff 15%);
+    outline-offset: 2px;
+  }
+
+  /* حالات لونية اختيارية */
+  .icon--muted   { color: var(--muted, #94a3b8); }
+  .icon--brand   { color: var(--brand, #7c3aed); }
+  .icon--danger  { color: #ef4444; }
+  .icon--success { color: #22c55e; }
+  .icon--warning { color: #f59e0b; }
+}

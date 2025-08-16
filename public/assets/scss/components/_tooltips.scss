@@ -1,0 +1,14 @@
+@mixin apply() {
+  .tooltip {
+    position: relative;
+  }
+  .tooltip[data-tip]::after {
+    content: attr(data-tip);
+    position: absolute; inset-inline-start: 50%; translate: -50% -8px; bottom: 100%;
+    white-space: nowrap; padding:.4rem .6rem; border-radius: .5rem;
+    background: #0b1220; color:#e5e7eb; border:1px solid #1f2a44;
+    box-shadow: 0 10px 30px rgba(0,0,0,.35); pointer-events:none;
+    opacity:0; transform: translate(-50%,-4px); transition: opacity .15s ease, transform .15s ease;
+  }
+  .tooltip:hover::after { opacity:1; transform: translate(-50%,-8px); }
+}

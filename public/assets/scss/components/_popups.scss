@@ -1,0 +1,26 @@
+/* components/_popups.scss */
+@mixin apply() {
+  .modal {
+    position: fixed; inset: 0; display: none;
+    align-items: center; justify-content: center; z-index: 60;
+  }
+  .modal.is-open { display: flex; }
+
+  .modal__overlay {
+    position: absolute; inset: 0; background: color-mix(in oklab, #000, #fff 12%);
+    backdrop-filter: blur(4px);
+  }
+  .modal__panel {
+    position: relative; z-index: 1;
+    inline-size: min(36rem, 92vw); max-block-size: 85vh; overflow: auto;
+    background: var(--surface, #0f172a); color: var(--text, #e5e7eb);
+    border: 1px solid color-mix(in oklab, var(--surface), #fff 14%);
+    border-radius: var(--radius-lg, 1rem); padding: 1.25rem;
+    box-shadow: var(--shadow-3);
+    animation: modalIn .18s ease both;
+  }
+  .modal__title { font-size: 1.125rem; font-weight: 600; margin: 0 0 .75rem; }
+  .modal__actions { display:flex; gap:.5rem; justify-content:flex-end; margin-top: 1rem; }
+
+  @keyframes modalIn { from { transform: translateY(6px); opacity: .001; } to { transform: none; opacity: 1; } }
+}
