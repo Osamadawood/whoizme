@@ -1,11 +1,19 @@
-/* Layers: base → components → utilities */
-@use "core/brand";
-@use "core/themes";
-@use "core/reset";
-@use "core/typography";
-@use "core/helpers";
+/* public/assets/scss/app.scss */
 
-@use "components/buttons";
+/* --- Core first --- */
+@use "core/reset";
+@use "core/brand";
+@use "core/typography";
+@use "core/mixins";
+@use "core/helpers";
+@use "core/themes";
+
+/* --- Components --- */
+@use "components/layout";
 @use "components/forms";
+@use "components/buttons";
 @use "components/auth";
-/* لاحقاً: @use "components/layout"; @use "pages/dashboard"; ... */
+
+/* --- Feature/Pages --- */
+@use "utilities"; // register/login
+@use "dashboard"; // dashboard widgets, cards ...

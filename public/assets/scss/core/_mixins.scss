@@ -1,22 +1,37 @@
-@layer utilities {
-    @mixin card($pad: var(--sp-4)) {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: var(--r-lg);
-        box-shadow: var(--shadow-md);
-        padding: $pad;
-    }
+/* core/_mixins.scss
+ * Central mixins used across components.
+ * NOTE: keep mixins at the top level (not inside @layer) so @use can access them.
+ */
 
-    @mixin button-base {
-        display: inline-grid;
-        place-items: center;
-        block-size: 2.75rem;
-        padding-inline: var(--sp-4);
-        border-radius: var(--r-md);
-        font-weight: 700;
-        letter-spacing: .2px;
-        border: 1px solid color-mix(in oklab, var(--border), transparent 40%);
-        transition: filter .2s, transform .12s, background-color .2s, border-color .2s;
-        will-change: transform;
-    }
+// Card container with padding parameter
+@mixin card($pad: var(--sp-4)) {
+    background: var(--color-card, var(--surface, #fff));
+    border: 1px solid var(--color-border, #e6e8eb);
+    border-radius: var(--radius-lg, 12px);
+    box-shadow: var(--shadow-md, 0 1px 2px rgba(0, 0, 0, .05));
+    padding: $pad;
+}
+
+// Base button reset + shared styles
+@mixin button-base {
+    display: inline-grid;
+    place-items: center;
+    inline-size: max-content;
+    block-size: 2.75rem;
+    padding-inline: var(--sp-4);
+    border-radius: var(--radius-md, 10px);
+    font-weight: 700;
+    letter-spacing: .2px;
+    border: 1px solid color-mix(in oklab, var(--color-border, #e6e8eb), transparent 40%);
+    transition: filter .2s, transform .12s, background-color .2s, border-color .2s;
+    will-change: transform;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+// Constrained page container
+@mixin container($max: 1200px) {
+    max-width: $max;
+    margin-inline: auto;
+    padding-inline: var(--space-md, 1.25rem);
 }

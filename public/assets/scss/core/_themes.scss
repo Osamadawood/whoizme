@@ -1,70 +1,36 @@
-@use "brand" as *;
+/* core/_themes.scss */
+@use "sass:map";
+@use "brand" as brand;
+/* إحنا داخل نفس مجلد core */
 
-/* Emit variables from theme maps */
-@mixin emit-theme($map) {
-    --bg: #{map-get($map, bg)};
-    --surface: #{map-get($map, surface)};
-    --surface-2: #{map-get($map, surface-2)};
-    --text: #{map-get($map, text)};
-    --text-dim: #{map-get($map, text-dim)};
-    --border: #{map-get($map, border)};
-    --brand-500: #{map-get($map, brand-500)};
-    --brand-600: #{map-get($map, brand-600)};
-    --brand-700: #{map-get($map, brand-700)};
+/* Light (default) */
+:root {
+    --font-sans: #{brand.$font-sans};
 
-    /* scales */
-    --r-sm: #{token(radius, sm)};
-    --r-md: #{token(radius, md)};
-    --r-lg: #{token(radius, lg)};
-    --r-xl: #{token(radius, xl)};
-    --r-full: #{token(radius, full)};
+    --space-xs: #{map.get(brand.$space, xs)};
+    --space-sm: #{map.get(brand.$space, sm)};
+    --space-md: #{map.get(brand.$space, md)};
+    --space-lg: #{map.get(brand.$space, lg)};
+    --space-xl: #{map.get(brand.$space, xl)};
 
-    --sp-0: #{token(space, 0)};
-    --sp-1: #{token(space, 1)};
-    --sp-2: #{token(space, 2)};
-    --sp-3: #{token(space, 3)};
-    --sp-4: #{token(space, 4)};
-    --sp-5: #{token(space, 5)};
-    --sp-6: #{token(space, 6)};
-    --sp-8: #{token(space, 8)};
-    --sp-10: #{token(space, 10)};
-    --sp-12: #{token(space, 12)};
-    --sp-16: #{token(space, 16)};
+    --radius-sm: #{map.get(brand.$radius, sm)};
+    --radius-md: #{map.get(brand.$radius, md)};
+    --radius-lg: #{map.get(brand.$radius, lg)};
+
+    --color-page: #{map.get(brand.$colors-light, page)};
+    --color-card: #{map.get(brand.$colors-light, card)};
+    --color-text: #{map.get(brand.$colors-light, text)};
+    --color-muted: #{map.get(brand.$colors-light, subtext)};
+    --color-border: #{map.get(brand.$colors-light, border)};
+    --color-primary: #{map.get(brand.$colors-light, primary)};
 }
 
-@layer base {
-    :root {
-        color-scheme: light dark;
-        /* hint للمتصفح */
-        font-size: #{token(font, size-root)};
-        --font-sans: #{token(font, family-sans)};
-        --lh-body: #{token(font, line-body)};
-        @include emit-theme(token(light, ));
-        /* Fluid steps */
-        --step--1: #{fluid(.8125rem, .875rem)};
-        /* 13 → 14px */
-        --step-0 : #{fluid(.9375rem, 1rem)};
-        /* 15 → 16px */
-        --step-1 : #{fluid(1rem, 1.125rem)};
-        /* 16 → 18px */
-        --step-2 : #{fluid(1.125rem, 1.25rem)};
-        /* 18 → 20px */
-        --step-3 : #{fluid(1.375rem, 1.625rem)};
-        /* 22 → 26px */
-        --step-4 : #{fluid(1.75rem, 2rem)};
-        /* 28 → 32px */
-    }
-
-    html[data-theme="dark"] {
-        @include emit-theme(token(dark, ));
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-        * {
-            animation-duration: .001ms !important;
-            animation-iteration-count: 1 !important;
-            transition-duration: .001ms !important;
-            scroll-behavior: auto !important;
-        }
-    }
+/* Dark */
+[data-theme="dark"] {
+    --color-page: #{map.get(brand.$colors-dark, page)};
+    --color-card: #{map.get(brand.$colors-dark, card)};
+    --color-text: #{map.get(brand.$colors-dark, text)};
+    --color-muted: #{map.get(brand.$colors-dark, subtext)};
+    --color-border: #{map.get(brand.$colors-dark, border)};
+    --color-primary: #{map.get(brand.$colors-dark, primary)};
 }

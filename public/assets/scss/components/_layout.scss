@@ -1,8 +1,18 @@
-.page {
-    min-height: 100vh;
-    background: var(--bg);
+/* components/_layout.scss */
+@use "../core/mixins" as mixins;
+
+.app-shell {
+    min-height: 100dvh;
+    background: var(--color-page);
+    color: var(--color-text);
 }
 
-.card {
-    @include ../core/mixins.card();
+.header-bar {
+    @include mixins.card;
+    margin-block: var(--space-md);
+    padding: var(--space-md);
+}
+
+.page-container {
+    @include mixins.container(1200px);
 }

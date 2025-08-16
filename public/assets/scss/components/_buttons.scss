@@ -1,14 +1,15 @@
-@use "../core/mixins" as *;
+@use "sass:color";
+@use "../core/mixins" as mixins;
 
 @layer components {
     .btn {
-        @include button-base;
+        @include mixins.button-base;
         background: var(--surface-2);
         color: var(--text);
     }
 
     .btn-primary {
-        @include button-base;
+        @include mixins.button-base;
         background: linear-gradient(180deg, var(--brand-500), var(--brand-600));
         color: #fff;
         border-color: transparent;
@@ -23,7 +24,7 @@
     }
 
     .btn-ghost {
-        @include button-base;
+        @include mixins.button-base;
         background: transparent;
         border-color: var(--border);
     }

@@ -1,142 +1,37 @@
-/* ==========================================================================
-   _brand.scss — Design Tokens (rem-based)  ✅
-   عدّل هذا الملف فقط لتغيير هوية البراند (ألوان/مسافات/راديَس..)
-   ========================================================================== */
+/* core/_brand.scss */
+/* خط واحد أساسي للمشروع */
+$font-sans: "IBM Plex Sans Arabic", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !default;
 
-/* Brand palette */
-$brand: (
-    50 : #eff6ff,
-    100: #dbeafe,
-    200: #bfdbfe,
-    300: #93c5fd,
-    400: #60a5fa,
-    500: #2563eb,
-    // Primary
-    600: #1d4ed8,
-    700: #1e40af,
-    800: #1e3a8a,
-    900: #172554
-);
-
-/* Semantic */
-$semantic: (
-    success: #16a34a,
-    warning: #f59e0b,
-    danger : #ef4444,
-    info : #0ea5e9
-);
-
-/* Neutral scale */
-$neutral: (
-    0 : #ffffff,
-    50 : #f8fafc,
-    100: #f1f5f9,
-    200: #e2e8f0,
-    300: #cbd5e1,
-    400: #94a3b8,
-    500: #64748b,
-    600: #475569,
-    700: #334155,
-    800: #1f2937,
-    900: #0f172a,
-    950: #0b1220
-);
-
-/* Spacing (rem) */
+/* مسافات */
 $space: (
-    0: 0rem,
-    1: .25rem,
-    2: .5rem,
-    3: .75rem,
-    4: 1rem,
-    5: 1.25rem,
-    6: 1.5rem,
-    8: 2rem,
-    10: 2.5rem,
-    12: 3rem,
-    16: 4rem
-);
+    xs: .25rem,
+    sm: .5rem,
+    md: 1rem,
+    lg: 1.5rem,
+    xl: 2rem) !default;
 
-/* Radii (rem بدل px) */
+/* زوايا */
 $radius: (
-    sm : .375rem,
-    // 6px
-    md : .625rem,
-    // 10px
-    lg : .875rem,
-    // 14px
-    xl : 1.125rem,
-    // 18px
-    full: 100vw
-);
+    sm: .5rem,
+    md: .75rem,
+    lg: 1rem) !default;
 
-/* Shadows */
-$shadow: (
-    sm : 0 .0625rem .125rem rgba(0, 0, 0, .06),
-    md : 0 .5rem 1.5rem rgba(0, 0, 0, .12),
-    lg : 0 1.125rem 2.5rem rgba(0, 0, 0, .20)
-);
+/* ألوان الثيم الفاتح */
+$colors-light: (
+    page: #f6f7fb,
+    card: #ffffff,
+    text: #0f172a,
+    subtext:#475569,
+    border: #e5e7eb,
+    primary:#2563eb) !default;
 
-/* Typography */
-$font: (
-    family-sans: ui-sans-serif,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    Inter,
-    "Helvetica Neue",
-    Arial,
-    "Apple Color Emoji",
-    "Segoe UI Emoji",
-    "Segoe UI Symbol",
-    size-root : 16px,
-    line-body : 1.65
-);
-
-/* Themes (CSS variables source) */
-$theme-light: (
-    bg : map-get($neutral, 50),
-    surface : #ffffff,
-    surface-2 : map-get($neutral, 100),
-    text : #0b1220,
-    text-dim : #475569,
-    border : rgba(15, 23, 42, .12),
-    brand-500 : map-get($brand, 500),
-    brand-600 : map-get($brand, 600),
-    brand-700 : map-get($brand, 700)
-);
-
-$theme-dark: (
-    bg : map-get($neutral, 950),
-    surface : #101827,
-    surface-2 : #0f1626,
-    text : #e5e7eb,
-    text-dim : #9aa4b2,
-    border : rgba(255, 255, 255, .1),
-    brand-500 : map-get($brand, 500),
-    brand-600 : map-get($brand, 600),
-    brand-700 : map-get($brand, 700)
-);
-
-/* Export */
-$tokens: (
-    brand : $brand,
-    neutral: $neutral,
-    semantic: $semantic,
-    space : $space,
-    radius : $radius,
-    shadow : $shadow,
-    font : $font,
-    light : $theme-light,
-    dark : $theme-dark
-);
-
-@function token($group, $key) {
-    @return map-get(map-get($tokens, $group), $key);
-}
-
-/* Fluid scale helpers (rem) */
-@function fluid($min, $max, $vw-min: 320, $vw-max: 1280) {
-    @return clamp(#{$min}, calc(#{$min} + (#{$max - $min}) * ((100vw - #{$vw-min}px) / (#{$vw-max - $vw-min}))), #{$max});
-}
+/* ألوان الثيم الداكن */
+$colors-dark: (
+    page: #0b1220,
+    card: #0f172a,
+    text: #e2e8f0,
+    subtext:#94a3b8,
+    border: #1f2937,
+    primary:#3b82f6) !default;
