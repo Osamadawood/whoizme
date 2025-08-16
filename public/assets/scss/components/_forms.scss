@@ -1,17 +1,23 @@
-@use "../core/mixins" as *;
+@use "../core/mixins" as m;
 
 @mixin apply() {
-  .form-control { @include field-base; }
-  .form-label { display:block; margin-block: 0 0.35rem; font-size: var(--fs-sm); color: var(--text-muted); }
-  .input-group { display:flex; align-items:stretch; gap:.5rem;
-    & > .form-control { flex: 1 1 auto; }
-    & > .btn { flex: 0 0 auto; } }
-  .form-help { font-size: var(--fs-xs); color: var(--text-muted); margin-top:.35rem; }
-  .checkbox { display:flex; align-items:center; gap:.55rem; font-size: var(--fs-sm); color: var(--text-muted);
-    input[type="checkbox"]{
-      inline-size: 1.05rem; block-size: 1.05rem; border-radius: .35rem;
-      border:1px solid var(--field-bd); background: var(--field-bg);
-      appearance: none; display:grid; place-items:center;
-      &:focus { @include focus-ring(); }
-      &:checked{ background: var(--brand); border-color: var(--brand); } } }
+  .form { display: grid; gap: 1rem; }
+
+  .form-group { display: grid; gap: .5rem; margin-block-end: var(--sp-4); }
+  label { color: var(--text); font-weight: 600; }
+  .help, .hint { color: var(--text-muted); font-size: .875rem; }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="url"],
+  input[type="search"],
+  input[type="number"],
+  select,
+  textarea,
+  .form-control { @include m.input-base; }
+
+  textarea { min-block-size: 120px; resize: vertical; }
+
+  .input-row { display:flex; gap: .75rem; align-items:center; }
 }

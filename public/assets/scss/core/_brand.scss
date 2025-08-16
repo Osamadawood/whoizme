@@ -1,156 +1,93 @@
+/* whoizme design system — color tokens + emit (colors only)
+   Author: Osama Dawood
+*/
 @use "sass:map";
-@use "sass:math";
-@use "sass:color";
 
-/* Typography (IBM Plex Sans Arabic) */
-$font-family-base: "IBM Plex Sans Arabic", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-$font-weight: (
-  regular: 400,
-  medium: 500,
-  semibold: 600,
-  bold: 700
-);
-$type-scale: (
-  xs: 0.75rem,
-  sm: 0.875rem,
-  base: 1rem,
-  lg: 1.125rem,
-  xl: 1.25rem,
-  h6: 1.125rem,
-  h5: 1.25rem,
-  h4: 1.5rem,
-  h3: 1.875rem,
-  h2: 2.25rem,
-  h1: clamp(2rem, 2.6vw, 2.75rem)
+/* ---------- Color maps (whoizme) ---------- */
+$brand-primary: (
+  100: #0e0e0e,
+  200: #f34971,
+  300: #005dff,
+  400: #fdb52a
 );
 
-/* Spacing scale */
-$space: (
-  0: 0,
-  1: 0.25rem,
-  2: 0.5rem,
-  3: 0.75rem,
-  4: 1rem,
-  5: 1.25rem,
-  6: 1.5rem,
-  8: 2rem,
-  10: 2.5rem,
-  12: 3rem
+$brand-secondary: (
+  200: #0d0d0d,
+  300: #272727,
+  400: #0b0b0b,
+  600: #fff9e5,
+  800: #e5f8e8
 );
 
-/* Radii */
-$radius: (
-  sm: 0.375rem,
-  md: 0.5rem,
-  lg: 0.75rem,
-  xl: 1rem,
-  pill: 9999px
+$brand-neutral: (
+  100: #ffffff,
+  300: #ebebeb,
+  400: #e4e4e4,
+  500: #8e8e8e,
+  600: #636363,
+  700: #0d0d0d,
+  800: #0a0a0a
 );
 
-/* Shadows */
-$shadow: (
-  sm: 0 4px 10px rgba(0,0,0,.15),
-  md: 0 8px 24px rgba(0,0,0,.2),
-  lg: 0 16px 40px rgba(0,0,0,.28)
+/* overlays */
+$brand-overlay-light: (
+  100: #ffffff66,
+  200: #ffffff80,
+  300: #ffffffa6,
+  400: #fffc
 );
 
-/* Containers */
-$container: (
-  sm: 640px,
-  md: 768px,
-  lg: 1024px,
-  xl: 1200px
+$brand-overlay-dark: (
+  100: #19213d66,
+  200: #19213d80,
+  300: #19213da6,
+  400: #19213dcc
 );
 
-/* Palettes */
-$dark-palette: (
-  page-bg: #0b0f17,
-  surface: #0f1624,
-  surface-2: #111a2b,
-  border: #1e2a3f,
-  text: #e6edf7,
-  text-muted: #9fb3d9,
+/* ---------- token() helper ---------- */
+@function token($group, $key) {
+  @if $group == primary { @return map.get($brand-primary, $key); }
+  @if $group == secondary { @return map.get($brand-secondary, $key); }
+  @if $group == neutral { @return map.get($brand-neutral, $key); }
+  @if $group == overlay-light { @return map.get($brand-overlay-light, $key); }
+  @if $group == overlay-dark  { @return map.get($brand-overlay-dark, $key); }
+  @error "Unknown token group `#{$group}`";
+}
 
-  brand: #3b82f6,
-  brand-600: #2f6de0,
-  brand-700: #2458bf,
-  brand-800: #1c4699,
+/* ---------- emit-colors: outputs CSS variables (whoizme naming) ---------- */
+@mixin emit-colors() {
+  :root {
+    /* primary */
+    --core--colors--primary--100: #{token(primary, 100)};
+    --core--colors--primary--200: #{token(primary, 200)};
+    --core--colors--primary--300: #{token(primary, 300)};
+    --core--colors--primary--400: #{token(primary, 400)};
 
-  accent: #22d3ee,
-  success: #22c55e,
-  warning: #f59e0b,
-  danger:  #ef4444,
+    /* secondary */
+    --core--colors--secondary--200: #{token(secondary, 200)};
+    --core--colors--secondary--300: #{token(secondary, 300)};
+    --core--colors--secondary--400: #{token(secondary, 400)};
+    --core--colors--secondary--600: #{token(secondary, 600)};
+    --core--colors--secondary--800: #{token(secondary, 800)};
 
-  field-bg: #0c1422,
-  field-bd: #1c2740,
-  ring: #4f87ff
-);
+    /* neutral */
+    --core--colors--neutral--100: #{token(neutral, 100)};
+    --core--colors--neutral--300: #{token(neutral, 300)};
+    --core--colors--neutral--400: #{token(neutral, 400)};
+    --core--colors--neutral--500: #{token(neutral, 500)};
+    --core--colors--neutral--600: #{token(neutral, 600)};
+    --core--colors--neutral--700: #{token(neutral, 700)};
+    --core--colors--neutral--800: #{token(neutral, 800)};
 
-$light-palette: (
-  page-bg: #f7f9fc,
-  surface: #ffffff,
-  surface-2: #f3f6fb,
-  border: #e3e9f3,
-  text: #0f172a,
-  text-muted: #4b5568,
+    /* overlays */
+    --core--colors--overlays--light-100: #{token(overlay-light, 100)};
+    --core--colors--overlays--light-200: #{token(overlay-light, 200)};
+    --core--colors--overlays--light-300: #{token(overlay-light, 300)};
+    --core--colors--overlays--light-400: #{token(overlay-light, 400)};
 
-  brand: #2260ff,
-  brand-600: #1b50d9,
-  brand-700: #1744b6,
-  brand-800: #11368f,
-
-  accent: #0ea5e9,
-  success: #16a34a,
-  warning: #d97706,
-  danger:  #dc2626,
-
-  field-bg: #ffffff,
-  field-bd: #d8e0ef,
-  ring: #2b6bff
-);
-
-/* Helpers */
-@function token($group, $key) { @return map.get($group, $key); }
-
-@mixin emit-vars($palette) {
-  --page-bg: #{token($palette, page-bg)};
-  --surface: #{token($palette, surface)};
-  --surface-2: #{token($palette, surface-2)};
-  --border: #{token($palette, border)};
-  --text: #{token($palette, text)};
-  --text-muted: #{token($palette, text-muted)};
-
-  --brand: #{token($palette, brand)};
-  --brand-600: #{token($palette, brand-600)};
-  --brand-700: #{token($palette, brand-700)};
-  --brand-800: #{token($palette, brand-800)};
-
-  --accent: #{token($palette, accent)};
-  --success: #{token($palette, success)};
-  --warning: #{token($palette, warning)};
-  --danger:  #{token($palette, danger)};
-
-  --field-bg: #{token($palette, field-bg)};
-  --field-bd: #{token($palette, field-bd)};
-  --ring: #{token($palette, ring)};
-
-  --radius-sm: #{map.get($radius, sm)};
-  --radius-md: #{map.get($radius, md)};
-  --radius-lg: #{map.get($radius, lg)};
-  --radius-xl: #{map.get($radius, xl)};
-  --radius-pill: #{map.get($radius, pill)};
-
-  --shadow-sm: #{map.get($shadow, sm)};
-  --shadow-md: #{map.get($shadow, md)};
-  --shadow-lg: #{map.get($shadow, lg)};
-
-  --ff-base: #{$font-family-base};
-  --fw-regular: #{map.get($font-weight, regular)};
-  --fw-medium:  #{map.get($font-weight, medium)};
-  --fw-semibold:#{map.get($font-weight, semibold)};
-  --fw-bold:    #{map.get($font-weight, bold)};
-
-  @each $k, $v in $type-scale { --fs-#{$k}: #{$v}; }
-  @each $k, $v in $space { --sp-#{$k}: #{$v}; }
-  @each $k, $v in $container { --container-#{$k}: #{$v}; }
+    --core--colors--overlays--dark-100: #{token(overlay-dark, 100)};
+    --core--colors--overlays--dark-200: #{token(overlay-dark, 200)};
+    --core--colors--overlays--dark-300: #{token(overlay-dark, 300)};
+    --core--colors--overlays--dark-400: #{token(overlay-dark, 400)};
+  }
 }

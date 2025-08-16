@@ -1,37 +1,38 @@
+/* Entry point: compile to /public/assets/css/app(.min).css */
+
+/* === Core @use must come first (no rules before them) === */
 @use "core/brand" as brand;
-@use "core/themes" as themes;
-@use "core/mixins";
+@use "core/themes";
 @use "core/reset";
 @use "core/typography";
 
+/* === Components === */
 @use "components/buttons";
 @use "components/forms";
 @use "components/layout";
-@use "components/cards";
 @use "components/nav";
+@use "components/cards";
 
+/* === Utilities === */
 @use "utilities/utilities";
 
-/* 1) Reset + Base */
+/* === Emit layers & tokens (order matters slightly) === */
+/* 1) color tokens */
+@include brand.emit-colors();
+
+/* 2) theme custom properties */
+@include themes.emit();
+
+/* 3) base layer */
 @include reset.apply();
 @include typography.apply();
 
-/* 2) Emit CSS variables for themes */
-@include themes.emit();
-
-/* 3) Components */
+/* 4) components */
 @include buttons.apply();
 @include forms.apply();
 @include layout.apply();
-@include cards.apply();
 @include nav.apply();
+@include cards.apply();
 
-/* 4) Utilities */
+/* 5) utilities (last) */
 @include utilities.apply();
-
-/* 5) Global page background hookup */
-:root,
-[data-theme="dark"] {
-  background-color: var(--page-bg);
-  color: var(--text);
-}

@@ -1,19 +1,12 @@
-@use "../core/mixins" as *;
+/* components/_layout.scss */
+@use "../core/mixins" as m;
 
 @mixin apply() {
-  .container { @include container(xl); }
-  .page-section { padding-block: var(--sp-10); }
-  .hero {
-    position:relative; overflow:hidden; border-radius: var(--radius-xl);
-    background: linear-gradient(180deg, color-mix(in oklab, var(--brand), transparent 85%) 0%, transparent 60%),
-                var(--surface);
-    border:1px solid var(--border);
-    box-shadow: var(--shadow-lg);
-  }
-  .grid { display:grid; gap: var(--sp-6);
-    &--2 { grid-template-columns: 1fr; }
-    &--3 { grid-template-columns: 1fr; }
-    @media (min-width: 768px){
-      &--2 { grid-template-columns: repeat(2, 1fr); }
-      &--3 { grid-template-columns: repeat(3, 1fr); } } }
+  .container { @include m.container(1200px); padding-inline:1rem; }
+
+  .card  { @include m.card; padding:1rem; }
+  .card--glass { background: color-mix(in oklab, var(--surface), white 3%); backdrop-filter: blur(6px); }
+
+  .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap: var(--sp-6); }
+  .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap: var(--sp-6); }
 }
