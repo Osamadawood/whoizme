@@ -26,8 +26,7 @@ $title = 'Whoizme · Styles & Components';
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title><?= htmlspecialchars($title) ?></title>
 
-  <!-- App CSS -->
-  
+  <!-- Page-only CSS (no inline styles) -->
   <link rel="stylesheet" href="/assets/css/styleguide.css?v=<?= time() ?>">
 </head>
 <body class="sg">
@@ -45,8 +44,23 @@ $title = 'Whoizme · Styles & Components';
       <a href="#buttons">Buttons</a>
       <a href="#forms">Forms</a>
       <a href="#badges">Badges</a>
+      <a href="#links">Links &amp; Lists</a>
       <a href="#cards">Cards</a>
-      <a href="#utilities">Utilities</a>
+      <a href="#avatars">Avatars</a>
+      <a href="#states">State messages</a>
+      <a href="#tooltips">Tooltips</a>
+      <a href="#tabs">Tabs</a>
+      <a href="#accordions">Accordions</a>
+      <a href="#notifications">Notifications</a>
+      <a href="#popups">Popups</a>
+      <a href="#breadcrumbs">Breadcrumbs</a>
+      <a href="#pagination">Pagination</a>
+      <a href="#prose">Rich text</a>
+      <a href="#spacers">Spacers</a>
+      <a href="#icons">Icons</a>
+      <a href="#iconfont">Icon font</a>
+      <a href="#logo">Logo</a>
+      <a href="#shadows">Shadows</a>
     </nav>
   </aside>
 
@@ -54,7 +68,7 @@ $title = 'Whoizme · Styles & Components';
   <div class="sg-main">
     <header class="sg-topbar">
       <div class="sg-topbar__in">
-        <strong>Styles & Components</strong>
+        <strong>Styles &amp; Components</strong>
         <span class="sg-muted">Reference</span>
         <div class="sg-topbar__spacer"></div>
         <label class="sg-toggle" title="Toggle theme">
@@ -67,11 +81,12 @@ $title = 'Whoizme · Styles & Components';
     <section class="sg-hero">
       <div class="sg-hero__in">
         <h1 class="sg-title">Design System</h1>
-        <p class="sg-sub">Color tokens, type scale, controls and layout blocks that mirror the Darkware guide. This page is public and uses the same CSS tokens from our SCSS design system.</p>
+        <p class="sg-sub">Tokens, type scale, controls and layout blocks used across Whoizme. Built with our SCSS system; this page is public for quick QA.</p>
       </div>
     </section>
 
     <main class="sg-content">
+
       <!-- Colors -->
       <section id="colors" class="sg-section">
         <h2 class="sg-h">Colors</h2>
@@ -201,6 +216,34 @@ $title = 'Whoizme · Styles & Components';
         </div>
       </section>
 
+      <!-- Links &amp; Lists -->
+      <section id="links" class="sg-section">
+        <h2 class="sg-h">Links &amp; Lists</h2>
+        <div class="sg-grid cols-2">
+          <div class="sg-card stack">
+            <h3 class="sg-h sg-h--sm">Links</h3>
+            <p><a class="btn btn--link" href="#">Inline link</a> inside text &mdash; plus a <a class="btn btn--link" href="#">second link</a> to show spacing.</p>
+            <div class="sg-row">
+              <a class="btn btn--link" href="#">Link button</a>
+              <a class="btn btn--link" href="#">Another</a>
+            </div>
+          </div>
+          <div class="sg-card stack">
+            <h3 class="sg-h sg-h--sm">Lists</h3>
+            <ul class="stack u-pl-4">
+              <li>Simple list item</li>
+              <li>Another list item</li>
+              <li>Third list item</li>
+            </ul>
+            <ol class="stack u-pl-4">
+              <li>Ordered one</li>
+              <li>Ordered two</li>
+              <li>Ordered three</li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
       <!-- Cards -->
       <section id="cards" class="sg-section">
         <h2 class="sg-h">Cards</h2>
@@ -224,18 +267,199 @@ $title = 'Whoizme · Styles & Components';
         </div>
       </section>
 
-      <!-- Utilities -->
-      <section id="utilities" class="sg-section">
-        <h2 class="sg-h">Utilities</h2>
+      <!-- Avatars -->
+      <section id="avatars" class="sg-section">
+        <h2 class="sg-h">Avatars</h2>
         <div class="sg-card sg-row">
-          <span class="badge">.mt-6</span>
-          <span class="badge">.rounded</span>
-          <span class="badge">.text-center</span>
-          <span class="badge">.flex .items-center .gap-4</span>
+          <div class="avatar"><img src="/img/qr-placeholder.png" alt=""></div>
+          <div class="avatar avatar--sm"><img src="/img/qr-placeholder.png" alt=""></div>
+          <div class="avatar avatar--lg"><img src="/img/qr-placeholder.png" alt=""></div>
+          <div class="avatar">
+            <span class="avatar__fallback">OD</span>
+            <span class="avatar__status" title="online"></span>
+          </div>
         </div>
       </section>
 
-      <p class="sg-muted" style="text-align:center">© <?= date('Y') ?> Whoizme · Design System Reference</p>
+      <!-- State messages -->
+      <section id="states" class="sg-section">
+        <h2 class="sg-h">State messages</h2>
+        <div class="sg-card stack">
+          <div class="note note--success">Everything looks good. Success state.</div>
+          <div class="note note--warning">Heads up! Something needs your attention.</div>
+          <div class="note note--danger">There was a problem processing your request.</div>
+        </div>
+      </section>
+
+      <!-- Tooltips -->
+      <section id="tooltips" class="sg-section">
+        <h2 class="sg-h">Tooltips</h2>
+        <div class="sg-card sg-row">
+          <button class="btn" data-tip="Default tooltip">Hover me</button>
+          <button class="btn btn--primary" data-tip="Primary action">Primary</button>
+          <span class="badge" data-tip="Badge tip">Badge</span>
+        </div>
+      </section>
+
+      <!-- Tabs -->
+      <section id="tabs" class="sg-section">
+        <h2 class="sg-h">Tabs</h2>
+        <div class="sg-card">
+          <div class="tabs" data-tabs>
+            <div class="tabs__list">
+              <button class="tabs__tab is-active" data-tab="one">Overview</button>
+              <button class="tabs__tab" data-tab="two">Details</button>
+              <button class="tabs__tab" data-tab="three">More</button>
+            </div>
+            <div class="tabs__panel is-active" data-panel="one">
+              <p class="sg-muted">Overview content.</p>
+            </div>
+            <div class="tabs__panel" data-panel="two">
+              <p class="sg-muted">Details content.</p>
+            </div>
+            <div class="tabs__panel" data-panel="three">
+              <p class="sg-muted">More content.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Accordions -->
+      <section id="accordions" class="sg-section">
+        <h2 class="sg-h">Accordions</h2>
+        <div class="sg-card">
+          <details class="acc" open>
+            <summary class="acc__head">Accordion item #1</summary>
+            <div class="acc__body">Body of item #1.</div>
+          </details>
+          <details class="acc">
+            <summary class="acc__head">Accordion item #2</summary>
+            <div class="acc__body">Body of item #2.</div>
+          </details>
+        </div>
+      </section>
+
+      <!-- Notifications -->
+      <section id="notifications" class="sg-section">
+        <h2 class="sg-h">Notifications</h2>
+        <div class="sg-card sg-row">
+          <div class="toast">Saved successfully</div>
+          <div class="toast toast--warn">Check your inputs</div>
+          <div class="toast toast--error">Something went wrong</div>
+        </div>
+      </section>
+
+      <!-- Popups -->
+      <section id="popups" class="sg-section">
+        <h2 class="sg-h">Popups</h2>
+        <div class="sg-card">
+          <button class="btn btn--primary" id="openDemoModal">Open modal</button>
+          <dialog id="demoModal" class="modal">
+            <div class="modal__card">
+              <h3 class="sg-h sg-h--sm">Demo modal</h3>
+              <p class="sg-muted">This is a native dialog styled by our tokens.</p>
+              <div class="sg-row">
+                <button class="btn btn--ghost" id="closeDemoModal">Close</button>
+                <button class="btn btn--primary">Confirm</button>
+              </div>
+            </div>
+          </dialog>
+        </div>
+      </section>
+
+      <!-- Breadcrumbs -->
+      <section id="breadcrumbs" class="sg-section">
+        <h2 class="sg-h">Breadcrumbs</h2>
+        <div class="sg-card">
+          <nav class="crumbs" aria-label="Breadcrumb">
+            <a href="#">Home</a>
+            <span>/</span>
+            <a href="#">Library</a>
+            <span>/</span>
+            <span aria-current="page" class="sg-muted">Data</span>
+          </nav>
+        </div>
+      </section>
+
+      <!-- Pagination -->
+      <section id="pagination" class="sg-section">
+        <h2 class="sg-h">Pagination</h2>
+        <div class="sg-card">
+          <nav class="pagi" role="navigation" aria-label="Pagination">
+            <a class="pagi__btn is-disabled" href="#" aria-disabled="true">Prev</a>
+            <a class="pagi__num is-active" href="#">1</a>
+            <a class="pagi__num" href="#">2</a>
+            <a class="pagi__num" href="#">3</a>
+            <span class="pagi__sep">…</span>
+            <a class="pagi__num" href="#">9</a>
+            <a class="pagi__btn" href="#">Next</a>
+          </nav>
+        </div>
+      </section>
+
+      <!-- Rich text / Prose -->
+      <section id="prose" class="sg-section">
+        <h2 class="sg-h">Rich text</h2>
+        <article class="prose">
+          <h3>Heading inside prose</h3>
+          <p>This is a paragraph with <a href="#">a link</a>, <strong>strong text</strong>, and <em>emphasis</em>.</p>
+          <blockquote>Blockquote example using muted border and color tokens.</blockquote>
+          <pre><code>code { color: var(--muted); }</code></pre>
+          <ul><li>One</li><li>Two</li></ul>
+        </article>
+      </section>
+
+      <!-- Spacers -->
+      <section id="spacers" class="sg-section">
+        <h2 class="sg-h">Spacers</h2>
+        <div class="sg-card">
+          <div class="sg-row"><span class="badge">.u-mt-6</span><span class="badge">.u-mb-6</span><span class="badge">.u-p-6</span></div>
+          <div class="u-mt-6"></div>
+          <div class="u-mb-6"></div>
+        </div>
+      </section>
+
+      <!-- Icons -->
+      <section id="icons" class="sg-section">
+        <h2 class="sg-h">Icons</h2>
+        <div class="sg-card sg-row">
+          <span class="icon-btn"><span class="icon">★</span></span>
+          <span class="icon-btn"><span class="icon">☆</span></span>
+          <span class="icon-btn"><span class="icon">✚</span></span>
+        </div>
+      </section>
+
+      <!-- Icon font -->
+      <section id="iconfont" class="sg-section">
+        <h2 class="sg-h">Icon font</h2>
+        <div class="sg-card sg-row">
+          <i class="if if-home"></i>
+          <i class="if if-user"></i>
+          <i class="if if-bell"></i>
+          <i class="if if-settings"></i>
+        </div>
+      </section>
+
+      <!-- Logo -->
+      <section id="logo" class="sg-section">
+        <h2 class="sg-h">Logo</h2>
+        <div class="sg-card sg-row">
+          <div class="logo">Whoizme</div>
+          <div class="logo logo--badge"><span>WZ</span></div>
+        </div>
+      </section>
+
+      <!-- Shadows -->
+      <section id="shadows" class="sg-section">
+        <h2 class="sg-h">Shadows</h2>
+        <div class="sg-grid cols-3">
+          <div class="sg-card u-center" style="box-shadow: var(--shadow-sm)">shadow-sm</div>
+          <div class="sg-card u-center" style="box-shadow: var(--shadow-md)">shadow-md</div>
+          <div class="sg-card u-center" style="box-shadow: var(--shadow-lg)">shadow-lg</div>
+        </div>
+      </section>
+
+      <p class="sg-muted u-center">© <?= date('Y') ?> Whoizme · Design System Reference</p>
     </main>
   </div>
 </div>
@@ -245,10 +469,18 @@ $title = 'Whoizme · Styles & Components';
   // ===== Theme toggle =====
   const root = document.documentElement;
   const toggle = document.getElementById('themeToggle');
+  const KEY = 'whoizme_theme';
+  // apply saved theme if exists
+  const saved = localStorage.getItem(KEY);
+  if (saved === 'light' || saved === 'dark') {
+    root.setAttribute('data-theme', saved);
+  }
   if (toggle) {
     toggle.checked = (root.getAttribute('data-theme') === 'light');
     toggle.addEventListener('change', () => {
-      root.setAttribute('data-theme', toggle.checked ? 'light' : 'dark');
+      const mode = toggle.checked ? 'light' : 'dark';
+      root.setAttribute('data-theme', mode);
+      try { localStorage.setItem(KEY, mode); } catch(e) {}
     });
   }
 
@@ -302,6 +534,39 @@ $title = 'Whoizme · Styles & Components';
   }
   document.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll, { passive: true });
+
+  // Tabs
+  const tabs = document.querySelector('[data-tabs]');
+  if (tabs){
+    const btns = Array.from(tabs.querySelectorAll('.tabs__tab'));
+    const panels = Array.from(tabs.querySelectorAll('.tabs__panel'));
+    btns.forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const id = btn.getAttribute('data-tab');
+        btns.forEach(b => b.classList.toggle('is-active', b===btn));
+        panels.forEach(p => p.classList.toggle('is-active', p.getAttribute('data-panel')===id));
+      });
+    });
+  }
+
+  // Modal
+  const modal = document.getElementById('demoModal');
+  const openBtn = document.getElementById('openDemoModal');
+  const closeBtn = document.getElementById('closeDemoModal');
+  if (modal && openBtn){
+    openBtn.addEventListener('click', ()=> modal.showModal());
+    if (closeBtn) closeBtn.addEventListener('click', ()=> modal.close());
+    modal.addEventListener('click', (e)=> {
+      if (e.target === modal) modal.close();
+    });
+  }
+
+  // Lightweight tooltips (title fallback)
+  document.addEventListener('mouseover', (e)=>{
+    const t = e.target.closest('[data-tip]');
+    if (!t) return;
+    t.setAttribute('title', t.getAttribute('data-tip'));
+  }, {passive:true});
 
   // If page loads with a hash, scroll to it then clean URL
   if (location.hash) {

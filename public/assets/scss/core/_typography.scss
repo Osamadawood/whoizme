@@ -1,7 +1,8 @@
 @mixin apply() {
   :root { font-size: 100%; }
+  html, body { font-family: var(--ff-sans); }
   body {
-    font-family: var(--ff-base);
+    font-family: var(--ff-sans);
     font-size: var(--fs-base);
     color: var(--text);
     background: var(--page-bg);
