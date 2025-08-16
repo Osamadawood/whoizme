@@ -1,48 +1,10 @@
-@layer base {
-
-    *,
-    *::before,
-    *::after {
-        box-sizing: border-box;
-    }
-
-    html {
-        -webkit-text-size-adjust: 100%;
-    }
-
-    body {
-        margin: 0;
-        font-family: var(--font-sans);
-        font-size: var(--step-0);
-        line-height: var(--lh-body);
-        color: var(--text);
-        background: var(--bg);
-    }
-
-    img,
-    svg,
-    video,
-    canvas {
-        display: block;
-        max-inline-size: 100%;
-        block-size: auto;
-    }
-
-    a {
-        text-decoration: none;
-        color: inherit;
-    }
-
-    button,
-    input,
-    select,
-    textarea {
-        font: inherit;
-        color: inherit;
-    }
-
-    :focus-visible {
-        outline: .125rem solid var(--brand-500);
-        outline-offset: .2rem;
-    }
+@mixin apply() {
+  *,*::before,*::after{box-sizing:border-box}
+  *{margin:0}
+  html:focus-within{scroll-behavior:smooth}
+  html,body{height:100%}
+  body{line-height:1.5;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  img,picture,video,canvas,svg{display:block;max-inline-size:100%}
+  input,button,textarea,select{font:inherit}
+  p,h1,h2,h3,h4,h5,h6{overflow-wrap:anywhere}
 }

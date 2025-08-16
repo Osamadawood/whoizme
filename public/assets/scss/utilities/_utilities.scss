@@ -1,0 +1,9 @@
+@mixin apply() {
+  .mt-4{margin-top:var(--sp-4)} .mt-6{margin-top:var(--sp-6)} .mt-8{margin-top:var(--sp-8)}
+  .mb-4{margin-bottom:var(--sp-4)} .mb-6{margin-bottom:var(--sp-6)} .mb-8{margin-bottom:var(--sp-8)}
+  .pt-6{padding-top:var(--sp-6)} .pb-6{padding-bottom:var(--sp-6)}
+  .rounded{border-radius:var(--radius-md)} .rounded-lg{border-radius:var(--radius-lg)}
+  .text-center{text-align:center}
+  .flex{display:flex} .items-center{align-items:center} .justify-between{justify-content:space-between} .gap-4{gap:var(--sp-4)}
+  .muted{color:var(--text-muted)}
+}

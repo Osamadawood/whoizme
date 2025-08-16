@@ -1,19 +1,37 @@
-/* public/assets/scss/app.scss */
-
-/* --- Core first --- */
-@use "core/reset";
-@use "core/brand";
-@use "core/typography";
+@use "core/brand" as brand;
+@use "core/themes" as themes;
 @use "core/mixins";
-@use "core/helpers";
-@use "core/themes";
+@use "core/reset";
+@use "core/typography";
 
-/* --- Components --- */
-@use "components/layout";
-@use "components/forms";
 @use "components/buttons";
-@use "components/auth";
+@use "components/forms";
+@use "components/layout";
+@use "components/cards";
+@use "components/nav";
 
-/* --- Feature/Pages --- */
-@use "utilities"; // register/login
-@use "dashboard"; // dashboard widgets, cards ...
+@use "utilities/utilities";
+
+/* 1) Reset + Base */
+@include reset.apply();
+@include typography.apply();
+
+/* 2) Emit CSS variables for themes */
+@include themes.emit();
+
+/* 3) Components */
+@include buttons.apply();
+@include forms.apply();
+@include layout.apply();
+@include cards.apply();
+@include nav.apply();
+
+/* 4) Utilities */
+@include utilities.apply();
+
+/* 5) Global page background hookup */
+:root,
+[data-theme="dark"] {
+  background-color: var(--page-bg);
+  color: var(--text);
+}

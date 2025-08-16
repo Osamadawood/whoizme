@@ -1,31 +1,30 @@
-@use "sass:color";
-@use "../core/mixins" as mixins;
+@use "../core/mixins" as *;
 
-@layer components {
-    .btn {
-        @include mixins.button-base;
-        background: var(--surface-2);
-        color: var(--text);
-    }
-
-    .btn-primary {
-        @include mixins.button-base;
-        background: linear-gradient(180deg, var(--brand-500), var(--brand-600));
-        color: #fff;
-        border-color: transparent;
-
-        &:hover {
-            filter: brightness(1.06);
-        }
-
-        &:active {
-            transform: translateY(.0625rem);
-        }
-    }
-
-    .btn-ghost {
-        @include mixins.button-base;
-        background: transparent;
-        border-color: var(--border);
-    }
+@mixin apply() {
+  .btn { 
+    @include button-reset;
+    border-radius: var(--radius-md);
+    padding: .7rem 1rem;
+    font-weight: var(--fw-semibold);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    &:focus-visible { @include focus-ring(); }
+  }
+  .btn--primary {
+    background: var(--brand);
+    border-color: color-mix(in oklab, var(--brand), black 14%);
+    color: #fff;
+    &:hover { background: var(--brand-600); }
+    &:active { background: var(--brand-700); }
+  }
+  .btn--ghost {
+    background: transparent; border-color: var(--border); color: var(--text);
+    &:hover { background: color-mix(in oklab, var(--surface), white 3%); }
+  }
+  .btn--danger {
+    background: var(--danger); color: #fff; border-color: color-mix(in oklab, var(--danger), black 16%);
+  }
+  .btn--sm { padding: .5rem .75rem; font-size: var(--fs-sm) }
+  .btn--lg { padding: .85rem 1.15rem; font-size: var(--fs-lg) }
 }

@@ -1,35 +1,17 @@
-@layer components {
-    .label {
-        display: block;
-        font-weight: 600;
-        font-size: var(--step--1);
-        color: var(--text-dim);
-        margin: 0 0 .4rem;
-    }
+@use "../core/mixins" as *;
 
-    .input {
-        inline-size: 100%;
-        background: var(--surface-2);
-        color: var(--text);
-        border: 1px solid var(--border);
-        border-radius: var(--r-md);
-        padding: .75rem .9rem;
-        transition: border-color .2s, box-shadow .2s;
-    }
-
-    .input::placeholder {
-        color: color-mix(in oklab, var(--text-dim), transparent 10%);
-    }
-
-    .input:focus {
-        outline: 0;
-        border-color: color-mix(in oklab, var(--brand-500), white 20%);
-        box-shadow: 0 0 0 .25rem color-mix(in oklab, var(--brand-500), transparent 85%);
-    }
-
-    .form-error {
-        color: #ef4444;
-        font-size: .8rem;
-        margin-block-start: .35rem;
-    }
+@mixin apply() {
+  .form-control { @include field-base; }
+  .form-label { display:block; margin-block: 0 0.35rem; font-size: var(--fs-sm); color: var(--text-muted); }
+  .input-group { display:flex; align-items:stretch; gap:.5rem;
+    & > .form-control { flex: 1 1 auto; }
+    & > .btn { flex: 0 0 auto; } }
+  .form-help { font-size: var(--fs-xs); color: var(--text-muted); margin-top:.35rem; }
+  .checkbox { display:flex; align-items:center; gap:.55rem; font-size: var(--fs-sm); color: var(--text-muted);
+    input[type="checkbox"]{
+      inline-size: 1.05rem; block-size: 1.05rem; border-radius: .35rem;
+      border:1px solid var(--field-bd); background: var(--field-bg);
+      appearance: none; display:grid; place-items:center;
+      &:focus { @include focus-ring(); }
+      &:checked{ background: var(--brand); border-color: var(--brand); } } }
 }

@@ -1,37 +1,39 @@
-/* core/_mixins.scss
- * Central mixins used across components.
- * NOTE: keep mixins at the top level (not inside @layer) so @use can access them.
- */
+@use "brand";
+@use "sass:color";
 
-// Card container with padding parameter
-@mixin card($pad: var(--sp-4)) {
-    background: var(--color-card, var(--surface, #fff));
-    border: 1px solid var(--color-border, #e6e8eb);
-    border-radius: var(--radius-lg, 12px);
-    box-shadow: var(--shadow-md, 0 1px 2px rgba(0, 0, 0, .05));
-    padding: $pad;
+@mixin focus-ring($c: var(--ring)) {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in oklab, #000 0%, $c 100%);
 }
 
-// Base button reset + shared styles
-@mixin button-base {
-    display: inline-grid;
-    place-items: center;
-    inline-size: max-content;
-    block-size: 2.75rem;
-    padding-inline: var(--sp-4);
-    border-radius: var(--radius-md, 10px);
-    font-weight: 700;
-    letter-spacing: .2px;
-    border: 1px solid color-mix(in oklab, var(--color-border, #e6e8eb), transparent 40%);
-    transition: filter .2s, transform .12s, background-color .2s, border-color .2s;
-    will-change: transform;
-    text-decoration: none;
-    cursor: pointer;
+@mixin card($pad: var(--sp-5)) {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: $pad;
 }
 
-// Constrained page container
-@mixin container($max: 1200px) {
-    max-width: $max;
-    margin-inline: auto;
-    padding-inline: var(--space-md, 1.25rem);
+@mixin container($size: lg) {
+  inline-size: min(100% - 2rem, var(--container-#{$size}));
+  margin-inline: auto;
+}
+
+@mixin truncate { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+
+@mixin button-reset {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: .5rem; border: 0; background: none; cursor: pointer; text-decoration: none;
+  font: inherit; line-height: 1; user-select: none;
+}
+
+@mixin field-base {
+  inline-size: 100%;
+  padding: .75rem .9rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--field-bd);
+  background: var(--field-bg);
+  color: var(--text);
+  transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+  &:focus { @include focus-ring(); border-color: var(--ring); }
 }
