@@ -1,0 +1,22 @@
+@layer utilities {
+    @mixin card($pad: var(--sp-4)) {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--r-lg);
+        box-shadow: var(--shadow-md);
+        padding: $pad;
+    }
+
+    @mixin button-base {
+        display: inline-grid;
+        place-items: center;
+        block-size: 2.75rem;
+        padding-inline: var(--sp-4);
+        border-radius: var(--r-md);
+        font-weight: 700;
+        letter-spacing: .2px;
+        border: 1px solid color-mix(in oklab, var(--border), transparent 40%);
+        transition: filter .2s, transform .12s, background-color .2s, border-color .2s;
+        will-change: transform;
+    }
+}

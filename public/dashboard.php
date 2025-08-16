@@ -1,190 +1,144 @@
 <?php
-require_once __DIR__ . '/_bootstrap.php';
-require __DIR__ . '/../includes/auth.php';
+declare(strict_types=1);
+require_once __DIR__ . '/../includes/bootstrap.php';
+require_login();
 
-// عنوان للصفحة للهيدر (لو الهيدر بيستخدمه)
-$PAGE_TITLE = $page_title = 'Dashboard';
-
-// هيدر (يحمل الـ CSS/JS وشريط التنقل)
-include __DIR__ . '/../includes/header.php';
+$title  = 'Dashboard';
+$active = 'dashboard';
+include __DIR__ . '/partials/app_header.php';
 ?>
 
-<?php
-// ------------------------------------------------------
-// Dashboard data
-// ------------------------------------------------------
-// Accept both session keys used across app (user_id | uid)
-$uid = (int)($_SESSION['user_id'] ?? ($_SESSION['uid'] ?? 0));
-
-$qrsCount       = 0;   // what we show in the tile
-$qrsCountDb     = 0;   // strict count from qr_codes table
-$linksCount     = 0;
-$recentQrs      = [];
-$recentLinks    = [];
-$username       = '';
-$userCreatedAt  = '';
-
-$totalClicks    = 0;   // all clicks across user short links
-$qrScans        = 0;   // placeholder for future QR/landing-page breakdown
-$landingClicks  = 0;   // placeholder until landing pages ship
-
-try {
-  if (isset($db) && is_object($db)) {
-    // fetch username (for virtual profile QR fallback)
-    try {
-      $stU = $db->pdo()->prepare("SELECT username, created_at FROM users WHERE id=? LIMIT 1");
-      $stU->execute([$uid]);
-      if ($rowU = $stU->fetch()) {
-        $username = trim((string)$rowU['username']);
-        $userCreatedAt = (string)$rowU['created_at'];
-      }
-    } catch (Throwable $e) {}
-
-    // Count user QRs from table (real records)
-    try {
-      $st = $db->pdo()->prepare("SELECT COUNT(*) FROM qr_codes WHERE user_id=?");
-      $st->execute([$uid]);
-      $qrsCountDb = (int)$st->fetchColumn();
-    } catch (Throwable $e) { $qrsCountDb = 0; }
-
-    // Count user links (support both short_links and links tables)
-    foreach ([
-      ['tbl' => 'short_links', 'cols' => ['id','code','target_url','created_at']],
-      ['tbl' => 'links',       'cols' => ['id','code','target','created_at']],
-    ] as $meta) {
-      try {
-        $st2 = $db->pdo()->prepare("SELECT COUNT(*) FROM {$meta['tbl']} WHERE user_id=?");
-        $st2->execute([$uid]);
-        $linksCount = (int)$st2->fetchColumn();
-        if ($linksCount > 0) { break; }
-      } catch (Throwable $e) { /* table not found -> try next */ }
-    }
-
-    // Recent QRs (real records)
-    try {
-      $st3 = $db->pdo()->prepare("SELECT id, code, title, type, created_at FROM qr_codes WHERE user_id=? ORDER BY id DESC LIMIT 5");
-      $st3->execute([$uid]);
-      $recentQrs = $st3->fetchAll();
-    } catch (Throwable $e) { $recentQrs = []; }
-
-    // Fallback: virtual profile QR if user has username but no rows yet
-    if (count($recentQrs) === 0 && $username !== '') {
-      $recentQrs = [[
-        'id'         => 0,
-        'code'       => $username,
-        'title'      => 'Profile QR',
-        'type'       => 'profile',
-        'created_at' => $userCreatedAt ?: date('Y-m-d H:i:s'),
-      ]];
-    }
-
-    // Decide what to show in the tile: prefer strict DB count; otherwise fallback list size
-    $qrsCount = max($qrsCountDb, count($recentQrs));
-
-    // Recent short links (support both tables)
-    foreach ([
-      ['tbl' => 'short_links', 'target' => 'target_url'],
-      ['tbl' => 'links',       'target' => 'target'],
-    ] as $meta) {
-      try {
-        $st4 = $db->pdo()->prepare("SELECT id, code, {$meta['target']} AS target_url, created_at FROM {$meta['tbl']} WHERE user_id=? ORDER BY id DESC LIMIT 5");
-        $st4->execute([$uid]);
-        $recentLinks = $st4->fetchAll();
-        if ($recentLinks) { break; }
-      } catch (Throwable $e) {}
-    }
-
-    // Total clicks across user's short links
-    try {
-      $stClicks = $db->pdo()->prepare("
-        SELECT COUNT(*)
-        FROM short_link_hits sh
-        JOIN short_links sl ON sl.code = sh.code
-        WHERE sl.user_id = ?
-      ");
-      $stClicks->execute([$uid]);
-      $totalClicks = (int)$stClicks->fetchColumn();
-    } catch (Throwable $e) { $totalClicks = 0; }
-  }
-} catch (Throwable $e) {}
-
-$name  = htmlspecialchars($_SESSION['name'] ?? '');
-$brand = htmlspecialchars($settings['site_name'] ?? 'Whoiz.me');
-?>
-
-<div class="container py-3 py-md-4">
-  <!-- Hero -->
-  <div class="dash-hero mb-3 d-flex align-items-center justify-content-between">
-    <div>
-      <div class="chip-muted mb-2"><?= htmlspecialchars($settings['site_name'] ?? 'Whoiz.me') ?></div>
-      <div class="dash-title">Your Connections Platform</div>
-      <div class="dash-sub">Manage Links, QR Codes, and Landing Pages (Coming Soon).</div>
+<main class="dashboard">
+  <!-- Gradient hero -->
+  <section class="dash-hero">
+    <div class="dash-hero__inner">
+      <div class="dash-hero__left">
+        <h1 class="dash-hero__title">Hey <span class="wave">👋</span></h1>
+        <p class="dash-hero__subtitle">We’re on a mission to help you ship beautiful links, QR codes and landing pages.</p>
+        <div class="dash-hero__actions">
+          <a class="btn btn-primary" href="/link-create">Create link</a>
+          <a class="btn" href="/qr-codes">Create QR</a>
+        </div>
+      </div>
+      <div class="dash-hero__right">
+        <!-- Optional: hero illustration placeholder -->
+        <div class="dash-hero__art"></div>
+      </div>
     </div>
-    <div></div>
-  </div>
+  </section>
 
-  <!-- Quick actions -->
-  <div class="qa-panel mb-3">
-    <div class="qa-row">
-      <div class="qa-card">
-        <div class="qa-ico links"><i class="bi bi-link-45deg"></i></div>
-        <div class="flex-grow-1">
-          <h3 class="qa-title">Links</h3>
-          <div class="qa-desc">Create and manage short links, track clicks.</div>
-          <a href="/link-stats" class="btn btn-outline-success btn-sm">Go to Links</a>
+  <!-- KPI cards -->
+  <section class="kpi-row">
+    <article class="kpi-card">
+      <div class="kpi-card__icon">🔗</div>
+      <div class="kpi-card__meta">
+        <h3 class="kpi-card__label">LINK CLICKS</h3>
+        <div class="kpi-card__value">0</div>
+        <div class="kpi-card__delta kpi-card__delta--up">+0%</div>
+      </div>
+    </article>
+
+    <article class="kpi-card">
+      <div class="kpi-card__icon">📱</div>
+      <div class="kpi-card__meta">
+        <h3 class="kpi-card__label">QR SCANS</h3>
+        <div class="kpi-card__value">0</div>
+        <div class="kpi-card__delta kpi-card__delta--up">+0%</div>
+      </div>
+    </article>
+
+    <article class="kpi-card">
+      <div class="kpi-card__icon">🧲</div>
+      <div class="kpi-card__meta">
+        <h3 class="kpi-card__label">ENGAGEMENTS</h3>
+        <div class="kpi-card__value">0</div>
+        <div class="kpi-card__delta">—</div>
+      </div>
+    </article>
+
+    <article class="kpi-card is-soon">
+      <div class="kpi-card__icon">👥</div>
+      <div class="kpi-card__meta">
+        <h3 class="kpi-card__label">CUSTOMERS</h3>
+        <div class="kpi-card__value">—</div>
+        <span class="badge badge-soon">Soon</span>
+      </div>
+    </article>
+  </section>
+
+  <!-- Main panels grid -->
+  <section class="dash-grid">
+    <div class="panel span-2">
+      <div class="panel__head">
+        <h3>Visitors statistics</h3>
+        <div class="tabs">
+          <button class="tab is-active">Monthly</button>
+          <button class="tab" disabled>Yearly</button>
         </div>
       </div>
-      <div class="qa-card">
-        <div class="qa-ico qr"><i class="bi bi-qr-code"></i></div>
-        <div class="flex-grow-1">
-          <h3 class="qa-title">QR Codes</h3>
-          <div class="qa-desc">Generate QR codes and view scans.</div>
-          <a href="/qr/" class="btn btn-outline-primary btn-sm">Go to QR Codes</a>
+      <div class="panel__body chart-placeholder">
+        <!-- Replace with real chart -->
+        <div class="chart-skeleton">
+          <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
         </div>
       </div>
-      <div class="qa-card landingBox">
-        <span class="badge-soon">Soon</span>
-        <div class="landingBoxContent">
-          <div class="qa-ico page"><i class="bi bi-file-earmark-richtext"></i></div>
-          <div class="flex-grow-1">
-            <h3 class="qa-title">Landing Pages</h3>
-            <div class="qa-desc">Launch mini pages to showcase your links.</div>
+    </div>
+
+    <div class="panel">
+      <div class="panel__head">
+        <h3>Customers</h3>
+      </div>
+      <div class="panel__body">
+        <div class="donut-skeleton">
+          <svg viewBox="0 0 36 36" class="donut">
+            <circle class="donut-ring" cx="18" cy="18" r="15.915"></circle>
+            <circle class="donut-segment" cx="18" cy="18" r="15.915" stroke-dasharray="70 30"></circle>
+          </svg>
+          <div class="legend">
+            <span class="dot monthly"></span> Monthly
+            <span class="dot yearly"></span> Yearly
           </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Metrics -->
-  <div class="metrics mb-4">
-    <div class="metric">
-      <i class="bi bi-activity fs-5 text-primary"></i>
-      <div>
-        <small>ENGAGEMENTS</small>
-        <div class="num"><?= (int)$totalClicks ?></div>
+    <div class="panel">
+      <div class="panel__head">
+        <h3>Top Links</h3>
+      </div>
+      <div class="panel__body">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Clicks</th>
+              <th>Status</th>
+              <th>Last Active</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>— No links yet</td>
+              <td>0</td>
+              <td><span class="status status--pending">Pending</span></td>
+              <td>—</td>
+              <td><a class="btn btn-ghost" href="/link-create">Create</a></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
-    <div class="metric">
-      <i class="bi bi-link-45deg fs-5 text-success"></i>
-      <div>
-        <small>LINK CLICKS</small>
-        <div class="num"><?= (int)$totalClicks ?></div>
+
+    <div class="panel">
+      <div class="panel__head">
+        <h3>Recent Activity</h3>
       </div>
+      <ul class="activity">
+        <li class="activity__item">Nothing here yet — start by creating a link or a QR.</li>
+      </ul>
     </div>
-    <div class="metric">
-      <i class="bi bi-qr-code fs-5 text-dark"></i>
-      <div>
-        <small>LANDING PAGES CLICKS</small>
-        <div class="num"><?= (int)$landingClicks ?></div>
-      </div>
-    </div>
-  </div>
+  </section>
+</main>
 
-  <div class="alert alert-light border" role="alert">
-    We’ll add more blocks here (recent items, campaigns cards, etc.) to match the full dashboard experience.
-  </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<?php include __DIR__ . '/../includes/footer.php'; ?>
+<?php include __DIR__ . '/partials/app_footer.php'; ?>

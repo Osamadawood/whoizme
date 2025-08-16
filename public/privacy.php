@@ -3,6 +3,8 @@
 if (session_status() !== PHP_SESSION_ACTIVE) session_start();
 $page_title = 'Privacy · Whoiz.me';
 require __DIR__ . '/partials/landing_header.php'; ?>
+
+
 <div class="card" style="max-width:820px;margin:0 auto;">
   <h1>Privacy Policy</h1>
   <p class="muted">Placeholder privacy policy. Replace with your real policy.</p>

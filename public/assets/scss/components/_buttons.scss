@@ -1,0 +1,30 @@
+@use "../core/mixins" as *;
+
+@layer components {
+    .btn {
+        @include button-base;
+        background: var(--surface-2);
+        color: var(--text);
+    }
+
+    .btn-primary {
+        @include button-base;
+        background: linear-gradient(180deg, var(--brand-500), var(--brand-600));
+        color: #fff;
+        border-color: transparent;
+
+        &:hover {
+            filter: brightness(1.06);
+        }
+
+        &:active {
+            transform: translateY(.0625rem);
+        }
+    }
+
+    .btn-ghost {
+        @include button-base;
+        background: transparent;
+        border-color: var(--border);
+    }
+}

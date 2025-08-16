@@ -1,10 +1,11 @@
-/* public/assets/scss/app.scss */
-@use 'variables';
-@use 'mixins';
-@use 'base';
-@use 'layout';
-@use 'components';
-@use 'forms';
-@use 'tables';
-@use 'stats';
-@use 'visits';
+/* Layers: base → components → utilities */
+@use "core/brand";
+@use "core/themes";
+@use "core/reset";
+@use "core/typography";
+@use "core/helpers";
+
+@use "components/buttons";
+@use "components/forms";
+@use "components/auth";
+/* لاحقاً: @use "components/layout"; @use "pages/dashboard"; ... */
