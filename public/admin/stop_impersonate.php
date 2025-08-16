@@ -4,7 +4,7 @@ require __DIR__ . '/../../includes/admin_auth.php'; // لازم تكون أدم�
 
 // لازم يكون في سيشن impersonation
 if (empty($_SESSION['impersonating']) || empty($_SESSION['impersonate_admin_id'])) {
-  header('Location: /admin/dashboard.php'); exit;
+  header('Location: /admin/dashboard'); exit;
 }
 
 // نضيف لوج
@@ -27,4 +27,4 @@ unset($_SESSION['user_id'], $_SESSION['user_email'], $_SESSION['user_name']);
 unset($_SESSION['impersonating'], $_SESSION['impersonate_admin_id'], $_SESSION['impersonate_user_id']);
 
 $_SESSION['admin_ok'] = 'Impersonation ended. You are back to Admin.';
-header('Location: /admin/dashboard.php'); exit;
+header('Location: /admin/dashboard'); exit;

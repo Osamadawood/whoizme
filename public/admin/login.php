@@ -13,7 +13,7 @@ $csrf = $_SESSION['csrf'];
 
 // لو الأدمن داخل بالفعل، ودّيه للداشبورد
 if (!empty($_SESSION['is_admin']) || !empty($_SESSION['admin_id']) || !empty($_SESSION['admin_email'])) {
-  header('Location: /admin/dashboard.php'); exit;
+  header('Location: /admin/dashboard'); exit;
 }
 
 $err = '';
@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           // امسح أي سيشن يوزر لو كان فيه
           unset($_SESSION['user_id'], $_SESSION['uid'], $_SESSION['email'], $_SESSION['is_logged_in']);
 
-          header('Location: /admin/dashboard.php'); exit;
+          header('Location: /admin/dashboard'); exit;
         }
       }
       $err = 'Invalid credentials.';

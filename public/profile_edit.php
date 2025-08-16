@@ -127,7 +127,7 @@ if (auth_role() === 'admin') {
   </fieldset><br>
 
   <button>Save</button>
-  &nbsp; <a href="/dashboard.php">Go back</a>
+  &nbsp; <a href="/dashboard">Go back</a>
 </form>
 
 <script>

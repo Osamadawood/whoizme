@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= htmlspecialchars($page_title ?? 'Whoiz.me', ENT_QUOTES, 'UTF-8') ?></title>
 <link rel="stylesheet" href="/assets/landing.css">
+
 <style>
   :root{--brand:$brand;--muted:#6b7280;--border:#e5e7eb;background:#f9fafb}
   body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",sans-serif;color:#111}
@@ -39,7 +40,7 @@
   <div class="logo"><a href="/">Whoiz.me</a></div>
   <nav class="nav">
     <?php if (!empty($_SESSION['is_logged_in'])): ?>
-      <a href="/dashboard.php">Dashboard</a>
+      <a href="/dashboard">Dashboard</a>
       <a href="/logout.php">Logout</a>
     <?php else: ?>
       <a href="/login.php">Login</a>

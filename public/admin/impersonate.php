@@ -53,4 +53,4 @@ $_SESSION['impersonator_admin_id'] = (int)($_SESSION['admin_id'] ?? 0);
 admin_log('impersonate_start', $u['id'], ['user_email' => $u['email'] ?? null]);
 
 $_SESSION['flash'] = 'You are now impersonating: '.($u['email']);
-header('Location: /dashboard.php'); exit;
+header('Location: /dashboard'); exit;

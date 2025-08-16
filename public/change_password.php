@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $st = $db->pdo()->prepare("UPDATE users SET password_hash=?, must_change_password=0 WHERE id=?");
       $st->execute([$hash, (int)$_SESSION['user_id']]);
       $_SESSION['flash'] = 'Password updated successfully.';
-      header('Location: /dashboard.php'); exit;
+      header('Location: /dashboard'); exit;
     }
   }
 }

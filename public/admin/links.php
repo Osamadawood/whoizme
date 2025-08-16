@@ -7,7 +7,7 @@ ini_set('display_errors',1); error_reporting(E_ALL);
 /* ===== Permissions ===== */
 if (!admin_can('links.view')) {
   $_SESSION['flash'] = 'You do not have permission to view links.';
-  header('Location: /admin/dashboard.php'); exit;
+  header('Location: /admin/dashboard'); exit;
 }
 
 /* CSRF */
@@ -113,7 +113,7 @@ $flash = $_SESSION['flash'] ?? null; unset($_SESSION['flash']);
 ?>
 
 <h2 class="mb-2">Manage Links</h2>
-<p><a href="/admin/dashboard.php" class="text-decoration-none">← Back to Admin</a></p>
+<p><a href="/admin/dashboard" class="text-decoration-none">← Back to Admin</a></p>
 
 <?php if ($flash): ?>
   <div class="alert alert-info"><?= h($flash) ?></div>

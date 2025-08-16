@@ -197,7 +197,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $can_manage) {
 
     $_SESSION['admin_ok'] = 'Now impersonating the user.';
     unset($_SESSION['admin_error']);
-    header('Location: /dashboard.php');
+    header('Location: /dashboard');
     exit;
   }
 }

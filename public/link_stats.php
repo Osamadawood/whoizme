@@ -386,7 +386,7 @@ $base = rtrim($config['base_url'] ?? '', '/');
       <?php endif; endfor; ?>
   </div>
 
-  <p style="margin-top:16px"><a href="/dashboard.php">Back</a></p>
+  <p style="margin-top:16px"><a href="/dashboard">Back</a></p>
   <p style="opacity:.7;font-size:12px">Note: on localhost, IPs may be local; country/city will appear once GeoIP is enabled in production.</p>
 
 <script>
