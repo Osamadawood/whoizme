@@ -11,6 +11,10 @@
 
 <main class="site-main">
 
+  <div class="hero-img">
+    <img src="<?= $base ?>/assets/img/auth-hero.jpg" alt="Whoizme">
+  </div>
+
   <section class="auth-grid log-card">
     <!-- Left: Form card -->
     <article class="auth-panel auth-card">
@@ -28,7 +32,7 @@
           <input class="input" type="password" name="password" placeholder="••••••••" autocomplete="current-password" required>
         </label>
 
-        <div class="row row--between">
+        <div class="row row--between row--align">
           <label class="checkbox remember">
             <input type="checkbox" name="remember" value="1">
             <span>Remember me</span>
@@ -58,7 +62,8 @@
             <div class="title">Contact support</div>
             <div class="muted">We're here to help you</div>
           </div>
-          <a class="btn btn--secondary btn--sm action" href="mailto:support@whoiz.me">Email us</a>
+          <!-- <a class="btn btn--secondary btn--sm action" href="mailto:support@whoiz.me">Email us</a> -->
+          <a class="btn btn--secondary btn--sm action" href="/contact-us.php">Contact Us</a>
         </div>
 
 

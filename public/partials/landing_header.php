@@ -23,7 +23,6 @@
 
     <nav aria-label="Primary" class="nav">
       <a href="/#features">Features</a>
-      <a href="/#pricing">Pricing</a>
       <a href="/#help">Help</a>
       
     </nav>

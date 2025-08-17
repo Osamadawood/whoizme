@@ -52,7 +52,7 @@
   $radii: if(
     map.has-key($brand-vars, "radii"),
     map.get($brand-vars, "radii"),
-    (xs: 4px, sm: 6px, md: 8px, lg: 12px, xl: 16px, pill: 999px)
+    (xs: 4px, sm: 6px, md: 8px, lg: 12px, xl: 16px, 2xl: 24px, pill: 999px)
   );
 
   $spacing: if(

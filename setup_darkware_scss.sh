@@ -187,6 +187,7 @@ $light-palette: (
   --radius-md: #{map.get($radius, md)};
   --radius-lg: #{map.get($radius, lg)};
   --radius-xl: #{map.get($radius, xl)};
+  --radius-2xl: #{map.get($radius, 2xl)};
   --radius-pill: #{map.get($radius, pill)};
 
   --shadow-sm: #{map.get($shadow, sm)};

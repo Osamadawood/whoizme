@@ -31,8 +31,8 @@
 @use "components/prose";
 @use "core/fonts";
 @use "components/auth";
-@use "pages/landing";
 @use 'landing/header';
+@use "landing/footer";
 
 /* === Utilities === */
 @use "utilities/utilities";

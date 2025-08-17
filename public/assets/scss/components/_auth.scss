@@ -27,7 +27,8 @@
   max-width: min(1200px, 92vw);
   margin-inline: auto;
   display: grid;
-  grid-template-columns: minmax(340px, 560px) minmax(320px, 520px);
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 54% 1fr;
   gap: clamp(1.75rem, 3vw, 2.5rem);
   align-items: start;
 }
@@ -87,6 +88,7 @@
 /* Row helpers */
 .row { display: flex; gap: var(--sp-3); align-items: center; }
 .row--between { justify-content: space-between; }
+.row--align { align-items: center; }
 
 /* Buttons — pill and full-width like reference */
 .auth-panel .btn { height: 48px; border-radius: var(--radius-full); }
@@ -163,7 +165,9 @@
 .page-auth main, .page-auth .site-main { padding-top: 0 !important; }
 
 .rememberMe{margin-bottom: 0;}
-
+.remember{
+  margin-bottom: 0 !important;
+}
 /* === Theme toggle (animated pill) === */
 .theme-toggle{ 
   --ring: color-mix(in oklab, var(--brand), transparent 85%);
