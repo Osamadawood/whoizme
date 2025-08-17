@@ -1,9 +1,8 @@
 <?php
 declare(strict_types=1);
-require dirname(__DIR__) . '/includes/bootstrap.php';
-require_login();
+require __DIR__ . '/../includes/bootstrap.php';
+require_login(); // ضرورية
 ?>
-<!-- بقية صفحتك كما هي (الهيدر/المحتوى/الفوتر) -->
 
 <main class="dashboard">
   <!-- Gradient hero -->

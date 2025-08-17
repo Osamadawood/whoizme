@@ -3,43 +3,50 @@ declare(strict_types=1);
 
 /**
  * Public: Sign in
- * نحافظ على الـ markup كما هو، ونضبط تدفّق اللوج إن فقط.
+ * لا نلمس الـ HTML/الديزاين أسفل. فقط منطق التوجيه والتحقق بالأعلى.
  */
 
-// مهم: تخطّي الحارس
+// 1) تعطيل الحارس هنا لأن صفحة لوج إن عامة
 if (!defined('SKIP_AUTH_GUARD')) {
     define('SKIP_AUTH_GUARD', true);
 }
 
-// حمّل البوتستراب مبكراً (سيشن + دوال + PDO) قبل أي HTML
+// 2) حمل البوتستراب (سيشن + دوال + PDO + CONFIG)
 require dirname(__DIR__) . '/includes/bootstrap.php';
 
-// احسب return بشكل آمن وتجنّب الدورات/الروت/معالجات auth
-$raw      = isset($_GET['return']) ? (string)$_GET['return'] : '';
-$decoded  = $raw !== '' ? urldecode($raw) : '';
-$pathOnly = $decoded !== '' ? (string)(parse_url($decoded, PHP_URL_PATH) ?? '') : '';
+// 3) دالة صغيرة لتنظيف return ومنع أي دورات (login/do_login/index)
+function clean_return(?string $raw): string {
+    $raw      = (string)($raw ?? '');
+    $decoded  = $raw !== '' ? urldecode($raw) : '';
+    $pathOnly = $decoded !== '' ? (string)(parse_url($decoded, PHP_URL_PATH) ?? '') : '';
 
-$badTargets = ['', '/', '/index.php', '/do_login', '/do_login.php', '/login', '/login.php'];
-$return_to  = (! $pathOnly || in_array($pathOnly, $badTargets, true))
-            ? '/dashboard.php'
-            : ($pathOnly[0] === '/' ? $pathOnly : '/dashboard.php');
+    $bad = ['', '/', '/index', '/index.php', '/login', '/login.php', '/do_login', '/do_login.php'];
+    if ($pathOnly === '' || in_array($pathOnly, $bad, true)) {
+        return '/dashboard.php';
+    }
+    return $pathOnly[0] === '/' ? $pathOnly : '/dashboard.php';
+}
 
-// لو مسجّل بالفعل، وِّده على الهدف
+// 4) احسب الهدف بأمان
+$rawReturn = isset($_GET['return']) ? (string)$_GET['return'] : '';
+$return_to = clean_return($rawReturn);
+
+// 5) لو المستخدم مسجل دخول بالفعل, وده على الهدف
 if (function_exists('current_user_id') && current_user_id() > 0) {
     header('Location: ' . $return_to, true, 302);
     exit;
 }
 
-// رسالة خطأ عامة لو جاية من do_login
+// 6) رسالة خطأ عامة (لو do_login رجّع err=1)
 $errMsg = isset($_GET['err']) && $_GET['err'] !== ''
     ? 'The email or password you entered is incorrect.'
     : '';
 
-// إعدادات للـ header (لو الهيدر بيقرأها)
+// 7) إعدادات للهيدر (لو محتاجها)
 $page_title = 'Sign in';
 $page_class = 'page-auth';
 
-// هيدر اللاندنج (بيطبع الـ <html> و <body>)
+// 8) اطبع هيدر اللاندنج (لا تغييرات على المارك أب)
 require __DIR__ . '/partials/landing_header.php';
 ?>
 <main class="site-main">
@@ -90,7 +97,7 @@ require __DIR__ . '/partials/landing_header.php';
     <!-- Right: Marketing -->
     <aside class="auth-side login-side">
       <div class="text-muted">WHOIZ.ME</div>
-      <h2 class="big-title">All your links, QR codes & insights — together in one dashboard</h2>
+      <h2 class="big-title">All your links, QR codes &amp; insights — together in one dashboard</h2>
       <p class="lead">Sign in to manage short links, create QR codes, and track performance with clean, privacy-first analytics — all in one place.</p>
 
       <div class="auth-sidecards">
