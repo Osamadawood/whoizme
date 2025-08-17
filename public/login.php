@@ -1,43 +1,55 @@
 <?php
 declare(strict_types=1);
 
-// صفحة عامة
-$page_title = "Sign in";
-$page_class = "page-auth";
+/**
+ * Public: Sign in
+ * NOTE: We keep design markup/classes intact. This only hardens flow & errors.
+ */
 
-// نفعل SKIP_AUTH_GUARD (لو عندك أي فلاتر تعتمد عليه)
+// Mark this page as public (skip guards in bootstrap/includes)
 if (!defined('SKIP_AUTH_GUARD')) {
     define('SKIP_AUTH_GUARD', true);
 }
 
-// تحميل البوتستراب مبكرًا
+// Bootstrap (must be loaded before any HTML)
 require dirname(__DIR__) . '/includes/bootstrap.php';
 
-// --- إدارة return بأمان ومنع أي loop/open redirect ---
-$raw     = (string)($_GET['return'] ?? '');
-$decoded = $raw !== '' ? urldecode($raw) : '';
-$path    = $decoded !== '' ? (string)(parse_url($decoded, PHP_URL_PATH) ?? '') : '';
+// ---------------------------------------------------------------------
+// Return target: sanitize & avoid loops (no absolute URLs, no self/do_login)
+// ---------------------------------------------------------------------
+$raw      = isset($_GET['return']) ? (string)$_GET['return'] : '';
+$decoded  = $raw !== '' ? urldecode($raw) : '';
+$pathOnly = $decoded !== '' ? (string)(parse_url($decoded, PHP_URL_PATH) ?? '') : '';
 
-$bad = ['', '/', '/do_login.php', 'do_login.php', '/login.php', 'login.php'];
-if ($path === '' || in_array($path, $bad, true)) {
+$badTargets = ['', '/', '/do_login.php', 'do_login.php', '/login.php', 'login.php'];
+if ($pathOnly === '' || in_array($pathOnly, $badTargets, true)) {
     $return_to = '/dashboard.php';
 } else {
-    $return_to = ($path[0] === '/') ? $path : '/dashboard.php';
+    // Only allow relative paths that start with '/'
+    $return_to = ($pathOnly[0] === '/') ? $pathOnly : '/dashboard.php';
 }
 
-// لو داخل بالفعل → روح للداشبورد
+// Already signed-in? Go to target (typically /dashboard.php)
 if (function_exists('current_user_id') && current_user_id() > 0) {
     header('Location: ' . $return_to, true, 302);
     exit;
 }
 
-// هيدر اللاندينج (لا يطبع PHP قبل <html>)
+// Read error flags (e.g. after failed login)
+$errCode = isset($_GET['err']) ? (string)$_GET['err'] : '';
+$errMsg  = '';
+if ($errCode !== '') {
+    // Keep messages generic for security
+    $errMsg = 'The email or password you entered is incorrect.';
+}
+
+// Landing header (prints the document structure)
 require __DIR__ . '/partials/landing_header.php';
 ?>
 <main class="site-main">
 
   <div class="hero-img">
-    <img src="/assets/img/auth-hero.jpg" alt="Whoizme">
+    <img src="/assets/img/auth-hero.jpg" alt="Whoizme hero">
   </div>
 
   <section class="auth-grid log-card">
@@ -45,6 +57,12 @@ require __DIR__ . '/partials/landing_header.php';
     <article class="auth-panel auth-card">
       <h1 class="auth-title">Sign in</h1>
       <p class="auth-sub form-desc">Don’t have an account? <a href="/register.php">Create one</a></p>
+
+      <?php if ($errMsg): ?>
+        <div class="alert alert--danger" role="alert">
+          <?= htmlspecialchars($errMsg, ENT_QUOTES) ?>
+        </div>
+      <?php endif; ?>
 
       <form class="stack log-form" action="/do_login.php" method="post" novalidate>
         <input type="hidden" name="return" value="<?= htmlspecialchars($return_to, ENT_QUOTES) ?>">
@@ -77,7 +95,7 @@ require __DIR__ . '/partials/landing_header.php';
     <aside class="auth-side login-side">
       <div class="text-muted">WHOIZ.ME</div>
       <h2 class="big-title">All your links, QR codes & insights — together in one dashboard</h2>
-      <p class="lead">Sign in to manage short links, create QR codes, and track performance with clean, privacy-first analytics — all in one place.</p>
+      <p class="lead">Sign in to manage short links, create QR codes, and track performance with clean, privacy‑first analytics — all in one place.</p>
 
       <div class="auth-sidecards">
         <div class="sidecard">
