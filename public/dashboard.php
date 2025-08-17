@@ -1,12 +1,9 @@
 <?php
 declare(strict_types=1);
-require_once __DIR__ . '/../includes/bootstrap.php';
+require dirname(__DIR__) . '/includes/bootstrap.php';
 require_login();
-
-$title  = 'Dashboard';
-$active = 'dashboard';
-include __DIR__ . '/partials/app_header.php';
 ?>
+<!-- بقية صفحتك كما هي (الهيدر/المحتوى/الفوتر) -->
 
 <main class="dashboard">
   <!-- Gradient hero -->
