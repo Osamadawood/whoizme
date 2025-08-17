@@ -10,11 +10,30 @@
 /* ---------- emit-colors: outputs CSS variables (whoizme naming) ---------- */
 /* Entry point: compile to /public/assets/css/app(.min).css */
 /* === Core @use must come first (no rules before them) === */
-/* 
-  Theme emitter بدون أي اعتماد على brand.token().
-  لو لقي خرائط $colors-dark / $colors-light داخل brand
-  هيستخدمها، وإلا هيفال باك لقيم افتراضية.
-*/
+@layer base {
+  /* Base tokens fallbacks — always defined regardless of load order */
+  :root[data-theme=dark] {
+    --page-bg: #0e0e0e;
+    --surface: #13151a;
+    --border: #22252d;
+    --text: #e7e9ee;
+    --muted: #a6adbb;
+    --brand: #6c47ff; /* primary */
+  }
+  :root[data-theme=light] {
+    --page-bg: #ffffff;
+    --surface: #f6f7f9;
+    --border: #e6e8ee;
+    --text: #111318;
+    --muted: #6b7280;
+    --brand: #5b7cfa;
+  }
+  /* Guarantee page colors even if a page forgets to set them */
+  html, body {
+    background: var(--page-bg);
+    color: var(--text);
+  }
+}
 /* === Components === */
 /* Entry point: compile to /public/assets/css/app(.min).css */
 /* === Core @use must come first (no rules before them) === */
@@ -59,6 +78,273 @@
   font-family: var(--ff-sans);
 }
 
+/* Auth screens (login/register) — Dashbrd-like layout using our tokens */
+/* Page wrapper (used on body or main root) */
+.page-auth {
+  background: var(--page-bg);
+  min-height: 100dvh;
+  display: block;
+}
+
+/* ===== Hero ===== */
+.auth-hero {
+  /* tall banner behind the card */
+  height: clamp(16rem, 32vw, 20rem);
+  margin-inline: auto;
+  max-width: min(1180px, 92vw);
+  border-radius: var(--radius-2xl, var(--radius-xl));
+  overflow: hidden;
+  position: relative;
+  z-index: 0;
+  background-position: 50% 35%;
+  box-shadow: var(--shadow-lg, var(--shadow-md));
+  /* gradient + image */
+  background: radial-gradient(130% 70% at 50% -20%, color-mix(in oklab, var(--brand), #ffffff 30%) 0%, transparent 65%), url("/assets/img/auth-hero.jpg") center/cover no-repeat;
+  border: 1px solid var(--border);
+}
+
+/* ===== Content wrapper ===== */
+.auth-wrap {
+  margin-inline: auto;
+  max-width: min(1080px, 92vw);
+  padding-inline: var(--sp-4);
+  padding-block: var(--sp-8);
+  position: relative;
+  text-align: center;
+  margin-top: clamp(1rem, 3vw, 1.5rem);
+}
+
+/* Compact brand row shown above the card */
+.auth-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.auth-brand a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin: var(--sp-6) auto var(--sp-4);
+  padding: var(--sp-4) var(--sp-3);
+  background: color-mix(in oklab, var(--surface), var(--text)/6%);
+  box-shadow: var(--shadow-sm);
+  color: var(--text);
+  text-decoration: none;
+  font-weight: var(--fw-semibold, 600);
+}
+.auth-brand a .auth-brand__dot {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-md);
+  background: radial-gradient(100% 100% at 30% 20%, color-mix(in oklab, var(--brand), #fff 8%) 0%, var(--brand) 70%);
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--brand), #000 35%);
+  flex: 0 0 28px;
+}
+.auth-brand a .auth-brand__name {
+  letter-spacing: 0.01em;
+  font-size: clamp(1.5rem, 2.2vw, 1.6rem);
+  margin-top: 0.4rem;
+}
+
+/* ===== Card ===== */
+/* system card mixin: background, border, radius, shadow */
+.auth-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  z-index: 2; /* make sure card sits above the hero */
+  background: var(--surface); /* opaque card like reference */
+  width: min(540px, 100%);
+  padding: clamp(1.5rem, 2.6vw, 2rem);
+  margin-inline: auto;
+  /* stronger overlap on the hero */
+  margin-top: clamp(-16.4rem, -14vw, -7.5rem);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-2xl, var(--radius-xl));
+  box-shadow: var(--shadow-2xl, var(--shadow-xl));
+}
+
+/* Title + subtext INSIDE the card (reference style) */
+.auth-card .auth-title {
+  margin: 0 0 var(--sp-2);
+  text-align: center;
+  font-size: clamp(1.5rem, 2.2vw, 1.75rem);
+  line-height: var(--lh-tight, 1.25);
+  font-weight: var(--fw-bold, 700);
+  letter-spacing: -0.01em;
+}
+
+.auth-card .auth-sub {
+  color: var(--muted);
+  text-align: center;
+  margin: 0 0 var(--sp-4);
+}
+
+/* Inputs inside auth card: slightly darker with clearer outline */
+.auth-card .input {
+  background-color: color-mix(in oklab, var(--surface), var(--text) 5%);
+  box-shadow: inset 0 0 0 1px var(--border), 0 1px 0 0 color-mix(in oklab, #000, transparent 85%);
+  border-radius: var(--radius-full);
+  height: 48px;
+}
+
+.auth-card .input:focus {
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--brand), #fff 12%), 0 0 0 3px color-mix(in oklab, var(--brand), transparent 82%);
+  outline: none;
+}
+
+/* Layout for helper row with forgot password */
+.auth-card .row--between {
+  align-items: center;
+}
+
+.auth-card .btn--ghost {
+  height: 44px;
+  border-radius: var(--radius-full);
+  padding-inline: var(--sp-4);
+}
+
+/* === Auth controls cosmetics (pills & sizes) === */
+.page-auth .input {
+  border-radius: var(--radius-full);
+  height: 48px;
+}
+
+.page-auth .btn {
+  border-radius: var(--radius-full);
+  height: 48px;
+}
+
+.page-auth .btn--sm {
+  height: 42px;
+}
+
+.page-auth .btn--lg {
+  height: 52px;
+}
+
+/* Fields take full width inside the card */
+.auth-card .field .input,
+.auth-card .input {
+  width: 100%;
+}
+
+/* Rows and helpers */
+.row {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: center;
+}
+
+.row--between {
+  justify-content: space-between;
+}
+
+.row--center {
+  align-items: center;
+}
+
+/* Primary & secondary CTAs span full width like the reference */
+.auth-card .btn--primary,
+.auth-card .btn--secondary {
+  width: 100%;
+}
+
+/* Checkbox, radio, switch align baseline */
+.auth-card .checkbox,
+.auth-card .radio,
+.auth-card .switch {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+/* Small muted help text */
+.auth-muted {
+  color: var(--muted);
+}
+
+/* Space between stacked sections in the card */
+.auth-card .stack > * + * {
+  margin-top: var(--sp-3);
+}
+
+.auth-card .row + .row {
+  margin-top: var(--sp-3);
+}
+
+/* Button cosmetics to match system */
+.auth-card .btn--primary {
+  background: linear-gradient(180deg, color-mix(in oklab, var(--brand), #fff 10%) 0%, var(--brand) 100%);
+  border: 1px solid color-mix(in oklab, var(--brand), #000 20%);
+  color: #111;
+}
+
+.auth-card .btn--primary:hover {
+  filter: brightness(1.04);
+}
+
+.auth-card .btn--secondary {
+  background: color-mix(in oklab, var(--surface), var(--text)/6%);
+}
+
+.auth-card .field + .field {
+  margin-top: var(--sp-3);
+}
+
+/* Social buttons list (if used) */
+.auth-social {
+  display: grid;
+  gap: var(--sp-3);
+  margin-top: var(--sp-4);
+}
+.auth-social .btn {
+  width: 100%;
+}
+
+/* ===== Responsive tweaks ===== */
+@media (min-width: 900px) {
+  .auth-card {
+    padding: 2rem;
+  }
+}
+/* ===== Auth layout overrides ===== */
+/* اخفي الهيدر العام داخل صفحات الـAuth */
+.page-auth .site-header {
+  display: none;
+}
+
+/* لو عندك main عام عليه padding-top بسبب الهيدر، صفره هنا */
+.page-auth main,
+.page-auth .site-main {
+  padding-top: 0 !important;
+}
+
+/* تأكيد تباعد الصفحة في الموبايل */
+@media (max-width: 599px) {
+  .auth-wrap {
+    padding-inline: var(--sp-3);
+  }
+  .auth-card {
+    margin-top: clamp(-6rem, -16vw, -5rem);
+  }
+}
+.auth-hero {
+  background-color: color-mix(in oklab, var(--page-bg), var(--text)/8%);
+}
+
+/* Slightly larger spacing under the subtitle inside the card */
+.auth-card .auth-sub {
+  margin-bottom: var(--sp-5);
+}
+
+/* Center brand/logo above the card if present */
+.auth-wrap > .auth-brand {
+  display: inline-flex;
+}
+
 /* === Utilities === */
 /* === Emit layers & tokens (order matters slightly) === */
 /* 1) color tokens */
@@ -94,16 +380,6 @@
 }
 
 /* 2) theme custom properties */
-/* حمل خط Montserrat (نقدر ننقله لملف reset/typography لاحقًا) */
-@layer base {
-  @font-face {
-    font-family: "Montserrat";
-    src: url("https://fonts.gstatic.com/s/montserrat/v25/JTUHjIg1_i6t8kCHKm45_QphziTn89dtpQ.ttf") format("truetype");
-    font-display: swap;
-  }
-}
-/* اقرا متغيرات الموديول */
-/* خرائط الألوان: استخدم اللي في brand لو موجودة وإلا افتراضي */
 /* Radii/Spacing/Type/Shadows (فالباك لو مش موجودة في brand) */
 /* - Root variables العامة (فونت/راديوس/سبايسنج/تيبو/شادو) - */
 @layer base {
@@ -211,6 +487,17 @@ input, button, textarea, select {
 
 p, h1, h2, h3, h4, h5, h6 {
   overflow-wrap: anywhere;
+}
+
+:root {
+  --ff-sans: "Objectivity", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+            "Noto Sans Arabic", "IBM Plex Sans Arabic", Arial, sans-serif;
+  --fs-base: 16px;
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-bold: 700;
+  --fs-h1: clamp(2.25rem, 1.6vw + 1.5rem, 2.75rem);
+  --fs-h2: clamp(1.50rem, 0.9vw + 1rem, 2.00rem);
 }
 
 :root {

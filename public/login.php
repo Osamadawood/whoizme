@@ -1,102 +1,61 @@
 <?php
-// public/login.php — Whoizme Auth (matches Dashbrd template structure, uses our DS)
-declare(strict_types=1);
-
-$bootstrap = __DIR__ . '/_bootstrap.php';
-if (is_file($bootstrap)) { require $bootstrap; }
-else { require __DIR__ . '/../includes/bootstrap.php'; }
-
-// Already signed in? go to dashboard
-if (function_exists('current_user_id') && current_user_id() > 0) {
-    header('Location: /dashboard.php');
-    exit;
-}
-
-$action = is_file(__DIR__ . '/do_login.php') ? '/do_login.php' : '/login.php';
-if ($action === '/login.php' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
-    // Dev fallback: sign in as UID=1
-    $_SESSION['uid'] = 1;
-    header('Location: /dashboard.php');
-    exit;
-}
+// public/login.php (auth layout – no global header)
+$AUTH_PAGE = true; // flag kept if needed elsewhere
 ?>
 <!doctype html>
 <html lang="en" dir="ltr" data-theme="dark">
-  <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <title>Sign in · Whoizme</title>
-    <link rel="preload" href="/assets/fonts/Objectivity.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="/assets/css/app.min.css?v=<?= time() ?>">
-  </head>
-  <body class="page-auth">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Sign in · Whoiz.me</title>
+  <link rel="stylesheet" href="/assets/css/app.min.css?v=<?php echo time(); ?>">
+</head>
+<body class="page-auth">
 
-    <main class="auth auth--split">
-      <!-- Visual side (keeps aspect similar to Dashbrd template) -->
-      <aside class="auth__visual" aria-hidden="true">
-        <div class="auth__visual-in">
-          <div class="brand-mark">
-            <img src="/img/logo.svg" alt="Whoizme" width="32" height="32">
-            <span>Whoizme</span>
-          </div>
-          <h1 class="auth__headline">Welcome back</h1>
-          <p class="auth__sub">Access your links, QR codes and analytics in one place.</p>
-        </div>
-      </aside>
+  <div class="auth-brand">
+    <a href="/">
+      <span class="auth-brand__dot" aria-hidden="true"></span>
+      <span class="auth-brand__name">Whoiz.me</span>
+    </a>
+  </div>
 
-      <!-- Form card -->
-      <section class="auth__panel">
-        <div class="auth__card card">
-          <header class="auth__header">
-            <h2 class="h3">Sign in</h2>
-            <p class="muted">Use your email and password to continue</p>
-          </header>
+  <!-- Decorative hero band -->
+  <section class="auth-hero" aria-hidden="true"></section>
 
-          <form class="form stack" method="post" action="<?= htmlspecialchars($action, ENT_QUOTES) ?>" autocomplete="off" novalidate>
-            <label class="field">
-              <span class="label">Email address</span>
-              <input class="input" id="email" name="email" type="email" inputmode="email" required placeholder="name@email.com" />
-            </label>
-
-            <label class="field">
-              <span class="label">Password</span>
-              <input class="input" id="password" name="password" type="password" required placeholder="••••••••" />
-            </label>
-
-            <div class="row between center">
-              <label class="checkbox"><input type="checkbox" name="remember" value="1"> <span>Remember me</span></label>
-              <a class="link" href="/forgot.php">Forgot password?</a>
-            </div>
-
-            <button class="btn btn--primary btn--lg" type="submit">Continue</button>
-
-            <p class="muted small center">Don’t have an account? <a class="link" href="/register.php">Create one</a></p>
-          </form>
-
-          <!-- Optional OAuth row (hidden for now) -->
-          <!--
-          <div class="oauth row gap-4">
-            <button class="btn btn--ghost w-100" type="button">Sign in with Google</button>
-            <button class="btn btn--ghost w-100" type="button">GitHub</button>
-          </div>
-          -->
+  <!-- Auth container -->
+  <main class="auth-wrap">
+    <section class="auth-card">
+      <form class="stack" action="/do_login.php" method="post" novalidate>
+        <div class="auth-intro u-mb-2">
+          <h2 class="sg-h sg-h--lg u-mb-2">Sign in</h2>
+          <p class="auth-lead sg-muted">Use your email and password to continue</p>
         </div>
 
-        <footer class="auth__footer muted small center">© <?= date('Y') ?> Whoizme</footer>
-      </section>
-    </main>
+        <label class="field">
+          <span class="label">Email address</span>
+          <input class="input" type="email" name="email" placeholder="name@email.com" required>
+        </label>
 
-    <script>
-      // Apply stored theme preference (dark/light)
-      (function(){
-        try{
-          var t = localStorage.getItem('theme');
-          if(t){ document.documentElement.setAttribute('data-theme', t); }
-          else if (matchMedia('(prefers-color-scheme: light)').matches) {
-            document.documentElement.setAttribute('data-theme','light');
-          }
-        }catch(e){}
-      })();
-    </script>
-  </body>
+        <label class="field">
+          <span class="label">Password</span>
+          <input class="input" type="password" name="password" placeholder="••••••••" required>
+        </label>
+
+        <div class="row row--between row--center">
+          <label class="checkbox"><input type="checkbox" name="remember"> <span>Remember me</span></label>
+          <a class="btn btn--ghost btn--sm" href="/forgot.php">Forgot password?</a>
+        </div>
+
+        <button class="btn btn--primary" type="submit">Continue</button>
+
+        <div class="row row--between row--center">
+          <span class="auth-muted">Don’t have an account?</span>
+          <a class="btn btn--primary btn--sm" href="/register.php">Create one</a>
+        </div>
+      </form>
+    </section>
+
+    <footer class="auth-muted u-mt-6">© <?php echo date('Y'); ?> Whoizme</footer>
+  </main>
+</body>
 </html>

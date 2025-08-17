@@ -2,26 +2,10 @@
 @use "sass:meta";
 @use "brand" as brand;
 
-/* 
-  Theme emitter بدون أي اعتماد على brand.token().
-  لو لقي خرائط $colors-dark / $colors-light داخل brand
-  هيستخدمها، وإلا هيفال باك لقيم افتراضية.
-*/
 @mixin emit() {
-  /* حمل خط Montserrat (نقدر ننقله لملف reset/typography لاحقًا) */
-  @layer base {
-    @font-face {
-      font-family: "Montserrat";
-      src: url("https://fonts.gstatic.com/s/montserrat/v25/JTUHjIg1_i6t8kCHKm45_QphziTn89dtpQ.ttf")
-        format("truetype");
-      font-display: swap;
-    }
-  }
 
-  /* اقرا متغيرات الموديول */
   $brand-vars: meta.module-variables(brand);
 
-  /* خرائط الألوان: استخدم اللي في brand لو موجودة وإلا افتراضي */
   $colors-dark: if(
     map.has-key($brand-vars, "colors-dark"),
     map.get($brand-vars, "colors-dark"),
@@ -125,5 +109,32 @@
   /* - ثيم فاتح - */
   :root[data-theme="light"] {
     @each $k, $v in $colors-light { --#{$k}: #{$v}; }
+  }
+}
+
+@layer base {
+  /* Base tokens fallbacks — always defined regardless of load order */
+  :root[data-theme="dark"] {
+    --page-bg: #0e0e0e;
+    --surface: #13151a;
+    --border: #22252d;
+    --text: #e7e9ee;
+    --muted: #a6adbb;
+    --brand: #6c47ff; /* primary */
+  }
+
+  :root[data-theme="light"] {
+    --page-bg: #ffffff;
+    --surface: #f6f7f9;
+    --border: #e6e8ee;
+    --text: #111318;
+    --muted: #6b7280;
+    --brand: #5b7cfa;
+  }
+
+  /* Guarantee page colors even if a page forgets to set them */
+  html, body {
+    background: var(--page-bg);
+    color: var(--text);
   }
 }
