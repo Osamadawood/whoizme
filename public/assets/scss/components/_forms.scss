@@ -1,35 +1,23 @@
-@layer components {
-    .label {
-        display: block;
-        font-weight: 600;
-        font-size: var(--step--1);
-        color: var(--text-dim);
-        margin: 0 0 .4rem;
-    }
+@use "../core/mixins" as m;
 
-    .input {
-        inline-size: 100%;
-        background: var(--surface-2);
-        color: var(--text);
-        border: 1px solid var(--border);
-        border-radius: var(--r-md);
-        padding: .75rem .9rem;
-        transition: border-color .2s, box-shadow .2s;
-    }
+@mixin apply() {
+  .form { display: grid; gap: 1rem; }
 
-    .input::placeholder {
-        color: color-mix(in oklab, var(--text-dim), transparent 10%);
-    }
+  .form-group { display: grid; gap: .5rem; margin-block-end: var(--sp-4); }
+  label { color: var(--text); font-weight: 600; }
+  .help, .hint { color: var(--text-muted); font-size: .875rem; }
 
-    .input:focus {
-        outline: 0;
-        border-color: color-mix(in oklab, var(--brand-500), white 20%);
-        box-shadow: 0 0 0 .25rem color-mix(in oklab, var(--brand-500), transparent 85%);
-    }
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="url"],
+  input[type="search"],
+  input[type="number"],
+  select,
+  textarea,
+  .form-control { @include m.input-base; }
 
-    .form-error {
-        color: #ef4444;
-        font-size: .8rem;
-        margin-block-start: .35rem;
-    }
+  textarea { min-block-size: 120px; resize: vertical; }
+
+  .input-row { display:flex; gap: .75rem; align-items:center; }
 }

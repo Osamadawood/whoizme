@@ -1,0 +1,12 @@
+@mixin apply() {
+  .note {
+    display:flex; gap:.75rem; align-items:flex-start;
+    background: color-mix(in oklab, var(--surface, #0f172a), #fff 6%);
+    border: 1px solid color-mix(in oklab, var(--surface, #0f172a), #fff 14%);
+    border-radius: var(--radius-lg, 1rem);
+    padding: .9rem 1rem;
+  }
+  .note--success { border-color:#14532d; background:#052e20; color:#86efac; }
+  .note--warning { border-color:#7c2d12; background:#2a1905; color:#fdba74; }
+  .note--danger  { border-color:#7f1d1d; background:#3a0a0a; color:#fecaca; }
+}

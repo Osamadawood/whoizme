@@ -1,31 +1,14 @@
-@use "sass:color";
-@use "../core/mixins" as mixins;
+@use "../core/mixins" as m;
 
-@layer components {
-    .btn {
-        @include mixins.button-base;
-        background: var(--surface-2);
-        color: var(--text);
-    }
+@mixin apply() {
+  .btn { @include m.button-base; background: var(--surface-raise, var(--brand)); color: var(--brand-contrast); }
+  .btn:hover { filter: brightness(1.06); }
+  .btn:active { filter: brightness(.96); }
 
-    .btn-primary {
-        @include mixins.button-base;
-        background: linear-gradient(180deg, var(--brand-500), var(--brand-600));
-        color: #fff;
-        border-color: transparent;
+  .btn--secondary { background: var(--surface); color: var(--text); border-color: var(--border); }
+  .btn--ghost     { background: transparent; color: var(--text); border-color: var(--border); }
+  .btn--danger    { background: var(--danger); color: #fff; }
 
-        &:hover {
-            filter: brightness(1.06);
-        }
-
-        &:active {
-            transform: translateY(.0625rem);
-        }
-    }
-
-    .btn-ghost {
-        @include mixins.button-base;
-        background: transparent;
-        border-color: var(--border);
-    }
+  .btn--sm { padding: .5rem .75rem; border-radius: var(--radius-sm); }
+  .btn--lg { padding: .75rem 1.25rem; font-size: 1.0625rem; }
 }

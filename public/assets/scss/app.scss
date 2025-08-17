@@ -1,19 +1,73 @@
-/* public/assets/scss/app.scss */
+/* Entry point: compile to /public/assets/css/app(.min).css */
 
-/* --- Core first --- */
-@use "core/reset";
-@use "core/brand";
-@use "core/typography";
-@use "core/mixins";
-@use "core/helpers";
+/* === Core @use must come first (no rules before them) === */
+@use "core/brand" as brand;
 @use "core/themes";
+@use "core/reset";
+@use "core/typography";
 
-/* --- Components --- */
-@use "components/layout";
-@use "components/forms";
+/* === Components === */
 @use "components/buttons";
-@use "components/auth";
+@use "components/forms";
+@use "components/layout";
+@use "components/nav";
+@use "components/cards";
+@use "components/links";
+@use "components/lists";
+@use "components/avatars";
+@use "components/states";
+@use "components/badges";
+@use "components/tooltips";
+@use "components/tabs";
+@use "components/accordions";
+@use "components/notifications";
+@use "components/icons";
+@use "core/shadows";
+@use "components/logo";
+@use "components/iconfont";
+@use "components/popups";
+@use "components/breadcrumbs";
+@use "components/pagination";
+@use "components/prose";
+@use "core/fonts";
 
-/* --- Feature/Pages --- */
-@use "utilities"; // register/login
-@use "dashboard"; // dashboard widgets, cards ...
+/* === Utilities === */
+@use "utilities/utilities";
+
+/* === Emit layers & tokens (order matters slightly) === */
+/* 1) color tokens */
+@include brand.emit-colors();
+
+/* 2) theme custom properties */
+@include themes.emit();
+
+/* 3) base layer */
+@include reset.apply();
+@include typography.apply();
+
+/* 4) components */
+@include buttons.apply();
+@include forms.apply();
+@include layout.apply();
+@include nav.apply();
+@include cards.apply();
+@include links.apply();
+@include lists.apply();
+@include avatars.apply();
+@include states.apply();
+@include badges.apply();
+@include tooltips.apply();
+@include tabs.apply();
+@include accordions.apply();
+@include notifications.apply();
+@include icons.apply();
+@include shadows.apply();
+@include logo.apply();
+@include iconfont.apply();
+@include popups.apply();
+@include breadcrumbs.apply();
+@include pagination.apply();
+@include prose.apply();
+
+/* 5) utilities (last) */
+@include utilities.apply();

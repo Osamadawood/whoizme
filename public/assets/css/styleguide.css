@@ -1,0 +1,265 @@
+/* =============== Whoizme · Styleguide CSS (standalone) =============== */
+/* Objectivity font (self‑hosted) */
+@font-face {
+  font-family: 'Objectivity';
+  src: url('/assets/fonts/Objectivity.woff2') format('woff2'),
+       url('/assets/fonts/Objectivity.woff') format('woff'),
+       url('/assets/fonts/Objectivity.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+/* لا يعتمد على SCSS. كل شيء هنا صافي CSS مع custom properties. */
+/* Typography ----------------------------------------------------------- */
+:root{
+  /* Font family (تقدر تضيف link لمونتسرات في <head> لو حابب) */
+  --ff-sans: 'Objectivity', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Noto Sans', 'Helvetica Neue', Arial, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+  --fs-12: 0.75rem; --fs-13: 0.8125rem; --fs-14: 0.875rem; --fs-16: 1rem;
+  --fs-h3: 1.25rem; --fs-h2: 1.5rem; --fs-h1: 2rem;
+  --fw-regular: 400; --fw-medium: 500; --fw-semi: 600; --fw-bold: 700;
+
+  /* Radius / Shadow / Spacing ---------------------------------------- */
+  --radius-xs: .375rem; --radius-sm: .5rem; --radius: .75rem; --radius-lg: 1rem;
+  --shadow-1: 0 10px 30px rgba(0,0,0,.18);
+  --shadow-2: 0 12px 40px rgba(0,0,0,.26);
+  --sp-2: .5rem; --sp-3: .75rem; --sp-4: 1rem; --sp-6: 1.5rem; --sp-8: 2rem;
+
+  /* Light (default tokens) ------------------------------------------- */
+  --page-bg: #0B0D10;      /* خلفية الصفحة (للدارك الافتراضي تحت) هنبدل في الثيم */
+  --surface: #11151A;
+  --text: #EAF0F7;
+  --muted: #9AA6B2;
+  --brand: #3B82F6;        /* أزرق براند */
+  --brand-300: color-mix(in oklab, var(--brand), #fff 24%);
+  --brand-700: color-mix(in oklab, var(--brand), #000 12%);
+
+  --success: #16a34a; --warning: #f97316; --danger:#ef4444;
+
+  --card-bg: var(--surface);
+  --border: color-mix(in oklab, var(--text), var(--page-bg) 88%);
+  --outline: color-mix(in oklab, var(--text), var(--page-bg) 80%);
+
+  /* buttons */
+  --btn-bg: color-mix(in oklab, var(--surface), #fff 4%);
+  --btn-color: var(--text);
+  --btn-border: var(--border);
+  --btn-bg-hover: color-mix(in oklab, var(--btn-bg), #fff 6%);
+  --btn-disabled: #2B3138;
+
+  /* inputs */
+  --input-bg: color-mix(in oklab, var(--surface), #fff 2%);
+  --input-border: var(--border);
+  --input-focus: color-mix(in oklab, var(--brand), #fff 12%);
+}
+
+/* Theme: dark (افتراضي) */
+html[data-theme="dark"]{
+  --page-bg: #0B0D10;
+  --surface: #12161C;
+  --text: #E6EDF6;
+  --muted: #8FA0B2;
+  --brand: #2F6CF6;
+  --brand-300: color-mix(in oklab, var(--brand), #fff 24%);
+  --brand-700: color-mix(in oklab, var(--brand), #000 16%);
+  --card-bg: var(--surface);
+  --border: color-mix(in oklab, var(--text), var(--page-bg) 86%);
+  --outline: color-mix(in oklab, var(--text), var(--page-bg) 76%);
+  --btn-bg: color-mix(in oklab, var(--surface), #fff 6%);
+}
+
+/* Theme: light */
+html[data-theme="light"]{
+  --page-bg: #ffffff;
+  --surface: #F6F7FB;
+  --text: #0B1220;
+  --muted: #6B7785;
+  --brand: #2F6CF6;
+  --brand-300: color-mix(in oklab, var(--brand), #fff 22%);
+  --brand-700: color-mix(in oklab, var(--brand), #000 12%);
+  --card-bg: #ffffff;
+  --border: color-mix(in oklab, var(--text), #fff 80%);
+  --outline: color-mix(in oklab, var(--text), #fff 70%);
+  --btn-bg: #ffffff;
+  --btn-bg-hover: #F3F4F7;
+  --btn-color: var(--text);
+  --btn-border: var(--border);
+  --input-bg: #fff;
+  --input-border: var(--border);
+}
+
+/* Base ---------------------------------------------------------------- */
+*{box-sizing:border-box}
+html{
+  scroll-behavior: smooth;
+}
+html,body{height:100%}
+body.sg{
+  margin:0;
+  font-family: var(--ff-sans);
+  color:var(--text);
+  background:var(--page-bg);
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+a{color:var(--brand);text-decoration:none}
+a:hover{opacity:.9}
+h1{font-size:var(--fs-h1);font-weight:var(--fw-bold);margin:0 0 var(--sp-6)}
+h2{font-size:var(--fs-h2);font-weight:var(--fw-bold);margin:0 0 var(--sp-4)}
+h3{font-size:var(--fs-h3);font-weight:var(--fw-semi);margin:0 0 var(--sp-3)}
+p{font-size:var(--fs-14);margin:0 0 var(--sp-3)}
+.sg-muted{color:var(--muted)}
+.u-pl-4{padding-left:var(--sp-4)}
+.u-mb-6{margin-bottom:var(--sp-6)}
+.u-center{text-align:center}
+
+/* Layout --------------------------------------------------------------- */
+.sg-wrap{display:grid;grid-template-columns:260px 1fr;gap:0;min-height:100vh}
+.sg-aside{
+  border-right:1px solid var(--border);
+  padding:var(--sp-6) var(--sp-4);
+
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: auto;
+  background: var(--page-bg);
+}
+.sg-aside__logo{display:flex;align-items:center;gap:.625rem;margin-bottom:var(--sp-6)}
+.sg-badge{width:20px;height:20px;border-radius:6px;background:var(--brand);box-shadow:0 8px 20px color-mix(in oklab,var(--brand),#000 72%) inset}
+.sg-brand{font-weight:700;letter-spacing:.2px}
+.sg-nav{display:flex;flex-direction:column;gap:.25rem}
+.sg-nav a{
+  display:block;padding:.55rem .65rem;border-radius:.5rem;color:var(--text);
+  border: 1px solid transparent;
+  transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+.sg-nav a.is-active, .sg-nav a:hover{
+  background:color-mix(in oklab,var(--surface),#fff 6%);
+}
+
+.sg-nav a:hover{
+  background: color-mix(in oklab,var(--surface),#fff 8%);
+  border-color: var(--outline);
+}
+.sg-nav a.is-active{
+  background: color-mix(in oklab,var(--brand),#000 90%);
+  border-color: color-mix(in oklab,var(--brand),#000 35%);
+  color: #fff;
+}
+.sg-nav a{position:relative}
+.sg-nav a.is-active::after{content:"";position:absolute;right:8px;top:50%;transform:translateY(-50%);width:4px;height:18px;border-radius:2px;background:var(--brand)}
+
+.sg-main{display:flex;flex-direction:column}
+.sg-topbar{position:sticky;top:0;background:linear-gradient(180deg,color-mix(in oklab,var(--page-bg),#fff 4%),transparent);backdrop-filter:saturate(140%) blur(6px);z-index:2}
+.sg-topbar__in{display:flex;align-items:center;gap:.75rem;padding:var(--sp-3) var(--sp-6)}
+.sg-topbar__spacer{flex:1}
+.sg-toggle{position:relative;display:inline-flex;align-items:center;gap:.6rem;color:var(--muted);font-size:var(--fs-13);user-select:none;cursor:pointer}
+.sg-toggle input{appearance:none;-webkit-appearance:none;width:42px;height:24px;border-radius:999px;background:var(--outline);border:1px solid var(--outline);position:relative;outline:0;transition:.2s ease}
+.sg-toggle input::before{content:"";position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.2);transition:transform .2s ease}
+.sg-toggle input:checked{background:color-mix(in oklab,var(--brand),#fff 30%);border-color:color-mix(in oklab,var(--brand),#000 25%)}
+.sg-toggle input:checked::before{transform:translateX(18px)}
+
+.sg-hero{
+  padding:var(--sp-8) var(--sp-6) var(--sp-6);
+
+  border-bottom:1px solid var(--border);
+}
+.sg-title{margin:0 0 .5rem}
+.sg-sub{color:var(--muted);max-width:920px}
+
+.sg-content{padding:var(--sp-6)}
+.sg-section{margin:0 0 var(--sp-8);scroll-margin-top: 84px;}
+.sg-h{margin-bottom:var(--sp-4)}
+
+/* Grid + Cards --------------------------------------------------------- */
+.sg-grid{display:grid;gap:var(--sp-4)}
+.sg-grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.sg-grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.sg-grid.cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:1100px){.sg-grid.cols-4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:780px){
+  .sg-wrap{grid-template-columns:1fr}
+  .sg-aside{position:sticky;top:0;background:var(--page-bg);z-index:3}
+  .sg-grid.cols-2,.sg-grid.cols-3,.sg-grid.cols-4{grid-template-columns:1fr}
+}
+
+.sg-card{
+  background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);
+  padding:var(--sp-4);box-shadow:var(--shadow-1);
+}
+.stack>*+*{margin-top:var(--sp-3)}
+.sg-row{display:flex;flex-wrap:wrap;gap:.5rem}
+
+/* Swatches ------------------------------------------------------------- */
+.swatch{
+  height:74px;border-radius:var(--radius-sm);
+  display:flex;align-items:center;justify-content:center;
+  font-size:var(--fs-13);color:var(--text);
+  border:1px solid var(--outline);
+}
+
+/* Badges --------------------------------------------------------------- */
+.badge{
+  --bg: color-mix(in oklab,var(--surface),#fff 8%);
+  --bd: var(--outline);
+  display:inline-flex;align-items:center;gap:.35rem;
+  height:28px;border-radius:999px;padding:0 .7rem;
+  font-size:var(--fs-12);font-weight:var(--fw-medium);
+  background:var(--bg);border:1px solid var(--bd);color:var(--text);
+}
+.badge--brand{--bg: color-mix(in oklab,var(--brand),#fff 86%); --bd: color-mix(in oklab,var(--brand),#000 18%); color: color-mix(in oklab,var(--brand),#000 40%)}
+.badge--muted{--bg: color-mix(in oklab,var(--muted),#fff 86%); --bd: color-mix(in oklab,var(--muted),#000 18%); color: color-mix(in oklab,var(--muted),#000 40%)}
+
+/* Buttons -------------------------------------------------------------- */
+.btn{
+  --bg: var(--btn-bg); --bd: var(--btn-border); --fg: var(--btn-color);
+  display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
+  height:38px;padding:0 14px;border-radius:10px;border:1px solid var(--bd);
+  background:var(--bg);color:var(--fg);font-weight:var(--fw-medium);font-size:var(--fs-14);
+  transition:.15s ease; box-shadow:0 6px 18px rgba(0,0,0,.12);
+}
+.btn:hover{background:var(--btn-bg-hover);transform:translateY(-1px)}
+.btn:disabled{opacity:.6;background:var(--btn-disabled);cursor:not-allowed;transform:none}
+.btn--sm{height:30px;padding:0 12px;font-size:var(--fs-13)}
+.btn--lg{height:44px;padding:0 18px}
+.btn--primary{--bg: var(--brand); --bd: color-mix(in oklab,var(--brand),#000 18%); color:#fff}
+.btn--primary:hover{--bg: color-mix(in oklab,var(--brand),#000 6%)}
+.btn--ghost{--bg: transparent; --bd: var(--outline); --fg: var(--text)}
+.btn--danger{--bg: var(--danger); --bd: color-mix(in oklab,var(--danger),#000 22%); color:#fff}
+.btn--link{--bg: transparent; --bd: transparent; padding:0; height:auto; color:var(--brand)}
+.btn--link:hover{opacity:.8}
+
+/* Forms --------------------------------------------------------------- */
+.field{display:block}
+.field .label{display:block;margin:0 0 .35rem;color:var(--muted);font-size:var(--fs-13)}
+.input{
+  width:100%;height:40px;border-radius:10px;padding:0 12px;
+  background:var(--input-bg);border:1px solid var(--input-border);
+  color:var(--text);font:inherit;transition:.15s ease;
+}
+.input::placeholder{color:color-mix(in oklab,var(--muted),#fff 10%)}
+.input:focus{outline:0;border-color:var(--input-focus);box-shadow:0 0 0 3px color-mix(in oklab,var(--brand),#fff 84%)}
+
+.row{display:flex;gap:.75rem;flex-wrap:wrap;align-items:center}
+
+/* Checks / radios / switch (بسيطة) */
+.checkbox, .radio{display:inline-flex;align-items:center;gap:.5rem;color:var(--muted);font-size:var(--fs-14)}
+.checkbox input, .radio input{accent-color:var(--brand)}
+.switch{display:inline-flex;align-items:center;gap:.5rem;color:var(--muted);font-size:var(--fs-14)}
+.switch input{accent-color:var(--brand)}
+
+/* Upload (dropzone) */
+.drop{
+  border:1px dashed var(--outline);border-radius:var(--radius);padding:var(--sp-8);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.75rem;
+  background:color-mix(in oklab,var(--surface),#fff 4%);
+}
+.drop .ico{width:36px;height:36px;border-radius:10px;background:color-mix(in oklab,var(--brand),#fff 86%)}
+
+/* Stats number */
+.stat-num{font-size:2rem;font-weight:800;letter-spacing:.5px}
+
+/* Utilities ----------------------------------------------------------- */
+.mt-6{margin-top:var(--sp-6)} .rounded{border-radius:var(--radius)} .text-center{text-align:center}
+.flex{display:flex}.items-center{align-items:center}.gap-4{gap:var(--sp-4)}

@@ -1,18 +1,12 @@
 /* components/_layout.scss */
-@use "../core/mixins" as mixins;
+@use "../core/mixins" as m;
 
-.app-shell {
-    min-height: 100dvh;
-    background: var(--color-page);
-    color: var(--color-text);
-}
+@mixin apply() {
+  .container { @include m.container(1200px); padding-inline:1rem; }
 
-.header-bar {
-    @include mixins.card;
-    margin-block: var(--space-md);
-    padding: var(--space-md);
-}
+  .card  { @include m.card; padding:1rem; }
+  .card--glass { background: color-mix(in oklab, var(--surface), white 3%); backdrop-filter: blur(6px); }
 
-.page-container {
-    @include mixins.container(1200px);
+  .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap: var(--sp-6); }
+  .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap: var(--sp-6); }
 }
