@@ -1,4 +1,8 @@
 <?php
+require_once __DIR__ . '/auth_guard.php';
+auth_redirect_if_logged_in(); // لو مسجّل دخول يروح الداشبورد
+?>
+<?php
   if (!isset($page_title)) { $page_title = "Whoizme"; }
   if (!isset($page_class)) { $page_class = ""; }
 ?>

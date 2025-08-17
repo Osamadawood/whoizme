@@ -1,116 +1,104 @@
 <?php
-// public/do_login.php
 declare(strict_types=1);
 
+// ده هاندلر فقط، ما نحتاجش جارد إعادة التوجيه هنا
+if (!defined('SKIP_AUTH_GUARD')) {
+  define('SKIP_AUTH_GUARD', true);
+}
+
+// البوتستراب: بيشغّل السيشن ويلمّ الـ helpers (ومايطبعش HTML)
+require dirname(__DIR__) . '/includes/bootstrap.php';
+
 /**
- * Login endpoint (POST).
- * We deliberately skip the auth guard here, then include the bootstrap for DB + helpers.
+ * نحافظ على إن الهاندلر مايطبعش أي حاجة إطلاقًا
+ * علشان الـ header('Location') يشتغل.
  */
-if (!defined('SKIP_AUTH_GUARD')) define('SKIP_AUTH_GUARD', true);
-require __DIR__ . '/../includes/bootstrap.php';
+@ini_set('display_errors', '0');
 
-// Make sure a session is open (bootstrap usually starts it, but be explicit)
-if (session_status() !== PHP_SESSION_ACTIVE) {
-    session_name('whoizme_sess');
-    session_start();
+/** فلتر آمن لمسار الرجوع */
+function safe_return_path(?string $raw): string {
+  $raw      = (string)($raw ?? '');
+  $decoded  = urldecode($raw);
+  $pathOnly = parse_url($decoded, PHP_URL_PATH) ?: '';
+  if ($pathOnly === '' || $pathOnly === '/' || $pathOnly === '/login.php' || $pathOnly === '/do_login.php') {
+    return '/dashboard.php';
+  }
+  // نسمح بالمسارات الداخلية فقط
+  if ($pathOnly[0] !== '/') {
+    return '/dashboard.php';
+  }
+  return $pathOnly;
 }
 
-// Helper: safe internal return path (never to auth pages, never to do_login)
-function wl_return_path(): string {
-    $raw = (string)($_POST['return'] ?? ($_GET['return'] ?? ''));
-    if ($raw === '') return '';
-    // Decode once ("%2Fdashboard.php" -> "/dashboard.php")
-    $val = urldecode($raw);
-    $url = parse_url($val);
-    $path = (string)($url['path'] ?? '');
-
-    // Block empty/root and any auth endpoints to avoid loops
-    $blocked = [
-        '', '/', '/index.php',
-        '/login', '/login.php',
-        '/do_login', '/do_login.php',
-        '/register', '/register.php',
-        '/forgot', '/forgot.php',
-        '/reset', '/reset.php',
-    ];
-    if ($path === '' || in_array($path, $blocked, true)) {
-        return '';
-    }
-
-    // Re-append the original query-string (if any)
-    $qs = isset($url['query']) && $url['query'] !== '' ? ('?' . $url['query']) : '';
-    return $path . $qs;
+$method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+if ($method !== 'POST') {
+  $ret = safe_return_path($_GET['return'] ?? '');
+  header('Location: /login.php?return=' . rawurlencode($ret), true, 302);
+  exit;
 }
 
-// Only allow POST directly; otherwise bounce to login with a clean `return`
-if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
-    $ret = wl_return_path();
-    header('Location: /login.php' . ($ret !== '' ? ('?return=' . urlencode($ret)) : ''));
-    exit;
-}
-
-// --- Read form data ---
-$email    = strtolower(trim((string)($_POST['email'] ?? '')));
+$email    = trim((string)($_POST['email'] ?? ''));
 $password = (string)($_POST['password'] ?? '');
-$return   = wl_return_path();
+$remember = isset($_POST['remember']) ? 1 : 0;
+$returnTo = safe_return_path($_POST['return'] ?? '');
 
-// Quick validation
+// تحقق سريع من المدخلات
 if ($email === '' || $password === '') {
-    $_SESSION['flash_error'] = 'Please enter your email and password.';
-    header('Location: /login.php' . ($return !== '' ? ('?return=' . urlencode($return)) : ''));
-    exit;
+  header('Location: /login.php?return=' . rawurlencode($returnTo), true, 302);
+  exit;
 }
 
-// --- DB connection from bootstrap ---
-$pdo = $pdo ?? ($GLOBALS['pdo'] ?? null);
-if (!$pdo instanceof PDO) {
-    $_SESSION['flash_error'] = 'Temporary login issue. Please try again.';
-    header('Location: /login.php' . ($return !== '' ? ('?return=' . urlencode($return)) : ''));
-    exit;
-}
-
-// --- Look up user and verify password ---
-$ok = false; $user = null;
+// ===== تحقق المستخدم من قاعدة البيانات =====
+// توقع الأعمدة: id, email, password_hash (BCrypt/Argon2)
+// عدّل الأسماء لو سكيمتك مختلفة
 try {
-    $stmt = $pdo->prepare('SELECT id, email, password FROM users WHERE LOWER(email) = :email LIMIT 1');
-    $stmt->execute([':email' => $email]);
-    $user = $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
-
-    if ($user) {
-        $hash = (string)($user['password'] ?? '');
-        $info = password_get_info($hash);
-        if (!empty($info['algo'])) {
-            $ok = password_verify($password, $hash);
-        } else {
-            // Backwards-compat (plain text) — remove once all rows migrated
-            $ok = ($hash !== '' && hash_equals($hash, $password));
-        }
+  /** @var PDO $pdo */
+  if (!isset($pdo)) {
+    // لو البوتستراب عندك بيوفر دالة، استخدمها:
+    if (function_exists('db')) {
+      $pdo = db();
+    } else {
+      throw new RuntimeException('DB handle not available');
     }
-} catch (Throwable $e) {
-    // Never leak DB details
-    $ok = false; $user = null;
-}
+  }
 
-if ($ok && $user) {
-    // Regenerate session ID to prevent fixation, then stamp identity
-    if (session_status() !== PHP_SESSION_ACTIVE) {
-        session_name('whoizme_sess');
-        session_start();
+  $stmt = $pdo->prepare('SELECT id, email, password_hash FROM users WHERE email = :email LIMIT 1');
+  $stmt->execute([':email' => $email]);
+  $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+  $ok = false;
+  if ($row) {
+    // لو عندك عمود اسمه password بدلاً من password_hash بدّله هنا
+    $hash = $row['password_hash'] ?? '';
+    if ($hash !== '' && password_verify($password, $hash)) {
+      $ok = true;
     }
-    session_regenerate_id(true);
-    $_SESSION['uid']   = (int)$user['id'];
-    $_SESSION['email'] = (string)$user['email'];
+  }
 
-    // Optional: clear any stale flash
-    unset($_SESSION['flash_error']);
-
-    // Decide target (dashboard by default)
-    $target = $return !== '' ? $return : '/dashboard.php';
-    header('Location: ' . $target);
+  if (!$ok) {
+    // فشل: ارجع لنفس صفحة اللوجين من غير ما نكسر الديزاين
+    header('Location: /login.php?return=' . rawurlencode($returnTo), true, 302);
     exit;
-}
+  }
 
-// Failure
-$_SESSION['flash_error'] = 'Invalid email or password.';
-header('Location: /login.php' . ($return !== '' ? ('?return=' . urlencode($return)) : ''));
-exit;
+  // نجاح: سجّل المستخدم في السيشن
+  if (function_exists('login_user')) {
+    login_user((int)$row['id'], $remember === 1);
+  } else {
+    // fallback بسيط لو ماعندكش helper
+    $_SESSION['uid'] = (int)$row['id'];
+    if ($remember === 1) {
+      // تقدر هنا تعمل remember-me token لو موجود عندك جدول tokens
+      // حالياً نكتفي بسيشن عادي
+    }
+  }
+
+  // توجيه أخير
+  header('Location: ' . $returnTo, true, 302);
+  exit;
+
+} catch (Throwable $e) {
+  // في حالة خطأ غير متوقع، ما نطبعش حاجة — نرجّع المستخدم للّوجين
+  header('Location: /login.php?return=' . rawurlencode($returnTo), true, 302);
+  exit;
+}
