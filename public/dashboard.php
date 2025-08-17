@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
-require __DIR__ . '/../includes/bootstrap.php';
-require_login(); // ضرورية
+require dirname(__DIR__) . '/includes/bootstrap.php'; // ما تعرّفش SKIP_AUTH_GUARD هنا!
+// أي HTML/تصميم بعد كده سيبه زي ما هو
 ?>
 
 <main class="dashboard">

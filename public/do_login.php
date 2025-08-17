@@ -2,194 +2,154 @@
 declare(strict_types=1);
 
 /**
- * Public: Login handler (POST only)
- * - لا يوجد أي HTML هنا. توجيهات فقط.
- * - يحترم return الآمن، ويمنع الدورات (login/do_login/index).
- * - يدعم legacy MD5/SHA1 ويُعيد تهشير الباسورد بـ password_hash.
- * - لا يلمس أي CSS/HTML للتصميم.
+ * POST /do_login.php
+ * - منطق فقط ثم Redirect (لا HTML).
+ * - sanitization للـ return، ومنع open redirect / الدوران.
+ * - يدعم أعمدة hash مختلفة (password_hash / pass_hash) وأنواع هاش قديمة.
+ * - إضافة لوج تشخيصي آمن في /tmp/whoizme_login.log
  */
 
 if (!defined('SKIP_AUTH_GUARD')) {
-    // مهم علشان ملف bootstrap أو الحارس ما يوقفنا هنا
     define('SKIP_AUTH_GUARD', true);
 }
 
 require dirname(__DIR__) . '/includes/bootstrap.php';
 
-// ---------------- Helpers ----------------
+/* ---------- polyfills / helpers ---------- */
 
-/** احصل على كائن PDO من أي مسمى مستخدم في المشروع */
-function _pdo(): ?PDO {
-    if (isset($GLOBALS['pdo']) && $GLOBALS['pdo'] instanceof PDO) return $GLOBALS['pdo'];
-    if (isset($GLOBALS['DB'])  && $GLOBALS['DB']  instanceof PDO) return $GLOBALS['DB'];
-    if (function_exists('db')) {
-        $maybe = db();
-        if ($maybe instanceof PDO) return $maybe;
+// polyfill بسيط بديل str_starts_with لنسخ PHP قبل 8.0
+if (!function_exists('whoizme_starts_with')) {
+    function whoizme_starts_with(string $haystack, string $needle): bool {
+        return $needle === '' || strncmp($haystack, $needle, strlen($needle)) === 0;
     }
-    return null;
 }
 
-/** تنظيف return ومنع الدورات */
-function _clean_return(?string $raw): string {
-    $raw = (string)($raw ?? '');
-    $decoded  = $raw !== '' ? urldecode($raw) : '';
-    $pathOnly = $decoded !== '' ? (string)(parse_url($decoded, PHP_URL_PATH) ?? '') : '';
+function log_diag(string $msg, array $ctx = []): void {
+    // لا تسجل كلمات سر. ده لبيئة التطوير فقط.
+    $line = '[' . date('c') . "] do_login | $msg";
+    if ($ctx) {
+        $safe = [];
+        foreach ($ctx as $k => $v) {
+            if (in_array($k, ['password', 'pwd'], true)) continue;
+            if (is_bool($v)) $v = $v ? 'true' : 'false';
+            $safe[$k] = (string)$v;
+        }
+        $line .= ' | ' . json_encode($safe, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+    }
+    @file_put_contents('/tmp/whoizme_login.log', $line . PHP_EOL, FILE_APPEND);
+}
 
-    // مسارات لا نعود إليها
-    $bad = [
-        '', '/', '/index', '/index.php',
-        '/login', '/login.php',
-        '/do_login', '/do_login.php'
-    ];
-    if ($pathOnly === '' || in_array($pathOnly, $bad, true)) {
+function clean_return(?string $raw): string {
+    $raw     = (string)($raw ?? '');
+    $decoded = $raw !== '' ? urldecode($raw) : '';
+    $path    = $decoded !== '' ? (string)(parse_url($decoded, PHP_URL_PATH) ?? '') : '';
+
+    // امنع الدوران / الرجوع لنفس الصفحات
+    $bad = ['', '/', '/index', '/index.php', '/login', '/login.php', '/do_login', '/do_login.php'];
+    if ($path === '' || in_array($path, $bad, true)) {
         return '/dashboard.php';
     }
-    // احرص إنه يبدأ بـ /
-    return $pathOnly[0] === '/' ? $pathOnly : '/dashboard.php';
+    return $path[0] === '/' ? $path : '/dashboard.php';
 }
 
-/** إعادة توجيه سريعة ثم exit */
-function _go(string $to): void {
-    header('Location: ' . $to, true, 302);
+function verify_password_safely(string $plain, string $stored): bool {
+    if ($stored === '') return false;
+
+    // Bcrypt / Argon2 prefixes بدون str_starts_with (متوافق مع PHP7)
+    if (
+        whoizme_starts_with($stored, '$2y$') ||
+        whoizme_starts_with($stored, '$2a$') ||
+        whoizme_starts_with($stored, '$argon2')
+    ) {
+        return password_verify($plain, $stored);
+    }
+
+    $len = strlen($stored);
+    if ($len === 40 && ctype_xdigit($stored)) return hash_equals($stored, sha1($plain));
+    if ($len === 32 && ctype_xdigit($stored)) return hash_equals($stored, md5($plain));
+
+    // نص صريح (حالات انتقالية فقط)
+    return hash_equals($stored, $plain);
+}
+
+function pick_hash(string ...$candidates): string {
+    foreach ($candidates as $h) {
+        if ($h !== '' && $h !== null) return $h;
+    }
+    return '';
+}
+
+/* ---------- inputs ---------- */
+
+$return_to = clean_return($_POST['return'] ?? '');
+$email     = isset($_POST['email']) ? trim(strtolower((string)$_POST['email'])) : '';
+$password  = isset($_POST['password']) ? (string)$_POST['password'] : '';
+$remember  = isset($_POST['remember']) && $_POST['remember'] == '1';
+
+if ($email === '' || $password === '') {
+    log_diag('empty_fields', ['email_len' => strlen($email), 'pwd_len' => strlen($password)]);
+    header('Location: /login.php?err=empty&return=' . rawurlencode($return_to), true, 302);
     exit;
 }
 
-/** التحقق من CSRF لو مستخدم (اختياري) */
-function _check_csrf(): bool {
-    if (!isset($_POST['_token'])) return true; // لا يوجد توكن، اعتبرها غير مفعلة
-    if (!isset($_SESSION['_csrf_login'])) return false;
-    return hash_equals((string)$_SESSION['_csrf_login'], (string)$_POST['_token']);
-}
+try {
+    // نجيب المستخدم – لاحظ الأعمدة الموجودة عندك (email, password_hash, pass_hash)
+    $sql = "SELECT id, email, password_hash, pass_hash
+            FROM users
+            WHERE email = :email
+            LIMIT 1";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([':email' => $email]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// ---------------- Only POST ----------------
-
-$method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-if ($method !== 'POST') {
-    $fallback = _clean_return($_GET['return'] ?? $_POST['return'] ?? null);
-    _go('/login.php?return=' . urlencode($fallback));
-}
-
-// لو فيه سيشن شغالة بالفعل ودورهان
-if (function_exists('current_user_id') && current_user_id() > 0) {
-    $rt = _clean_return($_POST['return'] ?? null);
-    _go($rt);
-}
-
-// ---------------- Read input ----------------
-
-$email      = trim((string)($_POST['email']    ?? ''));
-$password   = (string)($_POST['password'] ?? '');
-$remember   = isset($_POST['remember']) && (string)$_POST['remember'] === '1';
-$return_to  = _clean_return($_POST['return'] ?? null);
-
-// مدخلات لازمة
-if ($email === '' || $password === '' || !_check_csrf()) {
-    _go('/login.php?err=1&return=' . urlencode($return_to));
-}
-
-// ---------------- DB ----------------
-
-$pdo = _pdo();
-if (!$pdo) {
-    // غير متوقع
-    _go('/login.php?err=1&return=' . urlencode($return_to));
-}
-
-// هات المستخدم – ندعم وجود password أو password_hash
-$stmt = $pdo->prepare('SELECT id, email, password, password_hash FROM users WHERE email = ? LIMIT 1');
-$stmt->execute([$email]);
-$user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-if (!$user) {
-    // لا تفصح إن الإيميل غير موجود
-    _go('/login.php?err=1&return=' . urlencode($return_to));
-}
-
-// ---------------- Verify password ----------------
-
-$storedHash = '';
-if (!empty($user['password_hash'])) {
-    $storedHash = (string)$user['password_hash'];
-} elseif (!empty($user['password'])) {
-    $storedHash = (string)$user['password'];
-}
-
-$ok = false;
-if ($storedHash !== '') {
-    // الحالة الحديثة
-    if (strlen($storedHash) > 40) { // على الأغلب password_hash
-        $ok = password_verify($password, $storedHash);
-    } else {
-        // Legacy: MD5 أو SHA1
-        if (strlen($storedHash) === 32 && ctype_xdigit($storedHash)) {
-            $ok = (md5($password) === strtolower($storedHash));
-        } elseif (strlen($storedHash) === 40 && ctype_xdigit($storedHash)) {
-            $ok = (sha1($password) === strtolower($storedHash));
-        }
-        // لو اتقبل legacy، نرقي فورًا لـ password_hash
-        if ($ok) {
-            $newHash = password_hash($password, PASSWORD_DEFAULT);
-            if ($newHash && is_string($newHash)) {
-                try {
-                    // إن وجد عمود password_hash استعمله، خلاف ذلك اكتب فوق password
-                    if (array_key_exists('password_hash', $user)) {
-                        $up = $pdo->prepare('UPDATE users SET password_hash = ? WHERE id = ?');
-                        $up->execute([$newHash, (int)$user['id']]);
-                    } else {
-                        $up = $pdo->prepare('UPDATE users SET password = ? WHERE id = ?');
-                        $up->execute([$newHash, (int)$user['id']]);
-                    }
-                } catch (Throwable $e) {
-                    // تجاهل — ممكن نسجل لاحقًا
-                }
-            }
-        }
+    if (!$user) {
+        log_diag('user_not_found', ['email' => $email]);
+        header('Location: /login.php?err=notfound&return=' . rawurlencode($return_to), true, 302);
+        exit;
     }
-}
 
-// لو فشل التحقق
-if (!$ok) {
-    _go('/login.php?err=1&return=' . urlencode($return_to));
-}
+    // استخدم أي عمود متوفر
+    $stored = pick_hash(
+        (string)($user['password_hash'] ?? ''),
+        (string)($user['pass_hash'] ?? '')
+    );
 
-// ---------------- Auth success ----------------
-
-$_SESSION['uid'] = (int)$user['id'];
-if (function_exists('session_regenerate_id')) {
-    @session_regenerate_id(true);
-}
-
-// "Remember me" Cookie (موقّعة)
-$secret = $CFG['app_key'] ?? ($CFG['secret'] ?? 'whoizme_fallback_secret_change_me');
-if ($remember) {
-    $uid = (string)$_SESSION['uid'];
-    $sig = hash_hmac('sha256', $uid, (string)$secret);
-    $val = base64_encode(json_encode(['u' => $uid, 's' => $sig], JSON_UNESCAPED_SLASHES));
-    $exp = time() + 60 * 60 * 24 * 30; // 30 يوم
-    $secure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
-    setcookie('whoizme_remember', $val, [
-        'expires'  => $exp,
-        'path'     => '/',
-        'secure'   => $secure,
-        'httponly' => true,
-        'samesite' => 'Lax',
+    $ok = verify_password_safely($password, $stored);
+    log_diag('verify_done', [
+        'uid' => (string)($user['id'] ?? ''),
+        'email' => (string)($user['email'] ?? ''),
+        'hash_len' => strlen($stored),
+        'hash_prefix' => substr($stored, 0, 7),
+        'verify' => $ok ? '1' : '0'
     ]);
-} else {
-    // امسح الكوكي لو كانت موجودة
-    if (isset($_COOKIE['whoizme_remember'])) {
-        setcookie('whoizme_remember', '', [
-            'expires'  => time() - 3600,
+
+    if (!$ok) {
+        header('Location: /login.php?err=badpass&return=' . rawurlencode($return_to), true, 302);
+        exit;
+    }
+
+    // success
+    $_SESSION['user_id']    = (int)$user['id'];
+    $_SESSION['user_email'] = (string)$user['email'];
+
+    if ($remember) {
+        $token = bin2hex(random_bytes(32));
+        setcookie('whoizme_rm', $token, [
+            'expires'  => time() + 60 * 60 * 24 * 30,
             'path'     => '/',
-            'secure'   => (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'),
+            'secure'   => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
             'httponly' => true,
             'samesite' => 'Lax',
         ]);
+        $_SESSION['whoizme_rm'] = $token;
     }
+
+    log_diag('login_ok_redirect', ['to' => $return_to]);
+    header('Location: ' . $return_to, true, 302);
+    exit;
+
+} catch (Throwable $e) {
+    log_diag('exception', ['msg' => $e->getMessage(), 'line' => $e->getLine(), 'file' => $e->getFile()]);
+    header('Location: /login.php?err=exception&return=' . rawurlencode($return_to), true, 302);
+    exit;
 }
-
-// تنظيف CSRF الخاص بالفورم (اختياري)
-unset($_SESSION['_csrf_login']);
-
-// ---------------- Safe redirect ----------------
-
-_go($return_to);

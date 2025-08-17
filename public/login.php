@@ -67,7 +67,7 @@ require __DIR__ . '/partials/landing_header.php';
         </div>
       <?php endif; ?>
 
-      <form class="stack log-form" action="/do_login.php" method="post" novalidate>
+      <form class="stack log-form" method="post" action="/do_login.php" accept-charset="UTF-8" novalidate>
         <input type="hidden" name="return" value="<?= htmlspecialchars($return_to, ENT_QUOTES) ?>">
 
         <label class="field">
