@@ -1,50 +1,39 @@
 <?php
-declare(strict_types=1);
-
-// عنوان الصفحة (اختياري)
-$title = $title ?? 'Whoizme — QR & Short Links';
-
-// ثيم افتراضي (dark). حابب تفعّل light؟ غير القيمة
-$theme = $theme ?? 'dark';
-
-// مسار CSS النهائي (لو بتخرج CSS في مسار مختلف عدّله)
-$APP_CSS = '/assets/css/app.min.css';
-
-// هل المستخدم مسجّل؟ (لو عندك دالة جاهزة)
-$__uid = function_exists('current_user_id') ? (int)current_user_id() : 0;
+  if (!isset($page_title)) { $page_title = "Whoizme"; }
+  if (!isset($page_class)) { $page_class = ""; }
 ?>
 <!doctype html>
-<html lang="en" dir="ltr" data-theme="<?= htmlspecialchars($theme) ?>">
+<html lang="en" dir="ltr" data-theme="dark">
 <head>
   <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title><?= htmlspecialchars($title) ?></title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title><?= htmlspecialchars($page_title) ?></title>
 
-  <!-- Fonts + App CSS -->
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="<?= $APP_CSS ?>?v=<?= time() ?>"/>
+  <!-- App CSS (من SCSS بتاع السيستم) -->
+  <link rel="stylesheet" href="/assets/css/app.min.css?v=<?= time() ?>">
 </head>
-<body>
+<body class="<?= htmlspecialchars($page_class) ?>">
 
-<header class="topbar">
-  <div class="topbar__inner">
-    <a class="brand" href="/"><span class="sr-only">Whoizme</span>Whoizme</a>
+<header class="landing-header" role="banner">
+  <div class="landing-header__bar">
+    <a class="landing-header__logo" href="/">
+      <img src="/assets/img/logo.svg" alt="" width="28" height="28">
+      <span>Whoiz.me</span>
+    </a>
 
-    <nav class="nav">
+    <nav aria-label="Primary" class="nav">
       <a href="/#features">Features</a>
       <a href="/#pricing">Pricing</a>
-      <a href="/help.php">Help</a>
-
-      <?php if ($__uid): ?>
-        <a class="btn btn--primary" href="/dashboard">Go to Dashboard</a>
-      <?php else: ?>
-        <a class="btn btn--ghost" href="/login">Log in</a>
-        <a class="btn btn--primary" href="/register">Get Started</a>
-      <?php endif; ?>
+      <a href="/#help">Help</a>
+      
     </nav>
+
+    <div class="nav__spacer"></div>
+    
+    <a href="/login.php" class="landing-header__link">Log in</a>
+    <a class="btn btn--cta" href="/register.php">Get started</a>
+
   </div>
 </header>
 
-<main class="page-section">
-  <div class="container">
+</header>

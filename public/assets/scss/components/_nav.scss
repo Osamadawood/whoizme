@@ -1,13 +1,75 @@
 @use "../core/mixins" as m;
 
 @mixin apply() {
-  .topbar { position: sticky; inset-block-start: 0; z-index: 50;
-            background: var(--surface); border-bottom: 1px solid var(--border); }
-  .topbar__inner { @include m.container(1200px);
-                   display:flex; align-items:center; gap:1rem; padding:.75rem 1rem; }
-  .brand { font-weight: 800; letter-spacing: -.02em; color: var(--text); text-decoration: none; }
-  .nav { margin-inline-start:auto; display:flex; gap:.25rem; }
-  .nav a { text-decoration:none; color: var(--text-muted);
-           padding:.5rem .75rem; border-radius: var(--radius-sm); }
-  .nav a:hover { background: color-mix(in oklab, var(--surface), white 4%); color: var(--text); }
+  /* Floating pill header */
+  .topbar { position: sticky; inset-block-start: 0; z-index: 60; background: transparent; border: 0; }
+
+  .topbar__inner {
+    @include m.container(1200px);
+    display: flex; align-items: center; gap: .75rem;
+    padding: .75rem 1rem; margin-block: 1rem;
+    background: color-mix(in oklab, var(--surface), #fff 2%);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    box-shadow: var(--shadow-md);
+  }
+
+  /* brand */
+  .brand { display:inline-flex; align-items:center; gap:.5rem; text-decoration:none; color:var(--text); }
+  .brand__mark {
+    inline-size:1.5rem; block-size:1.5rem; border-radius:50%;
+    background: radial-gradient(circle at 30% 30%,
+                color-mix(in oklab,var(--brand),#fff 10%),
+                color-mix(in oklab,var(--brand),#000 20%));
+    box-shadow: inset 0 0 0 2px color-mix(in oklab,var(--brand),#000 35%);
+  }
+  .brand__name { font-weight:800; letter-spacing:-.02em; }
+
+  /* primary nav */
+  .nav { margin-inline-start:auto; display:flex; align-items:center; gap:.25rem; }
+  .nav a { text-decoration:none; color:var(--muted); padding:.5rem .75rem; border-radius:999px; line-height:1; }
+  .nav a:hover { background: color-mix(in oklab, var(--surface), var(--text) 6%); color:var(--text); }
+  .nav a.is-active { background: color-mix(in oklab, var(--brand, #7c3aed), #000 80%); color:#fff; }
+
+  /* CTA button */
+  .btn--cta {
+    display:inline-flex; align-items:center; gap:.5rem;
+    padding:.65rem 1rem; border-radius:999px; font-weight:600;
+    background:#fff; color:#111; border:1px solid color-mix(in oklab,#fff,#000 8%);
+    box-shadow: 0 1px 0 color-mix(in oklab,#000,#fff 85%), 0 8px 24px rgba(0,0,0,.25);
+    text-decoration:none; white-space:nowrap;
+    transition: transform .12s ease, box-shadow .2s ease;
+  }
+  .btn--cta:hover { transform: translateY(-1px); box-shadow: 0 2px 0 rgba(0,0,0,.25), 0 12px 28px rgba(0,0,0,.3); }
+  .btn--cta .arrow::after { content:"→"; display:inline-block; transition: transform .15s ease; }
+  .btn--cta:hover .arrow::after { transform: translateX(2px); }
 }
+
+/* Theme toggle (قواعد عامة) */
+.theme-toggle {
+  display: inline-flex; align-items: center; gap: .5rem;
+  padding: .25rem .5rem; border-radius: 999px;
+  background: color-mix(in oklab, var(--surface), var(--text) 6%);
+  border: 1px solid color-mix(in oklab, var(--surface), var(--text) 12%);
+  cursor: pointer;
+
+  input[type="checkbox"] {
+    inline-size: 2.1rem; block-size: 1.15rem;
+    appearance: none;
+    background: color-mix(in oklab, var(--surface), var(--text) 12%);
+    border-radius: 999px; position: relative; outline: none; border: none;
+    transition: background .2s ease;
+
+    &::after {
+      content: ""; position: absolute; inset-block-start: 2px; inset-inline-start: 2px;
+      inline-size: 1rem; block-size: 1rem; border-radius: 50%; background: var(--text);
+      transition: transform .2s ease;
+    }
+    &:checked { background: color-mix(in oklab, var(--brand, #7c3aed), #000 12%); }
+    &:checked::after { transform: translateX(1rem); background: #fff; }
+  }
+
+  .theme-toggle__label { font: inherit; color: var(--muted); user-select: none; }
+}
+
+

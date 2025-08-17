@@ -4,7 +4,8 @@
   .form { display: grid; gap: 1rem; }
 
   .form-group { display: grid; gap: .5rem; margin-block-end: var(--sp-4); }
-  label { color: var(--text); font-weight: 600; }
+  label { color: var(--text); font-weight: 600;margin-bottom: 1.6rem;
+    display: block; }
   .help, .hint { color: var(--text-muted); font-size: .875rem; }
 
   input[type="text"],

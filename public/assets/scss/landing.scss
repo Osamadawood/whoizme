@@ -1,0 +1,16 @@
+/* Entry point لستايل صفحات اللاندينج/الخارجية فقط */
+@forward "landing/header"; /* بيجمع الهيدر بس دلوقتي */
+
+/* مساحة صغيرة عالمستوى العام تحافظ على نفس خلفيات النظام */
+body.page-public {
+  min-block-size: 100dvb;
+  background: var(--page-bg, #0b0c0f);
+  color: var(--text, #e7e7ea);
+}
+
+/* كلاس مساعد للمحتوى الأساسي تحت الهيدر */
+.public-wrap {
+  width: min(1200px, 100% - 48px);
+  margin-inline: auto;
+  padding-block: 24px 72px;
+}

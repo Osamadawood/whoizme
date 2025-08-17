@@ -1,0 +1,113 @@
+/* Landing / public pages (header + small tweaks)
+   يعتمد بالكامل على توكنز السيستم: var(--surface) var(--border) var(--text) var(--muted) var(--shadow-sm)
+*/
+
+.landing-header {
+    position: sticky;
+    top: 2rem;
+    z-index: 50;
+    display: flex;
+    justify-content: center;
+    padding-inline: 2rem;
+    margin-block-end: clamp(4rem,1.25vw,4rem);
+}
+
+.landing-header__bar {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  height: 64px;
+  max-width: 1200px;
+  width: 100%;
+      padding: 2.8rem 3.2rem;
+
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  box-shadow: var(--shadow-sm);
+}
+
+.landing-header__logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: var(--fw-semibold, 600);
+  color: var(--text);
+  text-decoration: none;
+
+  img { display: block; }
+  span { line-height: 1; }
+}
+
+.landing-header nav {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.landing-header nav a {
+  display: inline-flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: 10px;
+  color: var(--muted);
+  text-decoration: none;
+  transition: 160ms ease;
+}
+
+.landing-header nav a:is(:hover, :focus-visible) {
+  color: var(--text);
+  background: color-mix(in oklab, var(--surface), var(--text) 8%);
+  outline: none;
+}
+
+.landing-header .nav__spacer { flex: 1; }
+
+/* CTA زر أبيض كبسولة زي المرجع */
+.btn.btn--cta {
+  height: 44px;
+  padding: 3px 16px 0;
+  border-radius: 999px;
+  font-weight: var(--fw-semibold, 600);
+  background: #fff;
+  color: #111;
+  border: 1px solid color-mix(in oklab, #fff, #000 10%);
+  box-shadow: 0 1px 0 rgba(0,0,0,.06);
+  transition: transform .3s;
+}
+
+.btn.btn--cta:is(:hover, :focus-visible) {
+  transform: translateY(-1px) scale(.96);
+}
+
+.landing-header__link{
+    color: white;
+    transition: ease .3s;
+    &:hoveR{
+        color: var(--brand, #6d28d9);
+        transform: translateY(-1px);
+    }
+}
+
+.page-auth .site-main { padding-top: 32px; }
+
+.form-desc{
+    margin: 0 0 24px;
+}
+
+.log-form{
+    label{
+        margin-bottom: 1rem;
+    }
+}
+
+@media (max-width: 900px) {
+  .landing-header__bar {
+    gap: 14px;
+    height: 56px;
+  }
+  .landing-header nav { gap: 10px; }
+  .landing-header nav a { height: 32px; }
+  .btn.btn--cta { height: 40px; }
+}

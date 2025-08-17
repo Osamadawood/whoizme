@@ -13,12 +13,13 @@
 @layer base {
   /* Base tokens fallbacks — always defined regardless of load order */
   :root[data-theme=dark] {
-    --page-bg: #0e0e0e;
+    --page-bg: rgba(5,8,17,1.0);
     --surface: #13151a;
     --border: #22252d;
     --text: #e7e9ee;
     --muted: #a6adbb;
     --brand: #6c47ff; /* primary */
+    --radius-full:200px;
   }
   :root[data-theme=light] {
     --page-bg: #ffffff;
@@ -27,6 +28,7 @@
     --text: #111318;
     --muted: #6b7280;
     --brand: #5b7cfa;
+    --radius-full:200px;
   }
   /* Guarantee page colors even if a page forgets to set them */
   html, body {
@@ -34,10 +36,64 @@
     color: var(--text);
   }
 }
+.mainFooter {
+  margin-top: 2rem;
+}
+
 /* === Components === */
 /* Entry point: compile to /public/assets/css/app(.min).css */
 /* === Core @use must come first (no rules before them) === */
 /* components/_layout.scss */
+/* Theme toggle (قواعد عامة) */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--surface), var(--text) 6%);
+  border: 1px solid color-mix(in oklab, var(--surface), var(--text) 12%);
+  cursor: pointer;
+}
+.theme-toggle input[type=checkbox] {
+  inline-size: 2.1rem;
+  block-size: 1.15rem;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  background: color-mix(in oklab, var(--surface), var(--text) 12%);
+  border-radius: 999px;
+  position: relative;
+  outline: none;
+  border: none;
+  transition: background 0.2s ease;
+}
+.theme-toggle input[type=checkbox]::after {
+  content: "";
+  position: absolute;
+  inset-block-start: 2px;
+  inset-inline-start: 2px;
+  inline-size: 1rem;
+  block-size: 1rem;
+  border-radius: 50%;
+  background: var(--text);
+  transition: transform 0.2s ease;
+}
+.theme-toggle input[type=checkbox]:checked {
+  background: color-mix(in oklab, var(--brand, #7c3aed), #000 12%);
+}
+.theme-toggle input[type=checkbox]:checked::after {
+  transform: translateX(1rem);
+  background: #fff;
+}
+.theme-toggle .theme-toggle__label {
+  font: inherit;
+  color: var(--muted);
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+
 /* Entry point: compile to /public/assets/css/app(.min).css */
 /* === Core @use must come first (no rules before them) === */
 /* Entry point: compile to /public/assets/css/app(.min).css */
@@ -78,160 +134,98 @@
   font-family: var(--ff-sans);
 }
 
-/* Auth screens (login/register) — Dashbrd-like layout using our tokens */
-/* Page wrapper (used on body or main root) */
+/* Auth screens (login/register) — split layout like the reference, using our tokens */
+/* ===== Page scaffold ===== */
 .page-auth {
   background: var(--page-bg);
+  color: var(--text);
   min-height: 100dvh;
   display: block;
+  padding-block: clamp(2rem, 1.25vw, 4rem);
 }
 
-/* ===== Hero ===== */
-.auth-hero {
-  /* tall banner behind the card */
-  height: clamp(16rem, 32vw, 20rem);
+/* Optional subtle dot grid background (no images) */
+/* ===== Split grid ===== */
+.auth-grid {
+  max-width: min(1200px, 92vw);
   margin-inline: auto;
-  max-width: min(1180px, 92vw);
-  border-radius: var(--radius-2xl, var(--radius-xl));
-  overflow: hidden;
-  position: relative;
-  z-index: 0;
-  background-position: 50% 35%;
-  box-shadow: var(--shadow-lg, var(--shadow-md));
-  /* gradient + image */
-  background: radial-gradient(130% 70% at 50% -20%, color-mix(in oklab, var(--brand), #ffffff 30%) 0%, transparent 65%), url("/assets/img/auth-hero.jpg") center/cover no-repeat;
-  border: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: minmax(340px, 560px) minmax(320px, 520px);
+  gap: clamp(1.75rem, 3vw, 2.5rem);
+  align-items: start;
 }
 
-/* ===== Content wrapper ===== */
-.auth-wrap {
-  margin-inline: auto;
-  max-width: min(1080px, 92vw);
-  padding-inline: var(--sp-4);
-  padding-block: var(--sp-8);
-  position: relative;
-  text-align: center;
-  margin-top: clamp(1rem, 3vw, 1.5rem);
-}
-
-/* Compact brand row shown above the card */
-.auth-brand {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.auth-brand a {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--sp-3);
-  margin: var(--sp-6) auto var(--sp-4);
-  padding: var(--sp-4) var(--sp-3);
-  background: color-mix(in oklab, var(--surface), var(--text)/6%);
-  box-shadow: var(--shadow-sm);
-  color: var(--text);
-  text-decoration: none;
-  font-weight: var(--fw-semibold, 600);
-}
-.auth-brand a .auth-brand__dot {
-  width: 28px;
-  height: 28px;
-  border-radius: var(--radius-md);
-  background: radial-gradient(100% 100% at 30% 20%, color-mix(in oklab, var(--brand), #fff 8%) 0%, var(--brand) 70%);
-  box-shadow: 0 0 0 1px color-mix(in oklab, var(--brand), #000 35%);
-  flex: 0 0 28px;
-}
-.auth-brand a .auth-brand__name {
-  letter-spacing: 0.01em;
-  font-size: clamp(1.5rem, 2.2vw, 1.6rem);
-  margin-top: 0.4rem;
-}
-
-/* ===== Card ===== */
-/* system card mixin: background, border, radius, shadow */
-.auth-card {
+/* ===== Left: form card ===== */
+.auth-panel {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
-  position: relative;
-  z-index: 2; /* make sure card sits above the hero */
-  background: var(--surface); /* opaque card like reference */
-  width: min(540px, 100%);
-  padding: clamp(1.5rem, 2.6vw, 2rem);
-  margin-inline: auto;
-  /* stronger overlap on the hero */
-  margin-top: clamp(-16.4rem, -14vw, -7.5rem);
+  /* pulls surface/border/radius/shadow defaults */
+  /* Match contact form card using tokens only */
+  background: color-mix(in oklab, var(--surface), #fff 3%);
   border: 1px solid var(--border);
-  border-radius: var(--radius-2xl, var(--radius-xl));
-  box-shadow: var(--shadow-2xl, var(--shadow-xl));
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  padding: clamp(1.25rem, 2.5vw, 1.75rem);
 }
 
-/* Title + subtext INSIDE the card (reference style) */
-.auth-card .auth-title {
+.auth-title {
   margin: 0 0 var(--sp-2);
-  text-align: center;
-  font-size: clamp(1.5rem, 2.2vw, 1.75rem);
-  line-height: var(--lh-tight, 1.25);
   font-weight: var(--fw-bold, 700);
   letter-spacing: -0.01em;
+  font-size: clamp(1.5rem, 3.2vw, 2rem);
+  line-height: 1.2;
 }
 
-.auth-card .auth-sub {
-  color: var(--muted);
-  text-align: center;
+.auth-sub {
   margin: 0 0 var(--sp-4);
+  color: var(--muted);
+  margin-bottom: 2.4rem;
 }
 
-/* Inputs inside auth card: slightly darker with clearer outline */
-.auth-card .input {
-  background-color: color-mix(in oklab, var(--surface), var(--text) 5%);
-  box-shadow: inset 0 0 0 1px var(--border), 0 1px 0 0 color-mix(in oklab, #000, transparent 85%);
+/* Inputs — rounded, clear outline, consistent heights */
+.auth-panel .field .label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.auth-panel .input {
+  width: 100%;
+  height: 52px;
   border-radius: var(--radius-full);
-  height: 48px;
+  /* Slightly lighter than the card, with a crisp 1px outline */
+  background: color-mix(in oklab, var(--surface), #fff 2%);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  color: var(--text);
+  padding: var(--sp-3) var(--sp-4);
+  font-size: 16px;
+  line-height: 1.4;
+  margin-bottom: 0;
+  font-weight: 400;
+  transition: box-shadow 0.3s, color 0.3s, border-color 0.3s;
 }
 
-.auth-card .input:focus {
-  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--brand), #fff 12%), 0 0 0 3px color-mix(in oklab, var(--brand), transparent 82%);
+.auth-panel .input:focus {
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--brand), #fff 12%), 0 0 0 3px color-mix(in oklab, var(--brand), transparent 85%);
   outline: none;
 }
 
-/* Layout for helper row with forgot password */
-.auth-card .row--between {
-  align-items: center;
+.auth-panel .input::-moz-placeholder {
+  color: color-mix(in oklab, var(--muted), #fff 10%);
 }
 
-.auth-card .btn--ghost {
-  height: 44px;
-  border-radius: var(--radius-full);
-  padding-inline: var(--sp-4);
+.auth-panel .input::placeholder {
+  color: color-mix(in oklab, var(--muted), #fff 10%);
 }
 
-/* === Auth controls cosmetics (pills & sizes) === */
-.page-auth .input {
-  border-radius: var(--radius-full);
-  height: 48px;
+.auth-panel .input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
-.page-auth .btn {
-  border-radius: var(--radius-full);
-  height: 48px;
-}
-
-.page-auth .btn--sm {
-  height: 42px;
-}
-
-.page-auth .btn--lg {
-  height: 52px;
-}
-
-/* Fields take full width inside the card */
-.auth-card .field .input,
-.auth-card .input {
-  width: 100%;
-}
-
-/* Rows and helpers */
+/* Row helpers */
 .row {
   display: flex;
   gap: var(--sp-3);
@@ -242,109 +236,462 @@
   justify-content: space-between;
 }
 
-.row--center {
-  align-items: center;
+/* Buttons — pill and full-width like reference */
+.auth-panel .btn {
+  height: 48px;
+  border-radius: var(--radius-full);
 }
 
-/* Primary & secondary CTAs span full width like the reference */
-.auth-card .btn--primary,
-.auth-card .btn--secondary {
+.auth-panel .btn--primary,
+.auth-panel .btn--secondary {
   width: 100%;
 }
 
-/* Checkbox, radio, switch align baseline */
-.auth-card .checkbox,
-.auth-card .radio,
-.auth-card .switch {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--sp-2);
+/* Small ghost on the right (Forgot password?) */
+.auth-panel .btn--ghost {
+  height: 44px;
+  border-radius: var(--radius-full);
+  padding-inline: var(--sp-4);
 }
 
-/* Small muted help text */
-.auth-muted {
-  color: var(--muted);
-}
-
-/* Space between stacked sections in the card */
-.auth-card .stack > * + * {
-  margin-top: var(--sp-3);
-}
-
-.auth-card .row + .row {
-  margin-top: var(--sp-3);
-}
-
-/* Button cosmetics to match system */
-.auth-card .btn--primary {
-  background: linear-gradient(180deg, color-mix(in oklab, var(--brand), #fff 10%) 0%, var(--brand) 100%);
-  border: 1px solid color-mix(in oklab, var(--brand), #000 20%);
-  color: #111;
-}
-
-.auth-card .btn--primary:hover {
-  filter: brightness(1.04);
-}
-
-.auth-card .btn--secondary {
-  background: color-mix(in oklab, var(--surface), var(--text)/6%);
-}
-
-.auth-card .field + .field {
-  margin-top: var(--sp-3);
-}
-
-/* Social buttons list (if used) */
-.auth-social {
-  display: grid;
-  gap: var(--sp-3);
+/* Stack spacing */
+.auth-panel .stack > * + * {
   margin-top: var(--sp-4);
 }
-.auth-social .btn {
-  width: 100%;
+
+.auth-panel .row + .row {
+  margin-top: var(--sp-3);
 }
 
-/* ===== Responsive tweaks ===== */
-@media (min-width: 900px) {
-  .auth-card {
-    padding: 2rem;
+.auth-panel .field + .field {
+  margin-top: var(--sp-3);
+}
+
+/* ===== Right: content side ===== */
+.auth-side .eyebrow {
+  color: var(--brand);
+  font-weight: var(--fw-bold, 700);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 0.875rem;
+  margin-bottom: var(--sp-2);
+}
+
+.auth-side .big-title {
+  margin: 0 0 var(--sp-3);
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-weight: var(--fw-bold, 700);
+}
+
+.auth-side .lead {
+  margin: 0 0 var(--sp-5);
+  color: var(--muted);
+  max-width: 48ch;
+}
+
+/* Side cards (two stacked cards with icon + action) */
+.auth-sidecards {
+  display: grid;
+  gap: var(--sp-3);
+}
+
+.sidecard {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+  background: color-mix(in oklab, var(--surface), #fff 2%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+}
+
+.sidecard .ico {
+  inline-size: 44px;
+  block-size: 44px;
+  border-radius: var(--radius-full);
+  display: grid;
+  place-items: center;
+  background: color-mix(in oklab, var(--brand), #000 10%);
+  color: #fff;
+  font-size: 18px;
+  flex: 0 0 44px;
+}
+
+.sidecard .meta {
+  line-height: 1.2;
+}
+
+.sidecard .meta .title {
+  font-weight: var(--fw-semibold, 600);
+}
+
+.sidecard .meta .muted {
+  color: var(--muted);
+  margin-top: 0.25rem;
+}
+
+.sidecard .action {
+  margin-inline-start: auto;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 900px) {
+  .auth-grid {
+    grid-template-columns: 1fr;
+  }
+  .auth-side {
+    order: -1;
   }
 }
-/* ===== Auth layout overrides ===== */
-/* اخفي الهيدر العام داخل صفحات الـAuth */
+/* ===== Hide global site header on auth pages (we keep footer) ===== */
 .page-auth .site-header {
   display: none;
 }
 
-/* لو عندك main عام عليه padding-top بسبب الهيدر، صفره هنا */
-.page-auth main,
-.page-auth .site-main {
+.page-auth main, .page-auth .site-main {
   padding-top: 0 !important;
 }
 
-/* تأكيد تباعد الصفحة في الموبايل */
-@media (max-width: 599px) {
-  .auth-wrap {
-    padding-inline: var(--sp-3);
-  }
-  .auth-card {
-    margin-top: clamp(-6rem, -16vw, -5rem);
-  }
-}
-.auth-hero {
-  background-color: color-mix(in oklab, var(--page-bg), var(--text)/8%);
+.rememberMe {
+  margin-bottom: 0;
 }
 
-/* Slightly larger spacing under the subtitle inside the card */
-.auth-card .auth-sub {
-  margin-bottom: var(--sp-5);
-}
-
-/* Center brand/logo above the card if present */
-.auth-wrap > .auth-brand {
+/* === Theme toggle (animated pill) === */
+.theme-toggle {
+  --ring: color-mix(in oklab, var(--brand), transparent 85%);
   display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: var(--radius-full);
+  background: color-mix(in oklab, var(--surface), #fff 1%);
+  border: 1px solid var(--border);
+  color: var(--text);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  transition: background 0.25s, border-color 0.25s, box-shadow 0.25s, transform 0.12s ease-in-out;
 }
 
+.theme-toggle:hover {
+  border-color: color-mix(in oklab, var(--brand), var(--border) 78%);
+  box-shadow: 0 0 0 4px var(--ring);
+}
+
+.theme-toggle:active {
+  transform: translateY(1px) scale(0.99);
+}
+
+.theme-toggle:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px var(--ring);
+}
+
+.theme-toggle .label {
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.theme-toggle .ico {
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  line-height: 0;
+  transition: opacity 0.25s, transform 0.35s ease;
+}
+
+.theme-toggle .moon {
+  opacity: 0;
+  transform: rotate(-20deg) scale(0.8);
+}
+
+html[data-theme=light] .theme-toggle .sun {
+  opacity: 0;
+  transform: rotate(20deg) scale(0.8);
+}
+
+html[data-theme=light] .theme-toggle .moon {
+  opacity: 1;
+  transform: rotate(0) scale(1);
+}
+
+html[data-theme=dark] .theme-toggle .sun {
+  opacity: 1;
+  transform: rotate(0) scale(1);
+}
+
+html[data-theme=dark] .theme-toggle .moon {
+  opacity: 0;
+  transform: rotate(-20deg) scale(0.8);
+}
+
+.auth-sidecards {
+  display: grid;
+  gap: 1.6rem;
+}
+.auth-sidecards .sidecard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.6rem 2rem;
+  border: 1px solid var(--color-border, rgba(255, 255, 255, 0.1));
+  border-radius: 12px;
+  background: var(--surface-elevated, rgba(255, 255, 255, 0.02));
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+.auth-sidecards .sidecard .ico {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--primary-bg, rgba(93, 95, 239, 0.1));
+  color: var(--primary);
+  font-size: 1.6rem;
+  margin-inline-end: 1.2rem;
+}
+.auth-sidecards .sidecard .meta {
+  flex-grow: 1;
+}
+.auth-sidecards .sidecard .meta .title {
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+}
+.auth-sidecards .sidecard .meta .muted {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+.auth-sidecards .sidecard .action {
+  margin-inline-start: 1.2rem;
+}
+
+/* Landing / public pages (header + small tweaks)
+   يعتمد بالكامل على توكنز السيستم: var(--surface) var(--border) var(--text) var(--muted) var(--shadow-sm)
+*/
+.landing-header {
+  position: sticky;
+  top: 2rem;
+  z-index: 50;
+  display: flex;
+  justify-content: center;
+  padding-inline: 2rem;
+  margin-block-end: clamp(5rem, 1.25vw, 4rem);
+}
+
+.landing-header__bar {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  height: 64px;
+  max-width: 1200px;
+  width: 100%;
+  padding: 2.8rem 3.2rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  box-shadow: var(--shadow-sm);
+}
+
+.landing-header__logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: var(--fw-semibold, 600);
+  color: var(--text);
+  text-decoration: none;
+}
+.landing-header__logo img {
+  display: block;
+}
+.landing-header__logo span {
+  line-height: 1;
+}
+
+.landing-header nav {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.landing-header nav a {
+  display: inline-flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: 10px;
+  color: var(--muted);
+  text-decoration: none;
+  transition: 160ms ease;
+}
+
+.landing-header nav a:is(:hover, :focus-visible) {
+  color: var(--text);
+  background: color-mix(in oklab, var(--surface), var(--text) 8%);
+  outline: none;
+}
+
+.landing-header .nav__spacer {
+  flex: 1;
+}
+
+/* CTA زر أبيض كبسولة زي المرجع */
+/* لا تتصادم مع صفحات الداشبورد */
+.page-auth .site-main {
+  padding-top: 32px;
+}
+
+@media (max-width: 900px) {
+  .landing-header__bar {
+    gap: 14px;
+    height: 56px;
+  }
+  .landing-header nav {
+    gap: 10px;
+  }
+  .landing-header nav a {
+    height: 32px;
+  }
+  .btn.btn--cta {
+    height: 40px;
+  }
+}
+.log-card {
+  align-items: center;
+}
+
+.login-side {
+  width: 90%;
+  margin: 0 auto;
+}
+.login-side .text-muted {
+  font-size: 0.9rem;
+  margin-block-end: 0.4rem;
+}
+
+/* Landing / public pages (header + small tweaks)
+   يعتمد بالكامل على توكنز السيستم: var(--surface) var(--border) var(--text) var(--muted) var(--shadow-sm)
+*/
+.landing-header {
+  position: sticky;
+  top: 2rem;
+  z-index: 50;
+  display: flex;
+  justify-content: center;
+  padding-inline: 2rem;
+  margin-block-end: clamp(4rem, 1.25vw, 4rem);
+}
+
+.landing-header__bar {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  height: 64px;
+  max-width: 1200px;
+  width: 100%;
+  padding: 2.8rem 3.2rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  box-shadow: var(--shadow-sm);
+}
+
+.landing-header__logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: var(--fw-semibold, 600);
+  color: var(--text);
+  text-decoration: none;
+}
+.landing-header__logo img {
+  display: block;
+}
+.landing-header__logo span {
+  line-height: 1;
+}
+
+.landing-header nav {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.landing-header nav a {
+  display: inline-flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: 10px;
+  color: var(--muted);
+  text-decoration: none;
+  transition: 160ms ease;
+}
+
+.landing-header nav a:is(:hover, :focus-visible) {
+  color: var(--text);
+  background: color-mix(in oklab, var(--surface), var(--text) 8%);
+  outline: none;
+}
+
+.landing-header .nav__spacer {
+  flex: 1;
+}
+
+/* CTA زر أبيض كبسولة زي المرجع */
+.btn.btn--cta {
+  height: 44px;
+  padding: 3px 16px 0;
+  border-radius: 999px;
+  font-weight: var(--fw-semibold, 600);
+  background: #fff;
+  color: #111;
+  border: 1px solid color-mix(in oklab, #fff, #000 10%);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
+  transition: transform 0.3s;
+}
+
+.btn.btn--cta:is(:hover, :focus-visible) {
+  transform: translateY(-1px) scale(0.96);
+}
+
+.landing-header__link {
+  color: white;
+  transition: ease 0.3s;
+}
+.landing-header__link:hoveR {
+  color: var(--brand, #6d28d9);
+  transform: translateY(-1px);
+}
+
+.page-auth .site-main {
+  padding-top: 32px;
+}
+
+.form-desc {
+  margin: 0 0 24px;
+}
+
+.log-form label {
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 900px) {
+  .landing-header__bar {
+    gap: 14px;
+    height: 56px;
+  }
+  .landing-header nav {
+    gap: 10px;
+  }
+  .landing-header nav a {
+    height: 32px;
+  }
+  .btn.btn--cta {
+    height: 40px;
+  }
+}
 /* === Utilities === */
 /* === Emit layers & tokens (order matters slightly) === */
 /* 1) color tokens */
@@ -617,6 +964,8 @@ h6 {
 label {
   color: var(--text);
   font-weight: 600;
+  margin-bottom: 1.6rem;
+  display: block;
 }
 
 .help, .hint {
@@ -766,12 +1115,13 @@ textarea {
   gap: var(--sp-6);
 }
 
+/* Floating pill header */
 .topbar {
   position: sticky;
   inset-block-start: 0;
-  z-index: 50;
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
+  z-index: 60;
+  background: transparent;
+  border: 0;
 }
 
 .topbar__inner {
@@ -779,33 +1129,93 @@ textarea {
   margin-inline: auto;
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
   padding: 0.75rem 1rem;
+  margin-block: 1rem;
+  background: color-mix(in oklab, var(--surface), #fff 2%);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  box-shadow: var(--shadow-md);
 }
 
+/* brand */
 .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: var(--text);
+}
+
+.brand__mark {
+  inline-size: 1.5rem;
+  block-size: 1.5rem;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, color-mix(in oklab, var(--brand), #fff 10%), color-mix(in oklab, var(--brand), #000 20%));
+  box-shadow: inset 0 0 0 2px color-mix(in oklab, var(--brand), #000 35%);
+}
+
+.brand__name {
   font-weight: 800;
   letter-spacing: -0.02em;
-  color: var(--text);
-  text-decoration: none;
 }
 
+/* primary nav */
 .nav {
   margin-inline-start: auto;
   display: flex;
+  align-items: center;
   gap: 0.25rem;
 }
 
 .nav a {
   text-decoration: none;
-  color: var(--text-muted);
+  color: var(--muted);
   padding: 0.5rem 0.75rem;
-  border-radius: var(--radius-sm);
+  border-radius: 999px;
+  line-height: 1;
 }
 
 .nav a:hover {
-  background: color-mix(in oklab, var(--surface), white 4%);
+  background: color-mix(in oklab, var(--surface), var(--text) 6%);
   color: var(--text);
+}
+
+.nav a.is-active {
+  background: color-mix(in oklab, var(--brand, #7c3aed), #000 80%);
+  color: #fff;
+}
+
+/* CTA button */
+.btn--cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1rem;
+  border-radius: 999px;
+  font-weight: 600;
+  background: #fff;
+  color: #111;
+  border: 1px solid color-mix(in oklab, #fff, #000 8%);
+  box-shadow: 0 1px 0 color-mix(in oklab, #000, #fff 85%), 0 8px 24px rgba(0, 0, 0, 0.25);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: transform 0.12s ease, box-shadow 0.2s ease;
+}
+
+.btn--cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25), 0 12px 28px rgba(0, 0, 0, 0.3);
+}
+
+.btn--cta .arrow::after {
+  content: "→";
+  display: inline-block;
+  transition: transform 0.15s ease;
+}
+
+.btn--cta:hover .arrow::after {
+  transform: translateX(2px);
 }
 
 .card {

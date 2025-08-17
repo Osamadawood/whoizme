@@ -115,12 +115,14 @@
 @layer base {
   /* Base tokens fallbacks — always defined regardless of load order */
   :root[data-theme="dark"] {
-    --page-bg: #0e0e0e;
+    // --page-bg: #0e0e0e;
+    --page-bg: rgba(5,8,17,1.0);
     --surface: #13151a;
     --border: #22252d;
     --text: #e7e9ee;
     --muted: #a6adbb;
     --brand: #6c47ff; /* primary */
+    --radius-full:200px;
   }
 
   :root[data-theme="light"] {
@@ -130,6 +132,7 @@
     --text: #111318;
     --muted: #6b7280;
     --brand: #5b7cfa;
+    --radius-full:200px;
   }
 
   /* Guarantee page colors even if a page forgets to set them */
@@ -137,4 +140,8 @@
     background: var(--page-bg);
     color: var(--text);
   }
+}
+
+.mainFooter{
+  margin-top: 2rem;
 }

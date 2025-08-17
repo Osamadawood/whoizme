@@ -1,61 +1,70 @@
 <?php
-// public/login.php (auth layout – no global header)
-$AUTH_PAGE = true; // flag kept if needed elsewhere
+  // Page meta
+  $page_title = "Sign in";
+  $page_class = "page-auth"; // adds .page-auth to <body> for auth layout styles
+  // Public page: bypass auth guard and use landing header
+  if (!defined('SKIP_AUTH_GUARD')) {
+      define('SKIP_AUTH_GUARD', true);
+  }
+  require __DIR__ . "/partials/landing_header.php"; // injects the <body class="$page_class">
 ?>
-<!doctype html>
-<html lang="en" dir="ltr" data-theme="dark">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Sign in · Whoiz.me</title>
-  <link rel="stylesheet" href="/assets/css/app.min.css?v=<?php echo time(); ?>">
-</head>
-<body class="page-auth">
 
-  <div class="auth-brand">
-    <a href="/">
-      <span class="auth-brand__dot" aria-hidden="true"></span>
-      <span class="auth-brand__name">Whoiz.me</span>
-    </a>
-  </div>
+<main class="site-main">
 
-  <!-- Decorative hero band -->
-  <section class="auth-hero" aria-hidden="true"></section>
+  <section class="auth-grid log-card">
+    <!-- Left: Form card -->
+    <article class="auth-panel auth-card">
+      <h1 class="auth-title">Sign in</h1>
+      <p class="auth-sub form-desc">Use your email and password to continue</p>
 
-  <!-- Auth container -->
-  <main class="auth-wrap">
-    <section class="auth-card">
-      <form class="stack" action="/do_login.php" method="post" novalidate>
-        <div class="auth-intro u-mb-2">
-          <h2 class="sg-h sg-h--lg u-mb-2">Sign in</h2>
-          <p class="auth-lead sg-muted">Use your email and password to continue</p>
-        </div>
-
+      <form class="stack log-form" action="/do_login.php" method="post" novalidate>
         <label class="field">
           <span class="label">Email address</span>
-          <input class="input" type="email" name="email" placeholder="name@email.com" required>
+          <input class="input" type="email" name="email" placeholder="name@email.com" autocomplete="username" required>
         </label>
 
         <label class="field">
           <span class="label">Password</span>
-          <input class="input" type="password" name="password" placeholder="••••••••" required>
+          <input class="input" type="password" name="password" placeholder="••••••••" autocomplete="current-password" required>
         </label>
 
-        <div class="row row--between row--center">
-          <label class="checkbox"><input type="checkbox" name="remember"> <span>Remember me</span></label>
-          <a class="btn btn--ghost btn--sm" href="/forgot.php">Forgot password?</a>
+        <div class="row row--between">
+          <label class="checkbox remember">
+            <input type="checkbox" name="remember" value="1">
+            <span>Remember me</span>
+          </label>
+          <a href="/forgot.php">Forgot password?</a>
         </div>
 
-        <button class="btn btn--primary" type="submit">Continue</button>
+        <button class="btn btn--primary" type="submit">Login</button>
 
-        <div class="row row--between row--center">
-          <span class="auth-muted">Don’t have an account?</span>
-          <a class="btn btn--primary btn--sm" href="/register.php">Create one</a>
+        <div class="row">
+          <div class="auth-muted">Don’t have an account? <a href="/register.php">Create one</a></div>
         </div>
       </form>
-    </section>
+    </article>
 
-    <footer class="auth-muted u-mt-6">© <?php echo date('Y'); ?> Whoizme</footer>
-  </main>
-</body>
-</html>
+    <!-- Right: Content side (marketing) -->
+    <aside class="auth-side login-side">
+      <div class="text-muted">WHOIZ.ME</div>
+      <h2 class="big-title">All your links, QR codes & insights — together in one dashboard</h2>
+      <p class="lead">Sign in to manage short links, create QR codes, and track performance with clean, privacy-first analytics — all in one place.</p>
+
+      <div class="auth-sidecards">
+        <!-- Card 1 -->
+        <div class="sidecard">
+          <div class="ico" aria-hidden="true">✉</div>
+          <div class="meta">
+            <div class="title">Contact support</div>
+            <div class="muted">We're here to help you</div>
+          </div>
+          <a class="btn btn--secondary btn--sm action" href="mailto:support@whoiz.me">Email us</a>
+        </div>
+
+
+      </div>
+    </aside>
+  </section>
+</main>
+
+<?php require __DIR__ . "/partials/landing_footer.php"; ?>
