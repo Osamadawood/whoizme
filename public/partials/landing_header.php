@@ -1,29 +1,25 @@
 <?php
-// Bootstrap first (sessions, config, etc.)
+// Bootstrap (sessions + config + helpers)
 require_once __DIR__ . '/../../includes/bootstrap.php';
 
-// Try to load shared auth helpers if present
-$__guard = __DIR__ . '/auth_guard.php';
-if (file_exists($__guard)) {
-  require_once $__guard;
-}
-
-// Fallback in case the helper wasn't loaded (prevents fatal errors)
+/**
+ * ضيف بسيط: لو المستخدم مُسجَّل بالفعل وفتح صفحات الضيوف (login/register/landing)
+ * حوِّله للداشبورد بدل ما يلبس في صفحات الضيوف.
+ * لا تستخدم auth_guard هنا حتى لا نصنع Loop!
+ */
 if (!function_exists('auth_redirect_if_logged_in')) {
   function auth_redirect_if_logged_in(): void {
-    if (isset($_SESSION['user_id']) && (int)$_SESSION['user_id'] > 0) {
+    if (!empty($_SESSION['user_id']) && (int)$_SESSION['user_id'] > 0) {
       header('Location: /dashboard.php');
       exit;
     }
   }
 }
-
-// If the viewer is already authenticated, keep them out of public landing/login pages
 auth_redirect_if_logged_in();
 
 // Page meta defaults
-if (!isset($page_title)) { $page_title = "Whoizme"; }
-if (!isset($page_class)) { $page_class = ""; }
+$page_title = $page_title ?? 'Whoizme';
+$page_class = $page_class ?? '';
 ?>
 <!doctype html>
 <html lang="en" dir="ltr" data-theme="dark">
@@ -31,8 +27,6 @@ if (!isset($page_class)) { $page_class = ""; }
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title><?= htmlspecialchars($page_title) ?></title>
-
-  <!-- App CSS (من SCSS بتاع السيستم) -->
   <link rel="stylesheet" href="/assets/css/app.min.css?v=<?= time() ?>">
 </head>
 <body class="<?= htmlspecialchars($page_class) ?>">

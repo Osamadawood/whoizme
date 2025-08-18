@@ -1,118 +1,76 @@
 <?php
 declare(strict_types=1);
 
-/**
- * POST /do_login.php
- * يعتمد على includes/bootstrap.php لتجهيز الـPDO والسيشن والدوال.
- */
-require dirname(__DIR__) . '/includes/bootstrap.php';
+// لود البوتستراب (سيشن + إعدادات + DB + هلفرز)
+require_once __DIR__ . '/../includes/bootstrap.php';
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: /login.php', true, 302);
-    exit;
+// أداة بسيطة لقراءة POST بأمان
+function p(string $key, string $default = ''): string {
+    return isset($_POST[$key]) ? trim((string)$_POST[$key]) : $default;
 }
 
-// helpers
-function only_internal_path(string $path, string $fallback = '/dashboard.php'): string {
-    $path = trim($path);
-    if ($path === '' || $path[0] !== '/') return $fallback;     // لازم يبدأ بـ /
-    // امنع البروتوكولات والروابط المطلقة
-    if (preg_match('~^\s*(https?:)?//~i', $path)) return $fallback;
-    // امنع أي new lines
-    $path = str_replace(["\r", "\n"], '', $path);
-    return $path;
-}
+// CSRF (اختياري لو عندك دالة verify_csrf_token)
+// if (!verify_csrf_token($_POST['_csrf'] ?? '')) {
+//     header('Location: /login.php?err=csrf'); exit;
+// }
 
-function redirect_login(string $reason, string $return = '/dashboard.php', string $email = ''): void {
-    $qs = http_build_query([
-        'err'    => $reason,
-        'return' => $return,
-        'email'  => $email !== '' ? $email : null,
-    ]);
-    header('Location: /login.php?' . $qs, true, 302);
-    exit;
-}
-
-// read inputs
-$email    = isset($_POST['email']) ? trim((string)$_POST['email']) : '';
-$password = isset($_POST['password']) ? (string)$_POST['password'] : '';
+// 1) التحقق من الإدخال
+$email    = strtolower(p('email'));
+$password = p('password');
 $remember = isset($_POST['remember']) ? (bool)$_POST['remember'] : false;
-$return   = only_internal_path((string)($_POST['return'] ?? '/dashboard.php'));
 
-if ($email === '' || $password === '') {
-    redirect_login('badpass', $return);
+if (!filter_var($email, FILTER_VALIDATE_EMAIL) || $password === '') {
+    header('Location: /login.php?err=badinput&email=' . urlencode($email));
+    exit;
 }
 
 try {
-    /** @var PDO $pdo */
-    if (!isset($pdo) || !($pdo instanceof PDO)) {
-        throw new RuntimeException('DB not ready');
-    }
-
-    // نحاول قراءة أي من العمودين password_hash أو pass_hash
-    // نجيب السطر مرة واحدة بعمودين ونستعمل أول واحد موجود
-    $sql = <<<SQL
-        SELECT id, name, email, is_active,
-               password_hash, pass_hash
-        FROM users
-        WHERE email = :email
-        LIMIT 1
-    SQL;
-
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([':email' => $email]);
+    // 2) احضر المستخدم
+    $stmt = $pdo->prepare('SELECT id, email, password_hash, is_active FROM users WHERE email = ? LIMIT 1');
+    $stmt->execute([$email]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if (!$user) {
-        // إيميل مش موجود
-        redirect_login('badpass', $return, $email);
+    if (!$user || (int)$user['is_active'] !== 1) {
+        header('Location: /login.php?err=nouser&email=' . urlencode($email));
+        exit;
     }
 
-    if (isset($user['is_active']) && (int)$user['is_active'] === 0) {
-        redirect_login('inactive', $return, $email);
+    // 3) تحقق من كلمة المرور
+    if (!password_verify($password, (string)$user['password_hash'])) {
+        header('Location: /login.php?err=badpass&email=' . urlencode($email));
+        exit;
     }
 
-    // اختَر الهاش الفعّال
-    $hash = '';
-    if (!empty($user['password_hash'])) {
-        $hash = (string)$user['password_hash'];
-    } elseif (!empty($user['pass_hash'])) {
-        $hash = (string)$user['pass_hash'];
-    }
-
-    if ($hash === '' || !password_verify($password, $hash)) {
-        redirect_login('badpass', $return, $email);
-    }
-
-    // نجاح: فعّل السيشن
-    if (session_status() !== PHP_SESSION_ACTIVE) {
-        session_start();
-    }
+    // 4) نجاح: ثبت الجلسة بأمان
     session_regenerate_id(true);
+    $_SESSION['user_id']    = (int)$user['id'];
+    $_SESSION['user_email'] = (string)$user['email'];
 
-    $_SESSION['user_id']   = (int)$user['id'];
-    $_SESSION['user_name'] = (string)($user['name'] ?? '');
-    $_SESSION['user_email']= (string)$user['email'];
+    // لو عندك فلاش ميسج
+    if (!function_exists('flash_set')) {
+        function flash_set(string $key, string $msg): void { $_SESSION['_flash'][$key] = $msg; }
+    }
+    flash_set('ok', 'Welcome back!');
 
-    // Remember me (كوكي اختيارية لمدة 30 يوم)
-    if ($remember) {
-        // token بسيط للآن (ممكن نطوّره لاحقاً)
-        $token = bin2hex(random_bytes(32));
-        setcookie('whoizme_remember', $token, [
-            'expires'  => time() + 60*60*24*30,
-            'path'     => '/',
-            'secure'   => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
-            'httponly' => true,
-            'samesite' => 'Lax',
-        ]);
-        // يمكن تخزينه في جدول لاحقاً؛ لسه مش مطلوب للـ MVP
+    // 5) احترم return إن كان نظيفًا، وإلا اذهب للداشبورد
+    $return = $_POST['return'] ?? $_GET['return'] ?? '/dashboard.php';
+
+    // تنظيف الـ return: يسمح فقط بمسارات داخلية تبدأ بـ /
+    if (!is_string($return) || $return === '' || $return[0] !== '/') {
+        $return = '/dashboard.php';
     }
 
-    // إلى الداشبورد أو الـreturn
-    header('Location: ' . $return, true, 302);
+    // منع حلقة: لو الـ return يشير للوج-إن نفسه، أرسل للداشبورد
+    if (preg_match('~^/login\.php~i', $return)) {
+        $return = '/dashboard.php';
+    }
+
+    header('Location: ' . $return);
     exit;
 
 } catch (Throwable $e) {
-    // بدلاً من كراش نرجّع رسالة exception المؤقتة
-    redirect_login('exception', $return, $email);
+    // سجل لو عندك لوج
+    error_log('[do_login] ' . $e->getMessage());
+    header('Location: /login.php?err=exception&email=' . urlencode($email));
+    exit;
 }
