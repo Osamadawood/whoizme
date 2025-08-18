@@ -1,34 +1,46 @@
-<?php define('PUBLIC_PAGE', true); ?>
 <?php
+/**
+ * Whoizme – Public Styleguide (no auth)
+ * Robust version: optional includes, no fatals if files are missing.
+ */
 declare(strict_types=1);
 
-/**
- * Style Guide (public, no auth) – Darkware-like, pixel-consistent
- */
-if (!defined('SKIP_AUTH_GUARD')) {
-    define('SKIP_AUTH_GUARD', true);
-}
+// Public page flags so guards (if any) will skip auth
+if (!defined('PUBLIC_PAGE')) { define('PUBLIC_PAGE', true); }
+if (!defined('SKIP_AUTH_GUARD')) { define('SKIP_AUTH_GUARD', true); }
 
-// حاول نلاقي أي bootstrap خفيف لو متاح
-$boot = [
+// Try to include a lightweight bootstrap if available (but don't die if not)
+$tryBoot = [
   __DIR__.'/_bootstrap.php',
   __DIR__.'/bootstrap.php',
   dirname(__DIR__).'/includes/bootstrap.php',
   dirname(__DIR__).'/includes/_bootstrap.php',
 ];
-foreach ($boot as $b) { if (is_file($b)) { require_once $b; break; } }
+foreach ($tryBoot as $b) { if (is_file($b)) { @require_once $b; break; } }
 
+// Title & meta
 $title = 'Whoizme · Styles & Components';
 ?>
 <!doctype html>
 <html lang="en" dir="ltr" data-theme="dark">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title><?= htmlspecialchars($title) ?></title>
 
-  <!-- Page-only CSS (no inline styles) -->
-  <link rel="stylesheet" href="/assets/css/styleguide.css?v=<?= time() ?>">
+  <!-- Favicon (use same assets used by register/login); guard if missing -->
+  <?php if (is_file(__DIR__.'/assets/img/favicon.svg')): ?>
+    <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml" />
+  <?php elseif (is_file(__DIR__.'/favicon.ico')): ?>
+    <link rel="icon" href="/favicon.ico" />
+  <?php endif; ?>
+
+  <!-- Design system CSS; fall back to app.css if styleguide.css is absent -->
+  <?php if (is_file(__DIR__.'/assets/css/styleguide.css')): ?>
+    <link rel="stylesheet" href="/assets/css/styleguide.css?v=<?= time() ?>" />
+  <?php else: ?>
+    <link rel="stylesheet" href="/assets/css/app.css?v=<?= time() ?>" />
+  <?php endif; ?>
 </head>
 <body class="sg">
 
@@ -73,7 +85,7 @@ $title = 'Whoizme · Styles & Components';
         <span class="sg-muted">Reference</span>
         <div class="sg-topbar__spacer"></div>
         <label class="sg-toggle" title="Toggle theme">
-          <input id="themeToggle" type="checkbox"/>
+          <input id="themeToggle" type="checkbox" />
           <span>Light</span>
         </label>
       </div>
@@ -87,8 +99,7 @@ $title = 'Whoizme · Styles & Components';
     </section>
 
     <main class="sg-content">
-
-      <!-- Colors -->
+      <!-- ==== Sections (unchanged) ==== -->
       <section id="colors" class="sg-section">
         <h2 class="sg-h">Colors</h2>
         <div class="sg-grid cols-4">
@@ -463,6 +474,7 @@ $title = 'Whoizme · Styles & Components';
       <p class="sg-muted u-center">© <?= date('Y') ?> Whoizme · Design System Reference</p>
     </main>
   </div>
+
 </div>
 
 <script>
@@ -471,7 +483,6 @@ $title = 'Whoizme · Styles & Components';
   const root = document.documentElement;
   const toggle = document.getElementById('themeToggle');
   const KEY = 'whoizme_theme';
-  // apply saved theme if exists
   const saved = localStorage.getItem(KEY);
   if (saved === 'light' || saved === 'dark') {
     root.setAttribute('data-theme', saved);
@@ -488,49 +499,29 @@ $title = 'Whoizme · Styles & Components';
   // ===== Smooth scroll + active link (no # in URL) =====
   const nav = document.querySelector('.sg-nav');
   const links = nav ? Array.from(nav.querySelectorAll('a[href^="#"]')) : [];
-  const sections = links
-    .map(a => document.querySelector(a.getAttribute('href')))
-    .filter(Boolean);
+  const sections = links.map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
 
   const topbar = document.querySelector('.sg-topbar');
   function getOffset(){ return (topbar?.offsetHeight || 80) + 16; }
-
-  function setActive(id){
-    links.forEach(a => a.classList.toggle('is-active', a.getAttribute('href') === '#' + id));
-  }
-
+  function setActive(id){ links.forEach(a => a.classList.toggle('is-active', a.getAttribute('href') === '#' + id)); }
   function scrollToId(id){
     const el = document.getElementById(id);
     if (!el) return;
     const y = el.getBoundingClientRect().top + window.pageYOffset - getOffset();
     window.scrollTo({ top: y, behavior: 'smooth' });
     setActive(id);
-    // Remove hash without reloading
     if (history.replaceState) history.replaceState(null, '', location.pathname);
   }
-
-  // Click -> smooth scroll, no hash in URL
   links.forEach(a => {
-    a.addEventListener('click', (e) => {
-      e.preventDefault();
-      const id = a.getAttribute('href').slice(1);
-      scrollToId(id);
-    }, { passive: false });
+    a.addEventListener('click', (e) => { e.preventDefault(); scrollToId(a.getAttribute('href').slice(1)); }, { passive: false });
   });
-
-  // Scroll spy: update active as you scroll
   let ticking = false;
   function onScroll(){
     if (ticking) return; ticking = true;
     requestAnimationFrame(() => {
-      let current = sections[0]?.id;
-      const offset = getOffset();
-      for (const sec of sections){
-        const top = sec.getBoundingClientRect().top;
-        if (top - offset <= 0) current = sec.id;
-      }
-      if (current) setActive(current);
-      ticking = false;
+      let current = sections[0]?.id; const offset = getOffset();
+      for (const sec of sections){ if (sec.getBoundingClientRect().top - offset <= 0) current = sec.id; }
+      if (current) setActive(current); ticking = false;
     });
   }
   document.addEventListener('scroll', onScroll, { passive: true });
@@ -557,25 +548,15 @@ $title = 'Whoizme · Styles & Components';
   if (modal && openBtn){
     openBtn.addEventListener('click', ()=> modal.showModal());
     if (closeBtn) closeBtn.addEventListener('click', ()=> modal.close());
-    modal.addEventListener('click', (e)=> {
-      if (e.target === modal) modal.close();
-    });
+    modal.addEventListener('click', (e)=> { if (e.target === modal) modal.close(); });
   }
 
-  // Lightweight tooltips (title fallback)
+  // Tooltips (title fallback)
   document.addEventListener('mouseover', (e)=>{
-    const t = e.target.closest('[data-tip]');
-    if (!t) return;
-    t.setAttribute('title', t.getAttribute('data-tip'));
+    const t = e.target.closest('[data-tip]'); if (!t) return; t.setAttribute('title', t.getAttribute('data-tip'));
   }, {passive:true});
 
-  // If page loads with a hash, scroll to it then clean URL
-  if (location.hash) {
-    const id = location.hash.slice(1);
-    setTimeout(() => scrollToId(id), 0);
-  } else {
-    onScroll();
-  }
+  if (location.hash) { const id = location.hash.slice(1); setTimeout(()=> scrollToId(id), 0); } else { onScroll(); }
 })();
 </script>
 </body>

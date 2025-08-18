@@ -47,17 +47,17 @@
         <div class="brand-row">
           <a class="brand" href="/index.php">
             <img class="brand-mark" src="/assets/img/logo.svg" alt="" loading="lazy" />
-            <span class="brand-name">Whoizme</span>
+            <span class="brand-name">Whoiz.me</span>
           </a>
 
-          <p class="copy">© <?php echo date('Y'); ?> Whoizme. All rights reserved.</p>
+          <p class="copy">© <?php echo date('Y'); ?> Whoiz.me. All rights reserved.</p>
         </div>
       </section>
 
       <!-- صندوق الـ CTA على اليمين -->
       <aside class="cta-card card">
         <div class="cta-inner">
-          <h3 class="cta-title">Get started with Whoizme today</h3>
+          <h3 class="cta-title">Get started with Whoiz.me today</h3>
 
           <div class="cta-actions">
             <a class="btn btn--sm btn--primary" href="/register.php">Get started</a>

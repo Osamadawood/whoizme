@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../../includes/bootstrap.php';
 
 // بدون أي auth_guard هنا — الهيدر عام
-if (!isset($page_title)) { $page_title = 'Whoizme'; }
+if (!isset($page_title)) { $page_title = 'Whoiz.me'; }
 if (!isset($page_class)) { $page_class = ''; }
 ?>
 <!doctype html>

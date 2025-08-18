@@ -32,7 +32,7 @@ if (!function_exists('auth_redirect_if_logged_in')) {
 }
 
 // 5) Page meta
-$page_title = 'Whoizme — Short links, QR & Analytics';
+$page_title = 'Whoiz.me — Short links, QR & Analytics';
 $page_class = 'page-landing';
 
 // 6) Landing header

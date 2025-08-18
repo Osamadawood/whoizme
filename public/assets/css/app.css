@@ -572,10 +572,6 @@ html[data-theme=dark] .theme-toggle .moon {
   transform: translateY(-1px);
 }
 
-.page-auth .site-main {
-  padding-top: 32px;
-}
-
 .form-desc {
   margin: 0 0 24px;
 }
@@ -613,12 +609,45 @@ html[data-theme=dark] .theme-toggle .moon {
 }
 
 .hero-img {
+  position: relative;
   max-width: min(1200px, 92vw);
   margin-inline: auto;
-  height: 10rem;
+  height: 16rem;
   overflow: hidden;
   border-radius: var(--radius-2xl);
-  margin-block-end: clamp(3rem, 1.25vw, 4rem);
+}
+
+.auth-custom {
+  width: 56%;
+  margin: 0 auto -140px;
+  position: relative;
+  top: -210px;
+  padding: 2.8rem 3.2rem;
+  border-radius: var(--radius-2xl);
+}
+.auth-custom .auth-sub {
+  margin-bottom: 32px;
+}
+.auth-custom .log-form label {
+  margin-bottom: var(--sp-6);
+}
+
+.double-check {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.no-mb {
+  margin-bottom: 0;
+}
+
+.log-form label span {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.remember-me span {
+  display: inline-block !important;
 }
 
 .landing-footer {

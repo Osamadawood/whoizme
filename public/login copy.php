@@ -47,8 +47,9 @@ require __DIR__ . '/partials/landing_header.php';
         <?php if (function_exists('csrf_input')) csrf_input(); ?>
 
         <label class="form__label">Email</label>
-        <input name="email" type="email" class="input mb-4" required
-               value="<?= htmlspecialchars($email) ?>" placeholder="name@email.com">
+        <input name="email" type="email" class="input mb-4" required value="<?= htmlspecialchars($email) ?>" placeholder="name@email.com">
+
+        </label>
 
         <label class="form__label">Password</label>
         <input name="password" type="password" class="input mb-4" required placeholder="••••••••">

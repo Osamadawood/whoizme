@@ -117,24 +117,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Header (landing)
 $page_title = 'Create account';
-$page_class = 'page-auth';
+$page_class = 'page-auth register-page';
 require __DIR__ . '/partials/landing_header.php';
 ?>
 <main class="site-main u-pb-16">
 
   <!-- hero strip (image) -->
-  <section class="hero-strip u-mt-8">
-    <div class="container">
-      <div class="hero-card">
-        <img src="/assets/img/hero-blue.jpg" alt="" class="hero-bg" />
-      </div>
-    </div>
-  </section>
+  <div class="hero-img">
+    <img src="/assets/img/auth-hero.jpg" alt="" class="hero-bg" />
+  </div>
 
-  <div class="container u-mt-8 grid grid-2 gap-8">
+  <div class="container u-mt-8 grid gap-8">
 
     <!-- form card -->
-    <article class="auth-panel auth-card">
+    <article class="auth-panel auth-card auth-custom">
 
       <h1 class="auth-title">Create your account</h1>
       <p class="auth-sub form-desc">
@@ -190,38 +186,9 @@ require __DIR__ . '/partials/landing_header.php';
 
         <button class="btn btn--primary u-mt-4" type="submit">Create account</button>
 
-        <div class="row u-mt-4">
-          <a class="auth-muted" href="/login.php">Have an account? Sign in</a>
-        </div>
       </form>
     </article>
 
-    <!-- right column -->
-    <aside class="auth-side login-side">
-      <span class="eyebrow sg-muted">WHOIZ.ME</span>
-      <h2 class="display u-mt-2">All your links, QR codes & insights — together in one dashboard</h2>
-      <p class="sg-muted u-mt-6">Create short links, generate QR codes, and track performance with clean, privacy-first analytics.</p>
-
-      <div class="cta-list u-mt-8">
-        <div class="cta-row">
-          <div class="cta-icon">✉️</div>
-          <div class="cta-body">
-            <strong>Contact support</strong>
-            <div class="sg-muted">We’re here to help you</div>
-          </div>
-          <a class="btn btn--ghost" href="mailto:support@whoiz.me">Email us</a>
-        </div>
-
-        <div class="cta-row">
-          <div class="cta-icon">⭐️</div>
-          <div class="cta-body">
-            <strong>New to Whoizme?</strong>
-            <div class="sg-muted">Create your free account</div>
-          </div>
-          <a class="btn btn--primary" href="/register.php">Get started</a>
-        </div>
-      </div>
-    </aside>
   </div>
 </main>
 <?php require __DIR__ . '/partials/landing_footer.php'; ?>
