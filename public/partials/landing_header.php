@@ -1,25 +1,9 @@
 <?php
-// Bootstrap (sessions + config + helpers)
 require_once __DIR__ . '/../../includes/bootstrap.php';
 
-/**
- * ضيف بسيط: لو المستخدم مُسجَّل بالفعل وفتح صفحات الضيوف (login/register/landing)
- * حوِّله للداشبورد بدل ما يلبس في صفحات الضيوف.
- * لا تستخدم auth_guard هنا حتى لا نصنع Loop!
- */
-if (!function_exists('auth_redirect_if_logged_in')) {
-  function auth_redirect_if_logged_in(): void {
-    if (!empty($_SESSION['user_id']) && (int)$_SESSION['user_id'] > 0) {
-      header('Location: /dashboard.php');
-      exit;
-    }
-  }
-}
-auth_redirect_if_logged_in();
-
-// Page meta defaults
-$page_title = $page_title ?? 'Whoizme';
-$page_class = $page_class ?? '';
+// بدون أي auth_guard هنا — الهيدر عام
+if (!isset($page_title)) { $page_title = 'Whoizme'; }
+if (!isset($page_class)) { $page_class = ''; }
 ?>
 <!doctype html>
 <html lang="en" dir="ltr" data-theme="dark">

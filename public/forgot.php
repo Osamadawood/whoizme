@@ -1,9 +1,10 @@
-<?php require_once __DIR__ . "/../includes/guest_guard.php"; guest_only($_GET["return"] ?? null); ?>
+
 <?php require_once __DIR__ . '/_bootstrap.php'; ?>
 <?php
 $config = require __DIR__ . '/../app/config.php';
 require_once __DIR__ . '/../app/database.php';
 require_once __DIR__ . '/../includes/mailer.php';
+require dirname(__DIR__).'/includes/guest_guard.php';
 session_start();
 $db = new Database($config['db']);
 

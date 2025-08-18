@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 /**
  * Register (public)
- * - صفحة عامة (لازم PAGE_PUBLIC) عشان الهيدر ما يعملش redirect.
- * - POST: فالييديشن + hash + INSERT آمن.
- * - UI مطابق لصفحة اللوجين/الصورة (حقل تأكيد كلمة السر + الموافقة على الشروط).
+ * - Public page (PAGE_PUBLIC) so auth guard doesn’t redirect.
+ * - POST: validate → hash → safe INSERT.
+ * - UI matches login look; keep classes/structure.
  */
 
 if (!defined('PAGE_PUBLIC')) {
@@ -14,7 +14,7 @@ if (!defined('PAGE_PUBLIC')) {
 
 require dirname(__DIR__) . '/includes/bootstrap.php';
 
-// لو مسجّل دخول، روّح على الداشبورد
+// If already logged-in, go to dashboard
 if (function_exists('current_user_id') && (int) current_user_id() > 0) {
     header('Location: /dashboard.php', true, 302);
     exit;
@@ -23,7 +23,7 @@ if (function_exists('current_user_id') && (int) current_user_id() > 0) {
 /** Helpers */
 function f(string $k): string { return isset($_POST[$k]) ? trim((string)$_POST[$k]) : ''; }
 
-/** نكتشف عمود الباسوورد المتاح */
+/** Discover available password column */
 function resolve_password_column(PDO $pdo): ?string {
     $has = static function(string $col) use ($pdo): bool {
         $s = $pdo->prepare("SHOW COLUMNS FROM `users` LIKE ?");
@@ -40,14 +40,25 @@ $APP_DEBUG = defined('APP_DEBUG') ? (bool)APP_DEBUG : (getenv('APP_DEBUG') === '
 $errors = [];
 $flash  = null;
 
+// CSRF token (simple per-page token)
+if (empty($_SESSION['csrf_reg'])) {
+    $_SESSION['csrf_reg'] = bin2hex(random_bytes(16));
+}
+$csrf_token = (string) $_SESSION['csrf_reg'];
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Verify CSRF
+    if (!isset($_POST['csrf']) || !hash_equals($csrf_token, (string)$_POST['csrf'])) {
+        $errors['general'] = 'Your session expired. Please try again.';
+    }
+
     $name      = f('name');
     $email     = mb_strtolower(f('email'));
     $password  = f('password');
     $password2 = f('password_confirm');
     $agree     = isset($_POST['agree']) ? '1' : '';
 
-    // Validation (بدون لمس الستايل)
+    // Validation (no style changes)
     if ($name === '' || mb_strlen($name) < 2)        $errors['name'] = 'Please enter your full name.';
     if ($name !== '' && mb_strlen($name) > 100)      $errors['name'] = 'Name is too long.';
     if (!filter_var($email, FILTER_VALIDATE_EMAIL))  $errors['email'] = 'Please enter a valid email address.';
@@ -63,22 +74,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!$errors) {
         try {
-            // تأكد الإيميل مش موجود
+            // Ensure unique email
             $q = $pdo->prepare('SELECT id FROM users WHERE email = ? LIMIT 1');
             $q->execute([$email]);
             if ($q->fetch(PDO::FETCH_ASSOC)) {
                 $errors['email'] = 'This email is already registered.';
             } else {
+                $pdo->beginTransaction();
+
                 $hash = password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
                 $sql  = sprintf("INSERT INTO users (name, email, `%s`, is_active, created_at) VALUES (?, ?, ?, 1, NOW())", $pwdCol);
                 $ins  = $pdo->prepare($sql);
                 $ins->execute([$name, $email, $hash]);
 
-                // نجاح: رجّع على اللوجين برسالة
+                $pdo->commit();
+
+                // Success → redirect to login with prefilled email
+                unset($_SESSION['csrf_reg']);
                 header('Location: /login.php?registered=1&email=' . urlencode($email), true, 302);
                 exit;
             }
         } catch (PDOException $e) {
+            if ($pdo->inTransaction()) { $pdo->rollBack(); }
             $code = $e->getCode();
             $msg  = $e->getMessage();
 
@@ -91,20 +108,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             if ($APP_DEBUG) error_log('[register][PDO] '.$msg);
         } catch (Throwable $e) {
+            if ($pdo->inTransaction()) { $pdo->rollBack(); }
             $errors['general'] = 'We couldn’t create your account right now. Please try again.';
             if ($APP_DEBUG) error_log('[register][THROWABLE] '.$e->getMessage());
         }
     }
 }
 
-// إعدادات الهيدر (landing header)
+// Header (landing)
 $page_title = 'Create account';
 $page_class = 'page-auth';
 require __DIR__ . '/partials/landing_header.php';
 ?>
 <main class="site-main u-pb-16">
 
-  <!-- هيرو بسيط (حسب الصورة) -->
+  <!-- hero strip (image) -->
   <section class="hero-strip u-mt-8">
     <div class="container">
       <div class="hero-card">
@@ -115,7 +133,7 @@ require __DIR__ . '/partials/landing_header.php';
 
   <div class="container u-mt-8 grid grid-2 gap-8">
 
-    <!-- الكارد: فورم التسجيل -->
+    <!-- form card -->
     <article class="auth-panel auth-card">
 
       <h1 class="auth-title">Create your account</h1>
@@ -130,6 +148,8 @@ require __DIR__ . '/partials/landing_header.php';
       <?php endif; ?>
 
       <form class="stack log-form" action="/register.php" method="post" novalidate>
+        <input type="hidden" name="csrf" value="<?= htmlspecialchars($csrf_token) ?>" />
+
         <label class="field">
           <span class="label">Full name</span>
           <input class="input<?= isset($errors['name']) ? ' is-invalid' : '' ?>"
@@ -176,7 +196,7 @@ require __DIR__ . '/partials/landing_header.php';
       </form>
     </article>
 
-    <!-- العمود اليمين (التسويق/الفوائد) -->
+    <!-- right column -->
     <aside class="auth-side login-side">
       <span class="eyebrow sg-muted">WHOIZ.ME</span>
       <h2 class="display u-mt-2">All your links, QR codes & insights — together in one dashboard</h2>

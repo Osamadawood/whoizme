@@ -1,41 +1,51 @@
 <?php
-declare(strict_types=1);
+if (session_status() !== PHP_SESSION_ACTIVE) { session_start(); }
 
-/**
- * Auth utilities – safe to include alongside bootstrap without redeclare errors.
- * Relies on includes/bootstrap.php for session setup and constants.
- */
-
-// Provide a single source of truth for current user id.
-// If bootstrap already declared current_user_id(), we do NOT redeclare it.
-if (!function_exists('current_user_id')) {
-    function current_user_id(): int {
-        // Accept both new and legacy session keys
-        return (int)($_SESSION['user_id'] ?? $_SESSION['uid'] ?? 0);
-    }
+// هل اليوزر داخل؟
+function auth_is_logged_in(): bool {
+  return !empty($_SESSION['user_id']) && (int)$_SESSION['user_id'] > 0;
 }
 
-if (!function_exists('is_logged_in')) {
-    function is_logged_in(): bool {
-        return current_user_id() > 0;
+// تسجيل الدخول
+function auth_login(int $userId, bool $remember = false): void {
+  if (session_status() !== PHP_SESSION_ACTIVE) { session_start(); }
+  session_regenerate_id(true);
+  $_SESSION['user_id'] = $userId;
+
+  if ($remember) {
+    $token = bin2hex(random_bytes(32));
+    setcookie('remember', $token, [
+      'expires'  => time() + 60*60*24*30,
+      'path'     => '/',
+      'secure'   => isset($_SERVER['HTTPS']),
+      'httponly' => true,
+      'samesite' => 'Lax',
+    ]);
+    // احفظ التوكن لو عندك عمود token
+    if (isset($GLOBALS['pdo'])) {
+      $q = $GLOBALS['pdo']->prepare('UPDATE users SET token = :t WHERE id = :id');
+      $q->execute([':t' => $token, ':id' => $userId]);
     }
+  }
 }
 
-if (!function_exists('require_login')) {
-    function require_login(): void {
-        if (!is_logged_in()) {
-            $current = $_SERVER['REQUEST_URI'] ?? '/';
-            header('Location: /login.php?return=' . rawurlencode($current), true, 302);
-            exit;
-        }
-    }
+// تسجيل خروج
+function auth_logout(): void {
+  if (session_status() !== PHP_SESSION_ACTIVE) { session_start(); }
+  $_SESSION = [];
+  if (ini_get('session.use_cookies')) {
+    $params = session_get_cookie_params();
+    setcookie(session_name(), '', time() - 42000, $params['path'], $params['domain'], $params['secure'], $params['httponly']);
+  }
+  session_destroy();
+  setcookie('remember', '', time()-3600, '/');
 }
 
-if (!function_exists('redirect_if_logged_in')) {
-    function redirect_if_logged_in(string $to = '/dashboard.php'): void {
-        if (is_logged_in()) {
-            header('Location: ' . $to, true, 302);
-            exit;
-        }
-    }
+// جارد للصفحات المحمية (استخدمه في dashboard.php)
+function auth_require_login(): void {
+  if (!auth_is_logged_in()) {
+    $return = rawurlencode($_SERVER['REQUEST_URI'] ?? '/dashboard.php');
+    header('Location: /login.php?return=' . $return);
+    exit;
+  }
 }
