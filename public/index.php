@@ -1,3 +1,4 @@
+
 <?php
 require_once __DIR__ . '/_bootstrap.php';
 
@@ -14,6 +15,7 @@ if ($IS_LOGGED_IN && empty($_GET['preview'])) {
     exit;
 }
 ?>
+<?php define('PUBLIC_PAGE', true); ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>

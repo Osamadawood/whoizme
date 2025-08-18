@@ -1,3 +1,4 @@
+<?php define('PUBLIC_PAGE', true); ?>
 <?php require_once __DIR__ . '/_bootstrap.php'; ?>
 <?php
 $config = require __DIR__ . '/../app/config.php';

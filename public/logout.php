@@ -1,3 +1,4 @@
+<?php define('PUBLIC_PAGE', true); ?>
 <?php
 declare(strict_types=1);
 if (!defined('SKIP_AUTH_GUARD')) define('SKIP_AUTH_GUARD', true);

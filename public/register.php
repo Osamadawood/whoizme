@@ -1,3 +1,4 @@
+<?php define('PUBLIC_PAGE', true); ?>
 <?php
 // public/register.php
 $AUTH_PAGE = true;
