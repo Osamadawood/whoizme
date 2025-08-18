@@ -599,10 +599,6 @@ html[data-theme=dark] .theme-toggle .moon {
     height: 40px;
   }
 }
-.log-card {
-  align-items: center;
-}
-
 .login-side {
   width: 100%;
 }

@@ -3,6 +3,9 @@
 require_once __DIR__ . '/../../includes/bootstrap.php';
 require __DIR__.'/../app/includes/layout.php';
 
+require __DIR__ . '/../includes/guest_guard.php';
+guest_only($_GET['return'] ?? null);
+
 $pdo   = pdo_conn($config);
 $now   = new DateTime('now', new DateTimeZone('UTC'));
 $token = trim($_GET['token'] ?? '');
@@ -94,6 +97,8 @@ render_header($token===''?'Reset password':'Set a new password'); ?>
 
   <?php if($token===''): ?>
     <form method="post" action="/reset.php">
+      <input type="hidden" name="csrf" value="<?= htmlspecialchars(csrf_token(), ENT_QUOTES) ?>">
+      <input type="hidden" name="token" value="<?= htmlspecialchars($_GET['token'] ?? '', ENT_QUOTES) ?>">
       <?php csrf_field(); ?>
       <label>Email</label>
       <input type="email" name="email" value="<?=h($email)?>" placeholder="you@example.com" required>

@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . "/../includes/guest_guard.php"; guest_only($_GET["return"] ?? null); ?>
 <?php require_once __DIR__ . '/_bootstrap.php'; ?>
 <?php
 $config = require __DIR__ . '/../app/config.php';
@@ -38,6 +39,7 @@ $flash = $_SESSION['flash'] ?? ''; unset($_SESSION['flash']);
   <h2>Forgot password</h2>
   <?php if($flash): ?><div style="background:#eef8ff;border:1px solid #cfe8ff;padding:10px;border-radius:10px"><?= htmlspecialchars($flash) ?></div><?php endif; ?>
   <form method="post">
+    <input type="hidden" name="csrf" value="<?= htmlspecialchars(csrf_token(), ENT_QUOTES) ?>">
     <input type="hidden" name="csrf" value="<?= $csrf ?>">
     <label>Email<br><input type="email" name="email" required style="width:100%"></label><br><br>
     <button>Send reset link</button>
