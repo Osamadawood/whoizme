@@ -1,0 +1,29 @@
+.app-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.6rem;
+
+    .breadcrumb {
+        display: inline-flex;
+        align-items: center;
+        gap: .6rem;
+        color: var(--text-muted);
+
+        &__item.is-current {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        &__sep {
+            opacity: .6;
+        }
+    }
+
+    .avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--border);
+    }
+}

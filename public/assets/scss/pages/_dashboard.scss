@@ -4,7 +4,8 @@
 */
 
 .dashboard {
-  padding-block: clamp(24px, 4vw, 48px);
+  padding-block: clamp(2.4rem, 4vw, 4.8rem);
+
 
   .container {
     max-width: 1200px;
@@ -14,12 +15,36 @@
 
   /* Grid: sidebar + main */
   .dash-grid {
+
     display: grid;
-    gap: clamp(12px, 2vw, 16px);
+    gap: 1.6rem;
+
 
     @media (min-width: 980px) {
       grid-template-columns: 260px 1fr;
     }
+  }
+
+  .maincol {
+    min-width: 0;
+  }
+
+  .list--plain {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .text-success {
+    color: var(--success);
+  }
+
+  .text-danger {
+    color: var(--danger);
+  }
+
+  .w-100 {
+    width: 100%;
   }
 
   /* Panels (cards) */
@@ -124,13 +149,17 @@
 
   /* Chart placeholder */
   .chart {
-    height: 230px;
-    background:
-      linear-gradient(180deg, color-mix(in oklab, var(--text) 10%, transparent), transparent 70%),
-      radial-gradient(1200px 220px at 0% 120%, color-mix(in oklab, var(--primary) 22%, transparent), transparent 60%),
-      radial-gradient(1200px 220px at 100% 0%, color-mix(in oklab, var(--primary) 18%, transparent), transparent 60%);
+    height: 23rem;
+    // background:
+    //   linear-gradient(180deg, color-mix(in oklab, var(--text) 10%, transparent), transparent 70%),
+    //   radial-gradient(1200px 220px at 0% 120%, color-mix(in oklab, var(--primary) 22%, transparent), transparent 60%),
+    //   radial-gradient(1200px 220px at 100% 0%, color-mix(in oklab, var(--primary) 18%, transparent), transparent 60%);
+    background: var(--neutral-100);
+
     border-radius: 10px;
-    border: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
+    border: 1px solid var(--border);
+
+
   }
 
   /* Table */

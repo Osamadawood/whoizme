@@ -29,6 +29,9 @@
 @use "components/breadcrumbs";
 @use "components/pagination";
 @use "components/prose";
+@use 'components/sidebar';
+@use 'components/topbar';
+@use 'components/table';
 @use "core/fonts";
 @use "components/auth";
 @use 'landing/header';

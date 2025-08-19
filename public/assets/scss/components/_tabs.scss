@@ -1,15 +1,51 @@
 @use "../core/brand" as brand;
 
 @mixin apply() {
-  .tabs { display:flex; gap:.5rem; border-bottom:1px solid color-mix(in oklab, var(--surface), #fff 12%); }
+  .tabs {
+    display: flex;
+    gap: .5rem;
+    border-bottom: 1px solid color-mix(in oklab, var(--surface), #fff 12%);
+  }
+
   .tab {
-    padding:.6rem .9rem; border-radius:.5rem .5rem 0 0;
+    padding: .6rem .9rem;
+    border-radius: .5rem .5rem 0 0;
     color: var(--muted, #94a3b8);
   }
+
   .tab.is-active {
     color: var(--text, #e5e7eb);
     background: color-mix(in oklab, var(--surface, #0f172a), #fff 6%);
     border: 1px solid color-mix(in oklab, var(--surface, #0f172a), #fff 14%);
     border-bottom-color: transparent;
+  }
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 .8rem;
+
+  th {
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    text-align: left;
+    padding: 1rem 1.2rem;
+  }
+
+  td {
+    padding: 1.2rem;
+    background: var(--surface);
+    color: var(--text);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+
+    &:first-child {
+      border-radius: 10px 0 0 10px;
+    }
+
+    &:last-child {
+      border-radius: 0 10px 10px 0;
+    }
   }
 }

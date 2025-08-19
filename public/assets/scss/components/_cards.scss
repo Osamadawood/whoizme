@@ -1,6 +1,74 @@
 @use "../core/mixins" as *;
 
 @mixin apply() {
-  .card { @include card; padding: 1rem; }
-  .card--glass { background: color-mix(in oklab, var(--surface), white 3%); backdrop-filter: blur(6px); }
+  .card {
+    @include card;
+    padding: 1rem;
+  }
+
+  .card--glass {
+    background: color-mix(in oklab, var(--surface), white 3%);
+    backdrop-filter: blur(6px);
+  }
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-md);
+
+  &__body {
+    padding: 1.6rem;
+  }
+
+  &__title {
+    color: var(--text-muted);
+    font-size: 1.4rem;
+    margin-bottom: .8rem;
+  }
+}
+
+.kpis {
+  display: grid;
+  gap: 1.4rem;
+
+  @media (min-width: 740px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.kpi__value {
+  font-weight: 700;
+  font-size: clamp(2.2rem, 3.6vw, 2.8rem);
+  letter-spacing: -.02em;
+  color: var(--text);
+}
+
+.kpi__delta {
+  font-size: 1.2rem;
+}
+
+.twoup {
+  display: grid;
+  gap: 1.6rem;
+
+  @media (min-width: 980px) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.badge {
+  font-size: 1.2rem;
+  padding: .25rem .6rem;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+}
+
+.badge--up {
+  color: var(--success);
+}
+
+.badge--down {
+  color: var(--danger);
 }

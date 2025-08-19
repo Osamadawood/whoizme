@@ -93,6 +93,67 @@
   user-select: none;
 }
 
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-md);
+}
+.card__body {
+  padding: 1.6rem;
+}
+.card__title {
+  color: var(--text-muted);
+  font-size: 1.4rem;
+  margin-bottom: 0.8rem;
+}
+
+.kpis {
+  display: grid;
+  gap: 1.4rem;
+}
+@media (min-width: 740px) {
+  .kpis {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.kpi__value {
+  font-weight: 700;
+  font-size: clamp(2.2rem, 3.6vw, 2.8rem);
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.kpi__delta {
+  font-size: 1.2rem;
+}
+
+.twoup {
+  display: grid;
+  gap: 1.6rem;
+}
+@media (min-width: 980px) {
+  .twoup {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.badge {
+  font-size: 1.2rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+}
+
+.badge--up {
+  color: var(--success);
+}
+
+.badge--down {
+  color: var(--danger);
+}
+
 /* Entry point: compile to /public/assets/css/app(.min).css */
 /* === Core @use must come first (no rules before them) === */
 /* Entry point: compile to /public/assets/css/app(.min).css */
@@ -102,6 +163,31 @@
 /* === Core @use must come first (no rules before them) === */
 /* Entry point: compile to /public/assets/css/app(.min).css */
 /* === Core @use must come first (no rules before them) === */
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 0.8rem;
+}
+.table th {
+  font-size: 1.2rem;
+  color: var(--text-muted);
+  text-align: left;
+  padding: 1rem 1.2rem;
+}
+.table td {
+  padding: 1.2rem;
+  background: var(--surface);
+  color: var(--text);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.table td:first-child {
+  border-radius: 10px 0 0 10px;
+}
+.table td:last-child {
+  border-radius: 0 10px 10px 0;
+}
+
 /* Entry point: compile to /public/assets/css/app(.min).css */
 /* === Core @use must come first (no rules before them) === */
 /* components/_icons.scss
@@ -116,6 +202,99 @@
 /* components/_breadcrumbs.scss */
 /* components/_pagination.scss */
 /* components/_prose.scss */
+.side-nav {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+}
+.side-nav__body {
+  padding: 1.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+.side-nav__title {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+.side-nav__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+.side-nav__link {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1rem 1.2rem;
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--text-muted);
+  border: 1px solid color-mix(in oklab, var(--text) 10%, transparent);
+}
+.side-nav__link:hover {
+  background: color-mix(in oklab, var(--surface) 80%, var(--text) 4%);
+  color: var(--text);
+}
+.side-nav__link.is-active {
+  background: color-mix(in oklab, var(--surface) 85%, var(--primary) 10%);
+  border-color: color-mix(in oklab, var(--primary) 30%, transparent);
+  color: var(--text);
+}
+
+.app-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.6rem;
+}
+.app-topbar .breadcrumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--text-muted);
+}
+.app-topbar .breadcrumb__item.is-current {
+  color: var(--text);
+  font-weight: 600;
+}
+.app-topbar .breadcrumb__sep {
+  opacity: 0.6;
+}
+.app-topbar .avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--border);
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 0.8rem;
+}
+.table th {
+  font-size: 1.2rem;
+  color: var(--text-muted);
+  text-align: left;
+  padding: 1rem 1.2rem;
+}
+.table td {
+  padding: 1.2rem;
+  background: var(--surface);
+  color: var(--text);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.table td:first-child {
+  border-radius: 10px 0 0 10px;
+}
+.table td:last-child {
+  border-radius: 0 10px 10px 0;
+}
+
 /* Whoizme — Fonts (Objectivity) */
 @font-face {
   font-family: "Objectivity";
@@ -826,7 +1005,7 @@ html[data-theme=dark] .theme-toggle .moon {
    - بدون inline styles؛ أي ستايل permanent يبقى هنا
 */
 .dashboard {
-  padding-block: clamp(24px, 4vw, 48px);
+  padding-block: clamp(2.4rem, 4vw, 4.8rem);
   /* Grid: sidebar + main */
   /* Panels (cards) */
   /* Sidebar */
@@ -844,12 +1023,29 @@ html[data-theme=dark] .theme-toggle .moon {
 }
 .dashboard .dash-grid {
   display: grid;
-  gap: clamp(12px, 2vw, 16px);
+  gap: 1.6rem;
 }
 @media (min-width: 980px) {
   .dashboard .dash-grid {
     grid-template-columns: 260px 1fr;
   }
+}
+.dashboard .maincol {
+  min-width: 0;
+}
+.dashboard .list--plain {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.dashboard .text-success {
+  color: var(--success);
+}
+.dashboard .text-danger {
+  color: var(--danger);
+}
+.dashboard .w-100 {
+  width: 100%;
 }
 .dashboard .panel {
   background: var(--surface);
@@ -934,10 +1130,10 @@ html[data-theme=dark] .theme-toggle .moon {
   }
 }
 .dashboard .chart {
-  height: 230px;
-  background: linear-gradient(180deg, color-mix(in oklab, var(--text) 10%, transparent), transparent 70%), radial-gradient(1200px 220px at 0% 120%, color-mix(in oklab, var(--primary) 22%, transparent), transparent 60%), radial-gradient(1200px 220px at 100% 0%, color-mix(in oklab, var(--primary) 18%, transparent), transparent 60%);
+  height: 23rem;
+  background: var(--neutral-100);
   border-radius: 10px;
-  border: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
+  border: 1px solid var(--border);
 }
 .dashboard .table {
   width: 100%;
