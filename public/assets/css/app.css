@@ -1,6 +1,7 @@
 @charset "UTF-8";
 /* Entry point: compile to /public/assets/css/app(.min).css */
 /* === Core @use must come first (no rules before them) === */
+@import url("https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap");
 /* whoizme design system — color tokens + emit (colors only)
    Author: Osama Dawood
 */
@@ -13,13 +14,14 @@
 @layer base {
   /* Base tokens fallbacks — always defined regardless of load order */
   :root[data-theme=dark] {
-    --page-bg: rgba(5,8,17,1.0);
+    --page-bg: rgba(5, 8, 17, 1.0);
     --surface: #13151a;
     --border: #22252d;
     --text: #e7e9ee;
     --muted: #a6adbb;
-    --brand: #6c47ff; /* primary */
-    --radius-full:200px;
+    --brand: #6c47ff;
+    /* primary */
+    --radius-full: 200px;
   }
   :root[data-theme=light] {
     --page-bg: #ffffff;
@@ -28,10 +30,11 @@
     --text: #111318;
     --muted: #6b7280;
     --brand: #5b7cfa;
-    --radius-full:200px;
+    --radius-full: 200px;
   }
   /* Guarantee page colors even if a page forgets to set them */
-  html, body {
+  html,
+  body {
     background: var(--page-bg);
     color: var(--text);
   }
@@ -137,7 +140,6 @@
   color: var(--text);
   min-height: 100dvh;
   display: block;
-  padding-block: clamp(2rem, 1.25vw, 4rem);
 }
 
 /* Optional subtle dot grid background (no images) */
@@ -348,7 +350,8 @@
   display: none;
 }
 
-.page-auth main, .page-auth .site-main {
+.page-auth main,
+.page-auth .site-main {
   padding-top: 0 !important;
 }
 
@@ -479,7 +482,7 @@ html[data-theme=dark] .theme-toggle .moon {
   display: flex;
   justify-content: center;
   padding-inline: 2rem;
-  margin-block-end: clamp(3rem, 1.25vw, 4rem);
+  padding-block: clamp(2rem, 1.25vw, 4rem) clamp(3rem, 1.25vw, 4rem);
 }
 
 .landing-header__bar {
@@ -745,7 +748,8 @@ html[data-theme=dark] .theme-toggle .moon {
 }
 .landing-footer .cta-card .cta-inner {
   position: relative;
-  isolation: isolate; /* يخلي الـ art تحت المحتوى */
+  isolation: isolate;
+  /* يخلي الـ art تحت المحتوى */
 }
 .landing-footer .cta-card .eyebrow {
   color: var(--muted);
@@ -1018,8 +1022,8 @@ html[data-theme=dark] .theme-toggle .moon {
 @layer base {
   :root {
     --font-sans: "Montserrat", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
-                 Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji",
-                 "Segoe UI Emoji","Segoe UI Symbol";
+      Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji",
+      "Segoe UI Emoji", "Segoe UI Symbol";
     --radius-xs: 4px;
     --radius-sm: 6px;
     --radius-md: 8px;
@@ -1088,7 +1092,9 @@ html[data-theme=dark] .theme-toggle .moon {
 }
 
 /* 3) base layer */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
@@ -1100,7 +1106,8 @@ html:focus-within {
   scroll-behavior: smooth;
 }
 
-html, body {
+html,
+body {
   height: 100%;
 }
 
@@ -1110,25 +1117,38 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-img, picture, video, canvas, svg {
+img,
+picture,
+video,
+canvas,
+svg {
   display: block;
   max-inline-size: 100%;
 }
 
-input, button, textarea, select {
+input,
+button,
+textarea,
+select {
   font: inherit;
 }
 
-p, h1, h2, h3, h4, h5, h6 {
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   overflow-wrap: anywhere;
 }
 
 :root {
-  --ff-sans: "Objectivity", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-            "Noto Sans Arabic", "IBM Plex Sans Arabic", Arial, sans-serif;
+  --ff-sans: "Onest", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji", "Noto Sans Arabic", "IBM Plex Sans Arabic", "Cairo", sans-serif;
   --fs-base: 16px;
   --fw-regular: 400;
   --fw-medium: 500;
+  --fw-semibold: 600;
   --fw-bold: 700;
   --fs-h1: clamp(2.25rem, 1.6vw + 1.5rem, 2.75rem);
   --fs-h2: clamp(1.50rem, 0.9vw + 1rem, 2.00rem);
@@ -1138,7 +1158,8 @@ p, h1, h2, h3, h4, h5, h6 {
   font-size: 100%;
 }
 
-html, body {
+html,
+body {
   font-family: var(--ff-sans);
 }
 

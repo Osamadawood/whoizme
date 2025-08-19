@@ -1,12 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap');
+
 @mixin apply() {
   :root {
-    --ff-sans: "Objectivity", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-      "Noto Sans Arabic", "IBM Plex Sans Arabic", Arial, sans-serif;
+    --ff-sans: "Onest", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji", "Noto Sans Arabic", "IBM Plex Sans Arabic", "Cairo", sans-serif;
 
     --fs-base: 16px;
 
     --fw-regular: 400;
     --fw-medium: 500;
+    --fw-semibold: 600;
     --fw-bold: 700;
 
     --fs-h1: clamp(2.25rem, 1.6vw + 1.5rem, 2.75rem);

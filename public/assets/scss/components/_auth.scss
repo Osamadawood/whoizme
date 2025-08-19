@@ -7,7 +7,7 @@
   color: var(--text);
   min-height: 100dvh;
   display: block;
-  padding-block: clamp(2rem,1.25vw,4rem);
+  // padding-block: clamp(2rem,1.25vw,4rem);
 }
 
 /* Optional subtle dot grid background (no images) */
@@ -35,7 +35,8 @@
 
 /* ===== Left: form card ===== */
 .auth-panel {
-  @include m.card; /* pulls surface/border/radius/shadow defaults */
+  @include m.card;
+  /* pulls surface/border/radius/shadow defaults */
   /* Match contact form card using tokens only */
   background: color-mix(in oklab, var(--surface), #fff 3%);
   border: 1px solid var(--border);
@@ -51,6 +52,7 @@
   font-size: clamp(1.5rem, 3.2vw, 2rem);
   line-height: 1.2;
 }
+
 .auth-sub {
   margin: 0 0 var(--sp-4);
   color: var(--muted);
@@ -58,7 +60,10 @@
 }
 
 /* Inputs — rounded, clear outline, consistent heights */
-.auth-panel .field .label { display: block; margin-bottom: .5rem; }
+.auth-panel .field .label {
+  display: block;
+  margin-bottom: .5rem;
+}
 
 .auth-panel .input {
   width: 100%;
@@ -76,32 +81,68 @@
   font-weight: 400;
   transition: box-shadow .3s, color .3s, border-color .3s;
 }
+
 .auth-panel .input:focus {
   box-shadow:
     inset 0 0 0 1px color-mix(in oklab, var(--brand), #fff 12%),
     0 0 0 3px color-mix(in oklab, var(--brand), transparent 85%);
   outline: none;
 }
-.auth-panel .input::placeholder { color: color-mix(in oklab, var(--muted), #fff 10%); }
-.auth-panel .input:disabled { opacity: .6; cursor: not-allowed; }
+
+.auth-panel .input::placeholder {
+  color: color-mix(in oklab, var(--muted), #fff 10%);
+}
+
+.auth-panel .input:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
 
 /* Row helpers */
-.row { display: flex; gap: var(--sp-3); align-items: center; }
-.row--between { justify-content: space-between; }
-.row--align { align-items: center; }
+.row {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: center;
+}
+
+.row--between {
+  justify-content: space-between;
+}
+
+.row--align {
+  align-items: center;
+}
 
 /* Buttons — pill and full-width like reference */
-.auth-panel .btn { height: 48px; border-radius: var(--radius-full); }
+.auth-panel .btn {
+  height: 48px;
+  border-radius: var(--radius-full);
+}
+
 .auth-panel .btn--primary,
-.auth-panel .btn--secondary { width: 100%; }
+.auth-panel .btn--secondary {
+  width: 100%;
+}
 
 /* Small ghost on the right (Forgot password?) */
-.auth-panel .btn--ghost { height: 44px; border-radius: var(--radius-full); padding-inline: var(--sp-4); }
+.auth-panel .btn--ghost {
+  height: 44px;
+  border-radius: var(--radius-full);
+  padding-inline: var(--sp-4);
+}
 
 /* Stack spacing */
-.auth-panel .stack > * + * { margin-top: var(--sp-4); }
-.auth-panel .row + .row { margin-top: var(--sp-3); }
-.auth-panel .field + .field { margin-top: var(--sp-3); }
+.auth-panel .stack>*+* {
+  margin-top: var(--sp-4);
+}
+
+.auth-panel .row+.row {
+  margin-top: var(--sp-3);
+}
+
+.auth-panel .field+.field {
+  margin-top: var(--sp-3);
+}
 
 /* ===== Right: content side ===== */
 .auth-side .eyebrow {
@@ -112,6 +153,7 @@
   font-size: .875rem;
   margin-bottom: var(--sp-2);
 }
+
 .auth-side .big-title {
   margin: 0 0 var(--sp-3);
   font-size: clamp(2rem, 5vw, 3.25rem);
@@ -119,6 +161,7 @@
   letter-spacing: -0.02em;
   font-weight: var(--fw-bold, 700);
 }
+
 .auth-side .lead {
   margin: 0 0 var(--sp-5);
   color: var(--muted);
@@ -130,6 +173,7 @@
   display: grid;
   gap: var(--sp-3);
 }
+
 .sidecard {
   display: flex;
   align-items: center;
@@ -140,55 +184,132 @@
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-sm);
 }
+
 .sidecard .ico {
-  inline-size: 44px; block-size: 44px;
+  inline-size: 44px;
+  block-size: 44px;
   border-radius: var(--radius-full);
-  display: grid; place-items: center;
+  display: grid;
+  place-items: center;
   background: color-mix(in oklab, var(--brand), #000 10%);
   color: #fff;
   font-size: 18px;
   flex: 0 0 44px;
 }
-.sidecard .meta { line-height: 1.2; }
-.sidecard .meta .title { font-weight: var(--fw-semibold, 600); }
-.sidecard .meta .muted { color: var(--muted); margin-top: .25rem; }
-.sidecard .action { margin-inline-start: auto; }
+
+.sidecard .meta {
+  line-height: 1.2;
+}
+
+.sidecard .meta .title {
+  font-weight: var(--fw-semibold, 600);
+}
+
+.sidecard .meta .muted {
+  color: var(--muted);
+  margin-top: .25rem;
+}
+
+.sidecard .action {
+  margin-inline-start: auto;
+}
 
 /* ===== Responsive ===== */
 @media (max-width: 900px) {
-  .auth-grid { grid-template-columns: 1fr; }
-  .auth-side { order: -1; }
+  .auth-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-side {
+    order: -1;
+  }
 }
 
 /* ===== Hide global site header on auth pages (we keep footer) ===== */
-.page-auth .site-header { display: none; }
-.page-auth main, .page-auth .site-main { padding-top: 0 !important; }
+.page-auth .site-header {
+  display: none;
+}
 
-.rememberMe{margin-bottom: 0;}
-.remember{
+.page-auth main,
+.page-auth .site-main {
+  padding-top: 0 !important;
+}
+
+.rememberMe {
+  margin-bottom: 0;
+}
+
+.remember {
   margin-bottom: 0 !important;
 }
+
 /* === Theme toggle (animated pill) === */
-.theme-toggle{ 
+.theme-toggle {
   --ring: color-mix(in oklab, var(--brand), transparent 85%);
-  display:inline-flex; align-items:center; gap:.55rem;
-  padding:.5rem .9rem; border-radius:var(--radius-full);
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+  padding: .5rem .9rem;
+  border-radius: var(--radius-full);
   background: color-mix(in oklab, var(--surface), #fff 1%);
-  border:1px solid var(--border);
+  border: 1px solid var(--border);
   color: var(--text);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.03);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .03);
   transition: background .25s, border-color .25s, box-shadow .25s, transform .12s ease-in-out;
 }
-.theme-toggle:hover{ border-color: color-mix(in oklab, var(--brand), var(--border) 78%); box-shadow: 0 0 0 4px var(--ring); }
-.theme-toggle:active{ transform: translateY(1px) scale(.99); }
-.theme-toggle:focus-visible{ outline: none; box-shadow: 0 0 0 4px var(--ring); }
-.theme-toggle .label{ font-weight:500; letter-spacing:.01em; }
-.theme-toggle .ico{ width:18px; height:18px; display:grid; place-items:center; line-height:0; transition: opacity .25s, transform .35s ease; }
-.theme-toggle .moon{ opacity:0; transform: rotate(-20deg) scale(.8); }
-html[data-theme="light"] .theme-toggle .sun{ opacity:0; transform: rotate(20deg) scale(.8); }
-html[data-theme="light"] .theme-toggle .moon{ opacity:1; transform: rotate(0) scale(1); }
-html[data-theme="dark"] .theme-toggle .sun{ opacity:1; transform: rotate(0) scale(1); }
-html[data-theme="dark"] .theme-toggle .moon{ opacity:0; transform: rotate(-20deg) scale(.8); }
+
+.theme-toggle:hover {
+  border-color: color-mix(in oklab, var(--brand), var(--border) 78%);
+  box-shadow: 0 0 0 4px var(--ring);
+}
+
+.theme-toggle:active {
+  transform: translateY(1px) scale(.99);
+}
+
+.theme-toggle:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px var(--ring);
+}
+
+.theme-toggle .label {
+  font-weight: 500;
+  letter-spacing: .01em;
+}
+
+.theme-toggle .ico {
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  line-height: 0;
+  transition: opacity .25s, transform .35s ease;
+}
+
+.theme-toggle .moon {
+  opacity: 0;
+  transform: rotate(-20deg) scale(.8);
+}
+
+html[data-theme="light"] .theme-toggle .sun {
+  opacity: 0;
+  transform: rotate(20deg) scale(.8);
+}
+
+html[data-theme="light"] .theme-toggle .moon {
+  opacity: 1;
+  transform: rotate(0) scale(1);
+}
+
+html[data-theme="dark"] .theme-toggle .sun {
+  opacity: 1;
+  transform: rotate(0) scale(1);
+}
+
+html[data-theme="dark"] .theme-toggle .moon {
+  opacity: 0;
+  transform: rotate(-20deg) scale(.8);
+}
 
 
 .auth-sidecards {
@@ -200,10 +321,10 @@ html[data-theme="dark"] .theme-toggle .moon{ opacity:0; transform: rotate(-20deg
     align-items: center;
     justify-content: space-between;
     padding: 1.6rem 2rem;
-    border: 1px solid var(--color-border, rgba(255,255,255,0.1));
+    border: 1px solid var(--color-border, rgba(255, 255, 255, 0.1));
     border-radius: 12px;
-    background: var(--surface-elevated, rgba(255,255,255,0.02));
-    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    background: var(--surface-elevated, rgba(255, 255, 255, 0.02));
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
 
     .ico {
       flex-shrink: 0;

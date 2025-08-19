@@ -10,7 +10,8 @@
   display: flex;
   justify-content: center;
   padding-inline: 2rem;
-  margin-block-end: clamp(3rem, 1.25vw, 4rem);
+  // margin-block-end: clamp(3rem, 1.25vw, 4rem);
+  padding-block: clamp(2rem, 1.25vw, 4rem) clamp(3rem, 1.25vw, 4rem);
   // padding-top: 32px;
 }
 
