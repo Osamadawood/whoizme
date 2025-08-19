@@ -26,7 +26,7 @@ $theme = in_array($themeCookie, ['dark','light'], true) ? $themeCookie : 'dark';
   <?php endif; ?>
 
   <!-- أي أيقونات/مانيفست مستقبلًا -->
-  <link rel="icon" href="/img/logo.svg" type="image/svg+xml">
+  <link rel="icon" href="/img/logo.png" type="image/svg+xml">
 </head>
 <body>
   <!-- App Shell -->

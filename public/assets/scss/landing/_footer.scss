@@ -1,11 +1,11 @@
 @use "../core/themes" as *;
 
 .landing-footer {
-  margin-block-start: clamp(3rem,1.25vw,4rem);
-  margin-block-end: clamp(3rem,1.25vw,4rem);
+  margin-block-start: clamp(3rem, 1.25vw, 4rem);
+  margin-block-end: clamp(3rem, 1.25vw, 4rem);
   padding-bottom: 48px;
-//   padding-block: clamp(2rem, 3vw, 3rem);
-//   background: var(--surface);
+  //   padding-block: clamp(2rem, 3vw, 3rem);
+  //   background: var(--surface);
 
   .wrap {
     width: min(1200px, 92vw);
@@ -44,22 +44,28 @@
     }
 
     .link-list {
-        display: grid;
-        gap: .8rem;
-        margin-block-start: 0;
-        margin-block-end: 0;
-        padding-inline-start: 0;
-        li{
-            list-style: none;
-            a {
-                color: var(--text);
-                color: white;
-                opacity: .9;
-                text-decoration: none;
-                transition: opacity .2s, transform .2s;
-                &:hover { opacity: 1; transform: translateX(2px); }
-            }
+      display: grid;
+      gap: .8rem;
+      margin-block-start: 0;
+      margin-block-end: 0;
+      padding-inline-start: 0;
+
+      li {
+        list-style: none;
+
+        a {
+          color: var(--text);
+          color: white;
+          opacity: .9;
+          text-decoration: none;
+          transition: opacity .2s, transform .2s;
+
+          &:hover {
+            opacity: 1;
+            transform: translateX(2px);
+          }
         }
+      }
     }
 
     .divider {
@@ -81,8 +87,16 @@
         gap: .6rem;
         text-decoration: none;
 
-        .brand-mark { width: 28px; height: 28px; border-radius: 8px; }
-        .brand-name { font-weight: 600; color: var(--text); }
+        .brand-mark {
+          width: 28px;
+          height: 28px;
+          border-radius: 8px;
+        }
+
+        .brand-name {
+          font-weight: 600;
+          color: var(--text);
+        }
       }
 
       .copy {
@@ -98,11 +112,12 @@
     overflow: hidden;
     padding: clamp(1.25rem, 2.5vw, 3rem);
     /* NOTE: path is relative to the compiled CSS in public/assets/css → ../img/footer-bg.png */
-    background:var(--card, color-mix(in oklab, var(--surface) 90%, #000 10%)) url('../img/footer-bg.png') no-repeat center/cover;
+    background: var(--card, color-mix(in oklab, var(--surface) 90%, #000 10%)) url('../img/footer-bg.png') no-repeat center/cover;
 
     .cta-inner {
       position: relative;
-      isolation: isolate; /* يخلي الـ art تحت المحتوى */
+      isolation: isolate;
+      /* يخلي الـ art تحت المحتوى */
     }
 
     .eyebrow {
@@ -125,7 +140,8 @@
       display: flex;
       gap: .6rem;
       flex-wrap: wrap;
-      .btn--ghost{
+
+      .btn--ghost {
         border-color: white;
       }
     }
@@ -155,33 +171,40 @@
         color: var(--muted);
         text-decoration: none;
         transition: color .2s;
-        &:hover { color: var(--text); }
+
+        &:hover {
+          color: var(--text);
+        }
       }
 
-      span { color: var(--border); }
+      span {
+        color: var(--border);
+      }
     }
   }
 
   /* ريسبونسِف */
   @media (max-width: 1024px) {
-    .footer-grid { grid-template-columns: 1fr; }
-    .cta-card { order: -1; };
+    .footer-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .cta-card {
+      order: -1;
+    }
+
+    ;
   }
 
   @media (max-width: 680px) {
-    .links-card .cols { grid-template-columns: 1fr 1fr; }
+    .links-card .cols {
+      grid-template-columns: 1fr 1fr;
+    }
   }
 
   @media (max-width: 420px) {
-    .links-card .cols { grid-template-columns: 1fr; }
+    .links-card .cols {
+      grid-template-columns: 1fr;
+    }
   }
 }
-
-
-
-
-
-
-
-
-

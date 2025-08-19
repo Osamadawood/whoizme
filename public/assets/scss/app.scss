@@ -33,6 +33,7 @@
 @use "components/auth";
 @use 'landing/header';
 @use "landing/footer";
+@use 'pages/dashboard';
 
 /* === Utilities === */
 @use "utilities/utilities";

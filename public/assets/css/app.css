@@ -58,9 +58,7 @@
 .theme-toggle input[type=checkbox] {
   inline-size: 2.1rem;
   block-size: 1.15rem;
-  -webkit-appearance: none;
-     -moz-appearance: none;
-          appearance: none;
+  appearance: none;
   background: color-mix(in oklab, var(--surface), var(--text) 12%);
   border-radius: 999px;
   position: relative;
@@ -89,9 +87,7 @@
 .theme-toggle .theme-toggle__label {
   font: inherit;
   color: var(--muted);
-  -webkit-user-select: none;
-     -moz-user-select: none;
-          user-select: none;
+  user-select: none;
 }
 
 /* Entry point: compile to /public/assets/css/app(.min).css */
@@ -211,10 +207,6 @@
 .auth-panel .input:focus {
   box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--brand), #fff 12%), 0 0 0 3px color-mix(in oklab, var(--brand), transparent 85%);
   outline: none;
-}
-
-.auth-panel .input::-moz-placeholder {
-  color: color-mix(in oklab, var(--muted), #fff 10%);
 }
 
 .auth-panel .input::placeholder {
@@ -612,16 +604,16 @@ html[data-theme=dark] .theme-toggle .moon {
   position: relative;
   max-width: min(1200px, 92vw);
   margin-inline: auto;
-  height: 16rem;
+  height: 20rem;
   overflow: hidden;
   border-radius: var(--radius-2xl);
 }
 
 .auth-custom {
   width: 56%;
-  margin: 0 auto -140px;
+  margin: 0 auto -180px;
   position: relative;
-  top: -210px;
+  top: -240px;
   padding: 2.8rem 3.2rem;
   border-radius: var(--radius-2xl);
 }
@@ -648,6 +640,10 @@ html[data-theme=dark] .theme-toggle .moon {
 
 .remember-me span {
   display: inline-block !important;
+}
+
+.reg-form .checkbox span {
+  margin-bottom: 0;
 }
 
 .landing-footer {
@@ -819,6 +815,167 @@ html[data-theme=dark] .theme-toggle .moon {
   .landing-footer .links-card .cols {
     grid-template-columns: 1fr;
   }
+}
+
+/* Dashboard page (Whoizme)
+   - يعتمد على نفس التوكنز واليوتيليتيز بتاعت السيستم
+   - بدون inline styles؛ أي ستايل permanent يبقى هنا
+*/
+.dashboard {
+  padding-block: clamp(24px, 4vw, 48px);
+  /* Grid: sidebar + main */
+  /* Panels (cards) */
+  /* Sidebar */
+  /* KPIs */
+  /* Two-up row */
+  /* Chart placeholder */
+  /* Table */
+  /* badges */
+  /* helpers */
+}
+.dashboard .container {
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: clamp(16px, 3vw, 28px);
+}
+.dashboard .dash-grid {
+  display: grid;
+  gap: clamp(12px, 2vw, 16px);
+}
+@media (min-width: 980px) {
+  .dashboard .dash-grid {
+    grid-template-columns: 260px 1fr;
+  }
+}
+.dashboard .panel {
+  background: var(--surface);
+  border: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+}
+.dashboard .panel--ghost {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+.dashboard .panel__body {
+  padding: clamp(16px, 2.2vw, 24px);
+}
+.dashboard .panel__title {
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+}
+.dashboard .side-nav .side__title {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+.dashboard .side-nav .side-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+}
+.dashboard .side-nav .side-link {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: var(--muted);
+  text-decoration: none;
+  border: 1px solid color-mix(in oklab, var(--text) 10%, transparent);
+}
+.dashboard .side-nav .side-link:hover {
+  background: color-mix(in oklab, var(--surface) 70%, var(--text) 4%);
+  color: var(--text);
+}
+.dashboard .side-nav .side-link.is-active {
+  background: color-mix(in oklab, var(--surface) 80%, var(--primary) 6%);
+  border-color: color-mix(in oklab, var(--primary) 22%, transparent);
+  color: var(--text);
+}
+.dashboard .kpis {
+  display: grid;
+  gap: clamp(10px, 2vw, 14px);
+}
+@media (min-width: 740px) {
+  .dashboard .kpis {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.dashboard .kpi {
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px dashed color-mix(in oklab, var(--text) 10%, transparent);
+}
+.dashboard .kpi__value {
+  font-weight: 700;
+  font-size: clamp(22px, 3.6vw, 28px);
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+.dashboard .kpi__delta {
+  font-size: 0.8rem;
+  color: var(--success);
+}
+.dashboard .twoup {
+  display: grid;
+  gap: clamp(12px, 2vw, 16px);
+}
+@media (min-width: 980px) {
+  .dashboard .twoup {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.dashboard .chart {
+  height: 230px;
+  background: linear-gradient(180deg, color-mix(in oklab, var(--text) 10%, transparent), transparent 70%), radial-gradient(1200px 220px at 0% 120%, color-mix(in oklab, var(--primary) 22%, transparent), transparent 60%), radial-gradient(1200px 220px at 100% 0%, color-mix(in oklab, var(--primary) 18%, transparent), transparent 60%);
+  border-radius: 10px;
+  border: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
+}
+.dashboard .table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 8px;
+}
+.dashboard .table th {
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-align: left;
+  padding: 10px 12px;
+}
+.dashboard .table td {
+  padding: 12px;
+  border-top: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
+  border-bottom: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
+  background: var(--surface);
+  color: var(--text);
+}
+.dashboard .table td:first-child {
+  border-radius: 10px 0 0 10px;
+}
+.dashboard .table td:last-child {
+  border-radius: 0 10px 10px 0;
+}
+.dashboard .badge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+}
+.dashboard .badge--up {
+  color: var(--success);
+}
+.dashboard .badge--down {
+  color: var(--danger);
+}
+.dashboard .u-mb-16 {
+  margin-bottom: 16px;
+}
+.dashboard .u-mb-8 {
+  margin-bottom: 8px;
 }
 
 /* === Utilities === */
@@ -1117,9 +1274,7 @@ input[type=number],
 select,
 textarea,
 .form-control {
-  -webkit-appearance: none;
-     -moz-appearance: none;
-          appearance: none;
+  appearance: none;
   inline-size: 100%;
   padding: 0.75rem 0.875rem;
   border-radius: var(--radius-md);
@@ -1129,10 +1284,6 @@ textarea,
   line-height: 1.35;
   font: inherit;
   transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
-}
-input[type=text]::-moz-placeholder, input[type=email]::-moz-placeholder, input[type=password]::-moz-placeholder, input[type=url]::-moz-placeholder, input[type=search]::-moz-placeholder, input[type=number]::-moz-placeholder, select::-moz-placeholder, textarea::-moz-placeholder, .form-control::-moz-placeholder {
-  color: var(--text-muted);
-  opacity: 0.75;
 }
 input[type=text]::placeholder,
 input[type=email]::placeholder,
@@ -1234,8 +1385,7 @@ textarea {
 
 .card--glass {
   background: color-mix(in oklab, var(--surface), white 3%);
-  -webkit-backdrop-filter: blur(6px);
-          backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
 }
 
 .grid-2 {
@@ -1363,8 +1513,7 @@ textarea {
 
 .card--glass {
   background: color-mix(in oklab, var(--surface), white 3%);
-  -webkit-backdrop-filter: blur(6px);
-          backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
 }
 
 a {
@@ -1790,8 +1939,7 @@ a:focus-visible {
   position: absolute;
   inset: 0;
   background: color-mix(in oklab, #000, #fff 12%);
-  -webkit-backdrop-filter: blur(4px);
-          backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
 }
 
 .modal__panel {

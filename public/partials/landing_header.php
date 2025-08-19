@@ -18,7 +18,7 @@ if (!isset($page_class)) { $page_class = ''; }
 <header class="landing-header" role="banner">
   <div class="landing-header__bar">
     <a class="landing-header__logo" href="/">
-      <img src="/assets/img/logo.svg" alt="" width="28" height="28">
+      <img src="/assets/img/logo.png" alt="" width="28" height="28">
       <span>Whoiz.me</span>
     </a>
 

@@ -3,15 +3,15 @@
 */
 
 .landing-header {
-    position: sticky;
-    position: relative;
-    top: 0;
-    z-index: 50;
-    display: flex;
-    justify-content: center;
-    padding-inline: 2rem;
-    margin-block-end: clamp(3rem,1.25vw,4rem);
-    // padding-top: 32px;
+  position: sticky;
+  position: relative;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  justify-content: center;
+  padding-inline: 2rem;
+  margin-block-end: clamp(3rem, 1.25vw, 4rem);
+  // padding-top: 32px;
 }
 
 .landing-header__bar {
@@ -36,8 +36,13 @@
   color: var(--text);
   text-decoration: none;
 
-  img { display: block; }
-  span { line-height: 1; }
+  img {
+    display: block;
+  }
+
+  span {
+    line-height: 1;
+  }
 }
 
 .landing-header nav {
@@ -63,7 +68,9 @@
   outline: none;
 }
 
-.landing-header .nav__spacer { flex: 1; }
+.landing-header .nav__spacer {
+  flex: 1;
+}
 
 /* CTA زر أبيض كبسولة زي المرجع */
 .btn.btn--cta {
@@ -74,7 +81,7 @@
   background: #fff;
   color: #111;
   border: 1px solid color-mix(in oklab, #fff, #000 10%);
-  box-shadow: 0 1px 0 rgba(0,0,0,.06);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, .06);
   transition: transform .3s;
 }
 
@@ -82,25 +89,26 @@
   transform: translateY(-1px) scale(.96);
 }
 
-.landing-header__link{
-    color: white;
-    transition: ease .3s;
-    &:hoveR{
-        color: var(--brand, #6d28d9);
-        transform: translateY(-1px);
-    }
+.landing-header__link {
+  color: white;
+  transition: ease .3s;
+
+  &:hoveR {
+    color: var(--brand, #6d28d9);
+    transform: translateY(-1px);
+  }
 }
 
-.page-auth .site-main {  }
+.page-auth .site-main {}
 
-.form-desc{
-    margin: 0 0 24px;
+.form-desc {
+  margin: 0 0 24px;
 }
 
-.log-form{
-    label{
-        margin-bottom: 1rem;
-    }
+.log-form {
+  label {
+    margin-bottom: 1rem;
+  }
 }
 
 @media (max-width: 900px) {
@@ -108,77 +116,96 @@
     gap: 14px;
     height: 56px;
   }
-  .landing-header nav { gap: 10px; }
-  .landing-header nav a { height: 32px; }
-  .btn.btn--cta { height: 40px; }
-}
 
-.log-card{
-  // align-items: center;
-}
+  .landing-header nav {
+    gap: 10px;
+  }
 
-.login-side{
-  width: 100%;
-    // margin: 0 auto;
-  .text-muted{
-    font-size: 0.9rem;
-  margin-block-end: .4rem ;
+  .landing-header nav a {
+    height: 32px;
+  }
+
+  .btn.btn--cta {
+    height: 40px;
   }
 }
 
-.mb-12{
-      display: block;
-    width: 100%;
-    // height: 16px;
+.log-card {
+  // align-items: center;
+}
+
+.login-side {
+  width: 100%;
+
+  // margin: 0 auto;
+  .text-muted {
+    font-size: 0.9rem;
+    margin-block-end: .4rem;
+  }
+}
+
+.mb-12 {
+  display: block;
+  width: 100%;
+  // height: 16px;
 }
 
 
-.hero-img{
+.hero-img {
   position: relative;
-    max-width: min(1200px, 92vw);
-    margin-inline: auto;
-    height: 16rem;
-    overflow: hidden;
-    border-radius: var(--radius-2xl);
+  max-width: min(1200px, 92vw);
+  margin-inline: auto;
+  height: 20rem;
+  overflow: hidden;
+  border-radius: var(--radius-2xl);
 }
 
 .auth-custom {
   width: 56%;
-  margin: 0 auto -140px;
+  margin: 0 auto -180px;
   position: relative;
-  top: -210px;
+  top: -240px;
   padding: 2.8rem 3.2rem;
   border-radius: var(--radius-2xl);
-  .auth-sub{
+
+  .auth-sub {
     margin-bottom: 32px;
   }
-  .log-form label{
+
+  .log-form label {
     margin-bottom: var(--sp-6);
-    
+
   }
 }
 
-.double-check{
-    justify-content: space-between;
-    align-items: center;
+.double-check {
+  justify-content: space-between;
+  align-items: center;
 }
 
-.no-mb{
+.no-mb {
   margin-bottom: 0;
 }
 
-.log-form{
-  label{
-    span{
+.log-form {
+  label {
+    span {
       display: block;
       margin-bottom: .5rem;
     }
   }
 }
 
-.remember-me{
-  span{
-      display: inline-block !important;
-    }
+.remember-me {
+  span {
+    display: inline-block !important;
+  }
 }
 
+.reg-form {
+  .checkbox {
+    span {
+      margin-bottom: 0;
+    }
+  }
+}

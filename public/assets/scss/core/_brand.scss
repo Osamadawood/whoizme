@@ -46,11 +46,26 @@ $brand-overlay-dark: (
 
 /* ---------- token() helper ---------- */
 @function token($group, $key) {
-  @if $group == primary { @return map.get($brand-primary, $key); }
-  @if $group == secondary { @return map.get($brand-secondary, $key); }
-  @if $group == neutral { @return map.get($brand-neutral, $key); }
-  @if $group == overlay-light { @return map.get($brand-overlay-light, $key); }
-  @if $group == overlay-dark  { @return map.get($brand-overlay-dark, $key); }
+  @if $group ==primary {
+    @return map.get($brand-primary, $key);
+  }
+
+  @if $group ==secondary {
+    @return map.get($brand-secondary, $key);
+  }
+
+  @if $group ==neutral {
+    @return map.get($brand-neutral, $key);
+  }
+
+  @if $group ==overlay-light {
+    @return map.get($brand-overlay-light, $key);
+  }
+
+  @if $group ==overlay-dark {
+    @return map.get($brand-overlay-dark, $key);
+  }
+
   @error "Unknown token group `#{$group}`";
 }
 

@@ -1,0 +1,190 @@
+/* Dashboard page (Whoizme)
+   - يعتمد على نفس التوكنز واليوتيليتيز بتاعت السيستم
+   - بدون inline styles؛ أي ستايل permanent يبقى هنا
+*/
+
+.dashboard {
+  padding-block: clamp(24px, 4vw, 48px);
+
+  .container {
+    max-width: 1200px;
+    margin-inline: auto;
+    padding-inline: clamp(16px, 3vw, 28px);
+  }
+
+  /* Grid: sidebar + main */
+  .dash-grid {
+    display: grid;
+    gap: clamp(12px, 2vw, 16px);
+
+    @media (min-width: 980px) {
+      grid-template-columns: 260px 1fr;
+    }
+  }
+
+  /* Panels (cards) */
+  .panel {
+    background: var(--surface);
+    border: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+
+    &--ghost {
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+    }
+
+    &__body {
+      padding: clamp(16px, 2.2vw, 24px);
+    }
+
+    &__title {
+      color: var(--muted);
+      font-size: .95rem;
+      margin-bottom: 8px;
+    }
+  }
+
+  /* Sidebar */
+  .side-nav {
+    .side__title {
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    .side-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .side-link {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 12px;
+      border-radius: 10px;
+      color: var(--muted);
+      text-decoration: none;
+      border: 1px solid color-mix(in oklab, var(--text) 10%, transparent);
+
+      &:hover {
+        background: color-mix(in oklab, var(--surface) 70%, var(--text) 4%);
+        color: var(--text);
+      }
+
+      &.is-active {
+        background: color-mix(in oklab, var(--surface) 80%, var(--primary) 6%);
+        border-color: color-mix(in oklab, var(--primary) 22%, transparent);
+        color: var(--text);
+      }
+    }
+  }
+
+  /* KPIs */
+  .kpis {
+    display: grid;
+    gap: clamp(10px, 2vw, 14px);
+
+    @media (min-width: 740px) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .kpi {
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px dashed color-mix(in oklab, var(--text) 10%, transparent);
+
+    &__value {
+      font-weight: 700;
+      font-size: clamp(22px, 3.6vw, 28px);
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    &__delta {
+      font-size: .8rem;
+      color: var(--success);
+    }
+  }
+
+  /* Two-up row */
+  .twoup {
+    display: grid;
+    gap: clamp(12px, 2vw, 16px);
+
+    @media (min-width: 980px) {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  /* Chart placeholder */
+  .chart {
+    height: 230px;
+    background:
+      linear-gradient(180deg, color-mix(in oklab, var(--text) 10%, transparent), transparent 70%),
+      radial-gradient(1200px 220px at 0% 120%, color-mix(in oklab, var(--primary) 22%, transparent), transparent 60%),
+      radial-gradient(1200px 220px at 100% 0%, color-mix(in oklab, var(--primary) 18%, transparent), transparent 60%);
+    border-radius: 10px;
+    border: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
+  }
+
+  /* Table */
+  .table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+
+    th {
+      font-size: .8rem;
+      color: var(--muted);
+      text-align: left;
+      padding: 10px 12px;
+    }
+
+    td {
+      padding: 12px;
+      border-top: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
+      border-bottom: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
+      background: var(--surface);
+      color: var(--text);
+
+      &:first-child {
+        border-radius: 10px 0 0 10px;
+      }
+
+      &:last-child {
+        border-radius: 0 10px 10px 0;
+      }
+    }
+  }
+
+  /* badges */
+  .badge {
+    font-size: .75rem;
+    padding: .25rem .5rem;
+    border-radius: 999px;
+    border: 1px solid currentColor;
+  }
+
+  .badge--up {
+    color: var(--success);
+  }
+
+  .badge--down {
+    color: var(--danger);
+  }
+
+  /* helpers */
+  .u-mb-16 {
+    margin-bottom: 16px;
+  }
+
+  .u-mb-8 {
+    margin-bottom: 8px;
+  }
+}

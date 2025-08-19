@@ -70,7 +70,7 @@
 │   ├── forgot.php
 │   ├── help.php
 │   ├── img
-│   │   ├── logo.svg
+│   │   ├── logo.png
 │   │   └── qr-placeholder.png
 │   ├── inc
 │   │   ├── auth.php

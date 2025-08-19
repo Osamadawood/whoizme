@@ -29,7 +29,7 @@ $base = rtrim(BASE_URL, '/');
     <link rel="stylesheet" href="<?= $base ?>/assets/css/app.min.css">
 
     <!-- أي أيقونات / manifest لو عندك -->
-    <link rel="icon" type="image/svg+xml" href="<?= $base ?>/img/logo.svg">
+    <link rel="icon" type="image/svg+xml" href="<?= $base ?>/img/logo.png">
 
     <!-- meta اختيارية لتحسين الـ caching -->
     <meta http-equiv="x-ua-compatible" content="ie=edge">
@@ -38,7 +38,7 @@ $base = rtrim(BASE_URL, '/');
 <header class="user-topbar">
     <div class="topHeader d-flex align-items-center justify-content-between">
         <a class="brand d-inline-flex align-items-center" href="<?= $base ?>/">
-            <img src="<?= $base ?>/img/logo.svg" alt="Whoizme" width="28" height="28" style="margin-inline-end:.5rem;">
+            <img src="<?= $base ?>/img/logo.png" alt="Whoizme" width="28" height="28" style="margin-inline-end:.5rem;">
             <strong>Whoizme</strong>
         </a>
 

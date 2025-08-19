@@ -143,7 +143,7 @@ require __DIR__ . '/partials/landing_header.php';
         </div>
       <?php endif; ?>
 
-      <form class="stack log-form" action="/register.php" method="post" novalidate>
+      <form class="stack log-form reg-form" action="/register.php" method="post" novalidate>
         <input type="hidden" name="csrf" value="<?= htmlspecialchars($csrf_token) ?>" />
 
         <label class="field">

@@ -46,7 +46,7 @@
 
         <div class="brand-row">
           <a class="brand" href="/index.php">
-            <img class="brand-mark" src="/assets/img/logo.svg" alt="" loading="lazy" />
+            <img class="brand-mark" src="/assets/img/logo.png" alt="" loading="lazy" />
             <span class="brand-name">Whoiz.me</span>
           </a>
 

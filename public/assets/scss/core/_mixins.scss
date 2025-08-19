@@ -27,30 +27,51 @@
   font: inherit;
   transition: border-color .15s ease, background-color .15s ease, box-shadow .15s ease;
 
-  &::placeholder { color: var(--text-muted); opacity: .75; }
-  &:hover { border-color: color-mix(in oklab, var(--border), var(--text) 18%); }
-  &:focus { outline: none; border-color: var(--brand);
+  &::placeholder {
+    color: var(--text-muted);
+    opacity: .75;
+  }
+
+  &:hover {
+    border-color: color-mix(in oklab, var(--border), var(--text) 18%);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--brand);
     box-shadow: 0 0 0 3px color-mix(in oklab, var(--brand), white 75%);
   }
-  &:disabled { opacity: .55; cursor: not-allowed; }
 
-  &.is-error   { border-color: var(--danger);
+  &:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+  }
+
+  &.is-error {
+    border-color: var(--danger);
     box-shadow: 0 0 0 3px color-mix(in oklab, var(--danger), white 80%);
   }
-  &.is-success { border-color: var(--success);
+
+  &.is-success {
+    border-color: var(--success);
     box-shadow: 0 0 0 3px color-mix(in oklab, var(--success), white 82%);
   }
 }
 
 // ===== Buttons base =====
 @mixin button-base {
-  display: inline-flex; align-items: center; justify-content: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   gap: .5rem;
   padding: .625rem 1rem;
   border-radius: var(--radius-md);
   border: 1px solid transparent;
-  font: inherit; font-weight: 600; letter-spacing: .01em;
-  cursor: pointer; text-decoration: none;
+  font: inherit;
+  font-weight: 600;
+  letter-spacing: .01em;
+  cursor: pointer;
+  text-decoration: none;
   transition: background-color .15s ease, color .15s ease,
-              border-color .15s ease, box-shadow .15s ease;
+    border-color .15s ease, box-shadow .15s ease;
 }
