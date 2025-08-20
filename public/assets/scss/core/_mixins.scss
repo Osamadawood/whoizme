@@ -1,6 +1,6 @@
 /* ===== Core Mixins & Utilities (namespace: m) ===== */
 
-/* Focus outline with good contrast & offset */
+/* Focus outline */
 @mixin focus-ring($color: var(--primary), $offset: 2px, $width: 2px) {
   outline: $width solid $color;
   outline-offset: $offset;
@@ -21,13 +21,13 @@
   }
 }
 
-/* Centered app container */
+/* Container */
 @mixin container($max: 1280px, $side-pad: 4.8rem) {
   width: min($max, 100% - $side-pad);
   margin-inline: auto;
 }
 
-/* Card / Panel surface (used by multiple components e.g. auth) */
+/* Card / Panel surface (مهم جداً لـ _auth.scss) */
 @mixin card($radius: 1.6rem,
   $padding: 1.6rem,
   $shadow: md,
@@ -40,7 +40,7 @@
   padding: $padding;
 }
 
-/* Alias: panel = card */
+/* Alias */
 @mixin panel($args...) {
   @include card($args...);
 }
