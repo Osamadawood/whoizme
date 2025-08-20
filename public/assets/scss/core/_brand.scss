@@ -1,108 +1,46 @@
-/* whoizme design system — color tokens + emit (colors only)
-   Author: Osama Dawood
-*/
-@use "sass:map";
+/* ===== Brand tokens (SCSS) ===== */
+$brand-blue-500: #4B6BFB;
+$brand-purple-500: #A855F7;
+$brand-yellow-500: #FACC15;
+$brand-orange-500: #FB923C;
 
-/* ---------- Color maps (whoizme) ---------- */
-$brand-primary: (
-  100: #0e0e0e,
-  200: #f34971,
-  300: #005dff,
-  400: #fdb52a
+$neutral-50: #FAFAFA;
+$neutral-100: #F5F5F5;
+$neutral-200: #E5E7EB;
+$neutral-300: #D1D5DB;
+$neutral-400: #9CA3AF;
+$neutral-500: #6B7280;
+$neutral-600: #4B5563;
+$neutral-700: #374151;
+$neutral-800: #1F2937;
+$neutral-900: #111827;
+
+$state-success: #22C55E;
+$state-warning: #FB923C;
+$state-danger: #EF4444;
+$state-info: #38BDF8;
+
+$radius-sm: 4px;
+$radius-md: 8px;
+$radius-lg: 12px;
+$radius-xl: 16px;
+$radius-2xl: 24px;
+
+/* Spacing scale (8px grid, base 10px = 1rem) */
+$space: (
+  8: .8rem,
+  16: 1.6rem,
+  24: 2.4rem,
+  32: 3.2rem,
+  40: 4.0rem,
+  48: 4.8rem,
+  64: 6.4rem,
+  80: 8.0rem,
+  96: 9.6rem,
+  128: 12.8rem
 );
 
-$brand-secondary: (
-  200: #0d0d0d,
-  300: #272727,
-  400: #0b0b0b,
-  600: #fff9e5,
-  800: #e5f8e8
-);
-
-$brand-neutral: (
-  100: #ffffff,
-  300: #ebebeb,
-  400: #e4e4e4,
-  500: #8e8e8e,
-  600: #636363,
-  700: #0d0d0d,
-  800: #0a0a0a
-);
-
-/* overlays */
-$brand-overlay-light: (
-  100: #ffffff66,
-  200: #ffffff80,
-  300: #ffffffa6,
-  400: #fffc
-);
-
-$brand-overlay-dark: (
-  100: #19213d66,
-  200: #19213d80,
-  300: #19213da6,
-  400: #19213dcc
-);
-
-/* ---------- token() helper ---------- */
-@function token($group, $key) {
-  @if $group ==primary {
-    @return map.get($brand-primary, $key);
-  }
-
-  @if $group ==secondary {
-    @return map.get($brand-secondary, $key);
-  }
-
-  @if $group ==neutral {
-    @return map.get($brand-neutral, $key);
-  }
-
-  @if $group ==overlay-light {
-    @return map.get($brand-overlay-light, $key);
-  }
-
-  @if $group ==overlay-dark {
-    @return map.get($brand-overlay-dark, $key);
-  }
-
-  @error "Unknown token group `#{$group}`";
-}
-
-/* ---------- emit-colors: outputs CSS variables (whoizme naming) ---------- */
-@mixin emit-colors() {
-  :root {
-    /* primary */
-    --core--colors--primary--100: #{token(primary, 100)};
-    --core--colors--primary--200: #{token(primary, 200)};
-    --core--colors--primary--300: #{token(primary, 300)};
-    --core--colors--primary--400: #{token(primary, 400)};
-
-    /* secondary */
-    --core--colors--secondary--200: #{token(secondary, 200)};
-    --core--colors--secondary--300: #{token(secondary, 300)};
-    --core--colors--secondary--400: #{token(secondary, 400)};
-    --core--colors--secondary--600: #{token(secondary, 600)};
-    --core--colors--secondary--800: #{token(secondary, 800)};
-
-    /* neutral */
-    --core--colors--neutral--100: #{token(neutral, 100)};
-    --core--colors--neutral--300: #{token(neutral, 300)};
-    --core--colors--neutral--400: #{token(neutral, 400)};
-    --core--colors--neutral--500: #{token(neutral, 500)};
-    --core--colors--neutral--600: #{token(neutral, 600)};
-    --core--colors--neutral--700: #{token(neutral, 700)};
-    --core--colors--neutral--800: #{token(neutral, 800)};
-
-    /* overlays */
-    --core--colors--overlays--light-100: #{token(overlay-light, 100)};
-    --core--colors--overlays--light-200: #{token(overlay-light, 200)};
-    --core--colors--overlays--light-300: #{token(overlay-light, 300)};
-    --core--colors--overlays--light-400: #{token(overlay-light, 400)};
-
-    --core--colors--overlays--dark-100: #{token(overlay-dark, 100)};
-    --core--colors--overlays--dark-200: #{token(overlay-dark, 200)};
-    --core--colors--overlays--dark-300: #{token(overlay-dark, 300)};
-    --core--colors--overlays--dark-400: #{token(overlay-dark, 400)};
-  }
-}
+/* Elevation */
+$shadow-sm: 0 1px 2px rgba(0, 0, 0, .06);
+$shadow-md: 0 4px 10px rgba(0, 0, 0, .08);
+$shadow-lg: 0 10px 24px rgba(0, 0, 0, .12);

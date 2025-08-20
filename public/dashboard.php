@@ -1,34 +1,21 @@
 <?php
 // Boot & guards
 require_once __DIR__ . '/../includes/bootstrap.php';
-require_once __DIR__ . '/../includes/auth_guard.php';
+require_once __DIR__ . '/partials/auth_guard.php';
 
 $page_title = 'Dashboard';
 include __DIR__ . '/partials/app_header.php';
 ?>
 
 <main class="dashboard">
-  <div class="container dash-grid">
+  <div class="app-container dash-grid">
 
     <!-- ============ Sidebar ============ -->
-    <aside class="panel side-nav">
-      <div class="panel__body">
-        <div class="side__title">Dashboard</div>
-        <nav class="side-list u-mb-16" aria-label="Sidebar">
-          <a class="side-link is-active" href="/dashboard.php">Overview</a>
-          <a class="side-link" href="/links.php">Links</a>
-          <a class="side-link" href="/qr.php">QR Codes</a>
-          <a class="side-link" href="/analytics.php">Analytics</a>
-          <a class="side-link" href="/templates.php">Templates</a>
-          <a class="side-link" href="/menus.php">Menus</a>
-          <a class="side-link" href="/settings.php">Settings</a>
-        </nav>
-        <a class="btn btn-primary" href="/create-link.php">Create link</a>
-      </div>
-    </aside>
+    <?php include __DIR__ . '/partials/app_sidebar.php'; ?>
 
     <!-- ============ Main content ============ -->
-    <section class="maincol">
+    <section id="main" class="maincol" role="main">
+<?php include __DIR__ . '/partials/app_topbar.php'; ?>
 
       <!-- KPIs -->
       <div class="kpis u-mb-16">

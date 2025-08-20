@@ -1,74 +1,37 @@
-@use "../core/mixins" as *;
+@use "../core/mixins" as m;
 
+/* ===== Panels / Cards ===== */
 @mixin apply() {
-  .card {
-    @include card;
-    padding: 1rem;
+  .panel {
+    @include m.card();
   }
 
-  .card--glass {
-    background: color-mix(in oklab, var(--surface), white 3%);
-    backdrop-filter: blur(6px);
-  }
-}
-
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  box-shadow: var(--shadow-md);
-
-  &__body {
+  .panel__body {
     padding: 1.6rem;
   }
 
-  &__title {
-    color: var(--text-muted);
-    font-size: 1.4rem;
+  .panel__title {
+    font-weight: 700;
     margin-bottom: .8rem;
   }
-}
 
-.kpis {
-  display: grid;
-  gap: 1.4rem;
-
-  @media (min-width: 740px) {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  .kpi {
+    padding: 1.6rem;
+    display: flex;
+    flex-direction: column;
+    gap: .6rem;
   }
-}
 
-.kpi__value {
-  font-weight: 700;
-  font-size: clamp(2.2rem, 3.6vw, 2.8rem);
-  letter-spacing: -.02em;
-  color: var(--text);
-}
-
-.kpi__delta {
-  font-size: 1.2rem;
-}
-
-.twoup {
-  display: grid;
-  gap: 1.6rem;
-
-  @media (min-width: 980px) {
-    grid-template-columns: 1fr 1fr;
+  .kpi__value {
+    font-size: 2.4rem;
+    font-weight: 800;
   }
-}
 
-.badge {
-  font-size: 1.2rem;
-  padding: .25rem .6rem;
-  border-radius: 999px;
-  border: 1px solid currentColor;
-}
-
-.badge--up {
-  color: var(--success);
-}
-
-.badge--down {
-  color: var(--danger);
+  .chart {
+    inline-size: 100%;
+    block-size: 28rem;
+    background: repeating-linear-gradient(0deg, rgba(255, 255, 255, .02), rgba(255, 255, 255, .02) 10px, transparent 10px, transparent 20px);
+    border-radius: 1.0rem;
+    border: 1px dashed var(--border);
+  }
 }

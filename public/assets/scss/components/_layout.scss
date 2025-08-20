@@ -1,12 +1,131 @@
-/* components/_layout.scss */
 @use "../core/mixins" as m;
 
+/* ===== App shell & container ===== */
 @mixin apply() {
-  .container { @include m.container(1200px); padding-inline:1rem; }
+  .app-shell {
+    min-height: 100vh;
+  }
 
-  .card  { @include m.card; padding:1rem; }
-  .card--glass { background: color-mix(in oklab, var(--surface), white 3%); backdrop-filter: blur(6px); }
+  .app-container {
+    @include m.container();
+  }
 
-  .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap: var(--sp-6); }
-  .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap: var(--sp-6); }
+  /* Two-column layout (sidebar + main) */
+  .dash-grid {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 2.4rem;
+    align-items: start;
+    padding-block: 1.6rem 3.2rem;
+  }
+
+  .sidebar {
+    position: sticky;
+    top: 1.6rem;
+    align-self: start;
+  }
+
+  .maincol {
+    min-width: 0;
+  }
+
+  /* Page header block (inside main) */
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.6rem 2.0rem;
+    background: linear-gradient(180deg, rgba(255, 255, 255, .02), rgba(0, 0, 0, .06));
+    border: 1px solid var(--border);
+    border-radius: 1.6rem;
+    @include m.elevation(lg);
+    margin-block: .8rem 1.6rem;
+  }
+
+  .page-header__title {
+    font-size: 2.4rem;
+    font-weight: 800;
+    letter-spacing: .01em;
+  }
+
+  .page-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+  }
+
+  /* Reusable grids */
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.6rem;
+  }
+
+  .kpis {
+    @extend .grid-3;
+  }
+
+  .twoup {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.6rem;
+  }
+
+  /* Tables */
+  .table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 1.4rem;
+  }
+
+  .table thead th {
+    text-align: left;
+    padding: 1.2rem;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .table tbody td {
+    padding: 1.2rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .2rem .6rem;
+    border-radius: .6rem;
+    font-size: 1.2rem;
+    border: 1px solid transparent;
+  }
+
+  .badge--up {
+    background: rgba(34, 197, 94, .12);
+    color: #16A34A;
+    border-color: rgba(34, 197, 94, .25);
+  }
+
+  .badge--down {
+    background: rgba(239, 68, 68, .12);
+    color: #DC2626;
+    border-color: rgba(239, 68, 68, .25);
+  }
+
+  @media (max-width: 1024px) {
+    .dash-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+      position: static;
+    }
+
+    .grid-3,
+    .kpis,
+    .twoup {
+      grid-template-columns: 1fr;
+    }
+  }
 }

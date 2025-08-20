@@ -2,44 +2,45 @@
 
 /* === Core @use must come first (no rules before them) === */
 @use "core/brand" as brand;
-@use "core/themes";
-@use "core/reset";
-@use "core/typography";
+@use "core/themes" as themes;
+@use "core/mixins" as m;
+@use "core/typography" as typography;
+@use "core/reset" as reset;
 
 /* === Components === */
-@use "components/buttons";
-@use "components/forms";
-@use "components/layout";
-@use "components/nav";
-@use "components/cards";
-@use "components/links";
-@use "components/lists";
-@use "components/avatars";
-@use "components/states";
-@use "components/badges";
-@use "components/tooltips";
-@use "components/tabs";
-@use "components/accordions";
-@use "components/notifications";
-@use "components/icons";
-@use "core/shadows";
-@use "components/logo";
-@use "components/iconfont";
-@use "components/popups";
-@use "components/breadcrumbs";
-@use "components/pagination";
-@use "components/prose";
-@use 'components/sidebar';
-@use 'components/topbar';
-@use 'components/table';
-@use "core/fonts";
-@use "components/auth";
-@use 'landing/header';
-@use "landing/footer";
-@use 'pages/dashboard';
+@use "components/buttons" as buttons;
+@use "components/layout" as layout;
+@use 'components/topbar' as topbar;
+@use 'components/sidebar' as sidebar;
+@use "components/cards" as cards;
+@use "components/forms" as forms;
+@use "components/nav" as nav;
+@use "components/links" as links;
+@use "components/lists" as lists;
+@use "components/avatars" as avatars;
+@use "components/states" as states;
+@use "components/badges" as badges;
+@use "components/tooltips" as tooltips;
+@use "components/tabs" as tabs;
+@use "components/accordions" as accordions;
+@use "components/notifications" as notifications;
+@use "components/icons" as icons;
+@use "core/shadows" as shadows;
+@use "components/logo" as logo;
+@use "components/iconfont" as iconfont;
+@use "components/popups" as popups;
+@use "components/breadcrumbs" as breadcrumbs;
+@use "components/pagination" as pagination;
+@use "components/prose" as prose;
+@use 'components/table' as table;
+@use "core/fonts" as fonts;
+@use "components/auth" as auth;
+@use 'landing/header' as lheader;
+@use "landing/footer" as lfooter;
+@use 'pages/dashboard' as pdashboard;
 
 /* === Utilities === */
-@use "utilities/utilities";
+@use "utilities/utilities" as utilities;
 
 /* === Emit layers & tokens (order matters slightly) === */
 /* 1) color tokens */
@@ -75,6 +76,9 @@
 @include breadcrumbs.apply();
 @include pagination.apply();
 @include prose.apply();
+@include topbar.apply();
+@include sidebar.apply();
+@include auth.apply();
 
 /* 5) utilities (last) */
 @include utilities.apply();

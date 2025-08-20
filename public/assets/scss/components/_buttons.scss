@@ -1,15 +1,79 @@
 @use "../core/mixins" as m;
 
+/* ===== Buttons ===== */
 @mixin apply() {
-  .btn { @include m.button-base; background: var(--surface-raise, var(--brand)); color: var(--brand-contrast); }
-  .btn:hover { filter: brightness(1.06); }
-  .btn:active { filter: brightness(.96); }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .6rem;
+    border-radius: var(--radius);
+    border: 1px solid transparent;
+    font-weight: 600;
+    cursor: pointer;
+    line-height: 1;
+    white-space: nowrap;
+    transition: filter .12s ease, transform .06s ease, border-color .12s;
+  }
 
-  .btn--secondary { background: var(--surface); color: var(--text); border-color: var(--border); }
-  .btn--ghost     { background: transparent; color: var(--text); border-color: var(--border); }
-  .btn--danger    { background: var(--danger); color: #fff; }
-  .btn--text      { background: transparent; color:  var(--text); }
+  .btn:focus-visible {
+    @include m.focus-ring();
+  }
 
-  .btn--sm { padding: .5rem .75rem; border-radius: var(--radius-sm); }
-  .btn--lg { padding: .75rem 1.25rem; font-size: 1.0625rem; }
+  .btn:active {
+    transform: translateY(1px);
+  }
+
+  .btn--sm {
+    height: 3.2rem;
+    padding: 0 1.2rem;
+    font-size: 1.4rem;
+  }
+
+  .btn--md {
+    height: 4.0rem;
+    padding: 0 1.6rem;
+    font-size: 1.5rem;
+  }
+
+  .btn--lg {
+    height: 4.8rem;
+    padding: 0 2.0rem;
+    font-size: 1.6rem;
+  }
+
+  .btn-pill {
+    border-radius: 999px;
+  }
+
+  .btn-primary {
+    background: var(--primary);
+    color: var(--text-inverse);
+  }
+
+  .btn-primary:hover {
+    filter: brightness(.96);
+  }
+
+  .btn-secondary {
+    background: var(--surface);
+    color: var(--text);
+    border-color: var(--border);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--primary);
+  }
+
+  .btn-destructive {
+    background: var(--danger);
+    color: #fff;
+  }
+
+  .btn-icon {
+    inline-size: 3.6rem;
+    block-size: 3.6rem;
+    border-radius: 1.0rem;
+  }
 }
