@@ -1,39 +1,55 @@
-/* Fonts (Onest + Cairo) */
-@import url('https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
+// Typography & font faces
+// Provides: @mixin apply()
+@use "core/mixins" as m;
 
-:root {
-  --font-sans: Onest, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial;
-  --font-ar: "Cairo", "IBM Plex Sans Arabic", "Noto Kufi Arabic", ui-sans-serif, system-ui;
-}
+@mixin apply() {
+  /* Google font: Onest (latin/arabic support OK) */
+  @import url('https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap');
 
-html[dir="rtl"] body {
-  font-family: var(--font-ar);
-}
+  html {
+    font-size: 62.5%;
+  }
 
-h1,
-h2,
-h3,
-h4,
-h5 {
-  margin: 0 0 0.6rem;
-  font-weight: 700;
-  letter-spacing: .01em;
-}
+  /* 10px = 1rem */
+  body {
+    font-family: "Onest", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    color: var(--text);
+    background: var(--bg);
+    line-height: 1.6;
+    font-size: 1.6rem;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
-h1 {
-  font-size: clamp(2.4rem, 2.2vw + 1rem, 4.2rem);
-  line-height: 1.2;
-}
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: var(--text);
+    line-height: 1.3;
+    font-weight: 600;
+  }
 
-h2 {
-  font-size: clamp(2.0rem, 1.6vw + 1rem, 3.2rem);
-}
+  h1 {
+    @include m.clamp-font(2.4rem, 2.2vw + 1rem, 4.2rem);
+  }
 
-h3 {
-  font-size: clamp(1.8rem, 1.2vw + .8rem, 2.4rem);
-}
+  h2 {
+    @include m.clamp-font(2.0rem, 1.6vw + 1rem, 3.2rem);
+  }
 
-small {
-  font-size: 1.2rem;
+  h3 {
+    @include m.clamp-font(1.8rem, 1.2vw + .8rem, 2.4rem);
+  }
+
+  small,
+  .text-sm {
+    font-size: 1.4rem;
+  }
+
+  .text-caption {
+    font-size: 1.2rem;
+  }
 }

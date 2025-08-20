@@ -1,46 +1,49 @@
-/* ===== Brand tokens (SCSS) ===== */
-$brand-blue-500: #4B6BFB;
-$brand-purple-500: #A855F7;
-$brand-yellow-500: #FACC15;
-$brand-orange-500: #FB923C;
+// Brand tokens → CSS variables
+// Provides: @mixin emit-colors()
+@mixin emit-colors() {
+  :root {
+    /* Brand core */
+    --brand-blue-500: #4B6BFB;
+    --brand-purple-500: #A855F7;
+    --brand-yellow-500: #FACC15;
+    --brand-orange-500: #FB923C;
 
-$neutral-50: #FAFAFA;
-$neutral-100: #F5F5F5;
-$neutral-200: #E5E7EB;
-$neutral-300: #D1D5DB;
-$neutral-400: #9CA3AF;
-$neutral-500: #6B7280;
-$neutral-600: #4B5563;
-$neutral-700: #374151;
-$neutral-800: #1F2937;
-$neutral-900: #111827;
+    /* Neutrals */
+    --neutral-50: #FAFAFA;
+    --neutral-100: #F5F5F5;
+    --neutral-200: #E5E7EB;
+    --neutral-300: #D1D5DB;
+    --neutral-400: #9CA3AF;
+    --neutral-500: #6B7280;
+    --neutral-600: #4B5563;
+    --neutral-700: #374151;
+    --neutral-800: #1F2937;
+    --neutral-900: #111827;
 
-$state-success: #22C55E;
-$state-warning: #FB923C;
-$state-danger: #EF4444;
-$state-info: #38BDF8;
+    /* Derived (defaults for light) */
+    --bg: #fff;
+    --surface: var(--neutral-100);
+    --text: var(--neutral-700);
+    --text-inverse: #fff;
+    --primary: var(--brand-blue-500);
+    --accent: var(--brand-purple-500);
+    --border: var(--neutral-200);
+    --muted: var(--neutral-300);
 
-$radius-sm: 4px;
-$radius-md: 8px;
-$radius-lg: 12px;
-$radius-xl: 16px;
-$radius-2xl: 24px;
+    /* State */
+    --success: #22C55E;
+    --warning: var(--brand-orange-500);
+    --danger: #EF4444;
+    --info: #38BDF8;
 
-/* Spacing scale (8px grid, base 10px = 1rem) */
-$space: (
-  8: .8rem,
-  16: 1.6rem,
-  24: 2.4rem,
-  32: 3.2rem,
-  40: 4.0rem,
-  48: 4.8rem,
-  64: 6.4rem,
-  80: 8.0rem,
-  96: 9.6rem,
-  128: 12.8rem
-);
-
-/* Elevation */
-$shadow-sm: 0 1px 2px rgba(0, 0, 0, .06);
-$shadow-md: 0 4px 10px rgba(0, 0, 0, .08);
-$shadow-lg: 0 10px 24px rgba(0, 0, 0, .12);
+    /* Radii / shadow tokens */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-2xl: 24px;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, .06);
+    --shadow-md: 0 4px 10px rgba(0, 0, 0, .08);
+    --shadow-lg: 0 10px 24px rgba(0, 0, 0, .12);
+  }
+}

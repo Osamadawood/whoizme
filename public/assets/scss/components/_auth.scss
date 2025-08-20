@@ -9,10 +9,9 @@
     padding: 3.2rem 1.6rem;
   }
 
-  /* الكارت الأساسي لشاشة الدخول/التسجيل */
   .auth-card {
     @include m.card(1.6rem, 2.0rem, lg);
-    /* ← لازم أقواس */
+    /* مهم: بأقواس */
     max-width: 520px;
     width: 100%;
   }

@@ -1,71 +1,17 @@
-/* ===== CSS variables for theming ===== */
-:root {
-  --brand-blue-500: #4B6BFB;
-  --brand-purple-500: #A855F7;
-  --brand-yellow-500: #FACC15;
-  --brand-orange-500: #FB923C;
+// Light/Dark themes → overrides only
+// Provides: @mixin emit()
+@mixin emit() {
 
-  --neutral-100: #F5F5F5;
-  --neutral-200: #E5E7EB;
-  --neutral-300: #D1D5DB;
-  --neutral-700: #334155;
-  --neutral-900: #0F172A;
-
-  --bg: #fff;
-  --surface: #F5F5F5;
-  --text: #334155;
-  --text-muted: #6B7280;
-  --text-inverse: #fff;
-  --primary: #4B6BFB;
-  --accent: #A855F7;
-  --border: #E5E7EB;
-  --muted: #D1D5DB;
-
-  --success: #22C55E;
-  --warning: #FB923C;
-  --danger: #EF4444;
-  --info: #38BDF8;
-  --radius: 12px;
-}
-
-:root[data-theme="dark"] {
-  --bg: #111827;
-  --surface: #1F2937;
-  --text: #F5F5F5;
-  --text-muted: #D1D5DB;
-  --primary: #6E93FF;
-  /* tuned for dark */
-  --accent: #B067F9;
-  --border: #374151;
-  --muted: #374151;
-}
-
-/* Base reset (lightweight) */
-html {
-  font-size: 10px;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  color: var(--text);
-  background: var(--bg);
-  font: 400 1.6rem/1.6 var(--font-sans, Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji");
-}
-
-a {
-  color: var(--primary);
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
-img {
-  max-width: 100%;
-  display: block;
+  /* Light (default) already set in :root via brand.emit-colors() */
+  :root[data-theme="dark"] {
+    --bg: #111827;
+    --surface: #1F2937;
+    --text: #F5F5F5;
+    --text-muted: #D1D5DB;
+    --primary: #6E93FF;
+    /* tuned for dark */
+    --accent: #B067F9;
+    --border: #374151;
+    --muted: #374151;
+  }
 }
