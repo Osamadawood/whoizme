@@ -244,30 +244,200 @@
   color: var(--text);
 }
 
+/* Topbar sizing refinements */
 .app-topbar {
+  --tb-h: 56px;
+  --tb-gap: 12px;
+  --tb-pad-x: 20px;
+  --tb-fs: 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1.6rem;
+  gap: var(--tb-gap);
+  padding: 12px var(--tb-pad-x);
+  border-bottom: 1px solid var(--border-700);
+  background: var(--surface-900);
 }
-.app-topbar .breadcrumb {
-  display: inline-flex;
+
+.app-topbar__left .breadcrumb {
+  display: flex;
   align-items: center;
-  gap: 0.6rem;
-  color: var(--text-muted);
+  gap: 10px;
+  font-size: clamp(14px, 1.6vw, 16px);
 }
-.app-topbar .breadcrumb__item.is-current {
-  color: var(--text);
+.app-topbar__left .breadcrumb .breadcrumb__item {
+  color: var(--text-300);
+}
+.app-topbar__left .breadcrumb .breadcrumb__item.is-current {
+  color: var(--text-50);
   font-weight: 600;
+  letter-spacing: 0.2px;
 }
-.app-topbar .breadcrumb__sep {
-  opacity: 0.6;
+.app-topbar__left .breadcrumb .breadcrumb__sep {
+  color: var(--text-500);
 }
-.app-topbar .avatar {
+
+.app-topbar__right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Search compact */
+.topbar-search__input {
+  height: 40px;
+  min-width: clamp(200px, 24vw, 360px);
+  padding: 0 14px;
+  border-radius: 10px;
+  background: var(--surface-800);
+  border: 1px solid var(--border-700);
+  color: var(--text-100);
+}
+.topbar-search__input::placeholder {
+  color: var(--text-500);
+}
+
+/* Primary button compact */
+.topbar__create.btn {
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 12px;
+  letter-spacing: 0.2px;
+}
+
+/* Theme toggle (small pill) */
+.theme-toggle {
+  width: 64px;
+  height: 40px;
+  border-radius: 999px;
+  background: var(--surface-800);
+  border: 1px solid var(--border-700);
+  position: relative;
+  /* you can animate left/right via [data-theme] with a small transition if you like */
+}
+.theme-toggle .theme-toggle__icon {
+  top: 50%;
+  left: 8px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--text);
+  content: "";
+  display: inline-block;
+}
+
+/* Language pill showing other locale only */
+.lang-pill {
+  height: 40px;
+  min-width: 60px;
+  padding: 0 10px;
+  border-radius: 12px;
+  background: var(--surface-800);
+  border: 1px solid var(--border-700);
+  color: var(--text-100);
+  font-weight: 700;
+}
+
+/* Avatar smaller + light brand tints */
+.avatar {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: var(--border);
+  overflow: hidden;
+  border: 1px solid var(--border-600);
+  display: inline-grid;
+  place-items: center;
+}
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.avatar.avatar--initial span {
+  font-weight: 700;
+  color: var(--text-900);
+}
+
+/* Map tints to our brand light palette (adjust tokens to your system) */
+.avatar--t1 {
+  background: color-mix(in oklab, var(--primary-400) 25%, white);
+}
+
+.avatar--t2 {
+  background: color-mix(in oklab, var(--accent-400) 25%, white);
+}
+
+.avatar--t3 {
+  background: color-mix(in oklab, var(--highlight-400) 25%, white);
+}
+
+.avatar--t4 {
+  background: color-mix(in oklab, var(--warning-400) 25%, white);
+}
+
+.avatar--t5 {
+  background: color-mix(in oklab, var(--neutral-400) 25%, white);
+}
+
+.avatar--t6 {
+  background: color-mix(in oklab, var(--primary-300) 20%, white);
+}
+
+/* Account menu */
+.account {
+  position: relative;
+}
+
+.account__menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  width: 220px;
+  padding: 8px;
+  border-radius: 12px;
+  background: var(--surface-900);
+  border: 1px solid var(--border-700);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  display: none;
+}
+.account__menu a {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: var(--text-100);
+}
+.account__menu a:hover {
+  background: var(--surface-800);
+}
+.account__menu .danger {
+  color: var(--danger-300);
+}
+
+.account__menu.is-open {
+  display: block;
+}
+
+.theme-toggle.is-on {
+  box-shadow: 0 0 0 2px var(--primary) inset;
+}
+.theme-toggle .theme-toggle__icon {
+  transition: transform 0.2s ease;
+}
+.theme-toggle.is-on .theme-toggle__icon {
+  transform: translateX(16px);
+}
+
+.theme-toggle.is-on {
+  box-shadow: 0 0 0 2px var(--primary) inset;
+}
+
+.theme-toggle .theme-toggle__icon {
+  transition: transform 0.2s ease;
+}
+
+.theme-toggle.is-on .theme-toggle__icon {
+  transform: translateX(16px);
 }
 
 .table {
@@ -1259,7 +1429,7 @@ html[data-theme=dark] .theme-toggle .moon {
   --border: #2a3340;
   --text: #e8eef6;
   --text-muted: #9aa8bb;
-  --brand: #5b8cff;
+  --brand: #1D88FE;
   --brand-contrast: #0b0f14;
   --accent: #7ad8cf;
   --accent-2: #a485ff;
@@ -1417,14 +1587,24 @@ h6 {
   transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
   background: var(--surface-raise, var(--brand));
   color: var(--brand-contrast);
+  transition: 0.3s ease-in-out;
 }
-
 .btn:hover {
   filter: brightness(1.06);
 }
 
-.btn:active {
+.btn .btn:active {
   filter: brightness(0.96);
+}
+
+.btn--primary {
+  background: var(--surface-raise, var(--brand));
+  color: var(--brand-contrast);
+  border-color: var(--border);
+}
+.btn--primary:hover {
+  background-color: var(--core--colors--primary--200);
+  color: var(--text);
 }
 
 .btn--secondary {
@@ -1796,6 +1976,7 @@ a:focus-visible {
   display: inline-block;
   /* خلفية وحدود متناغمة مع سطح الثيم */
   background: color-mix(in oklab, var(--surface, #0f172a), #fff 6%);
+  background: color-mix(in oklab, var(--accent-2, #0f172a), #fff 6%);
   border: 1px solid color-mix(in oklab, var(--surface, #0f172a), #fff 12%);
 }
 

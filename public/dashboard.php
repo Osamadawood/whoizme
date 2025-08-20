@@ -6,7 +6,14 @@ require_once __DIR__ . '/../includes/auth_guard.php';
 $page_title = 'Dashboard';
 include __DIR__ . '/partials/app_header.php';
 ?>
-
+<?php
+  // Topbar (shared across authenticated pages)
+  $breadcrumbs = [
+    ['label' => 'Home', 'url' => '/dashboard.php'],
+    ['label' => $page_title]
+  ];
+  include __DIR__ . '/partials/app_topbar.php';
+?>
 <main class="dashboard">
   <div class="container dash-grid">
 

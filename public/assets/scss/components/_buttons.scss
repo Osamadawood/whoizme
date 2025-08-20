@@ -1,15 +1,61 @@
 @use "../core/mixins" as m;
 
 @mixin apply() {
-  .btn { @include m.button-base; background: var(--surface-raise, var(--brand)); color: var(--brand-contrast); }
-  .btn:hover { filter: brightness(1.06); }
-  .btn:active { filter: brightness(.96); }
+  .btn {
+    @include m.button-base;
+    background: var(--surface-raise, var(--brand));
+    color: var(--brand-contrast);
+    transition: .3s ease-in-out;
 
-  .btn--secondary { background: var(--surface); color: var(--text); border-color: var(--border); }
-  .btn--ghost     { background: transparent; color: var(--text); border-color: var(--border); }
-  .btn--danger    { background: var(--danger); color: #fff; }
-  .btn--text      { background: transparent; color:  var(--text); }
+    &:hover {
+      filter: brightness(1.06);
+    }
+  }
 
-  .btn--sm { padding: .5rem .75rem; border-radius: var(--radius-sm); }
-  .btn--lg { padding: .75rem 1.25rem; font-size: 1.0625rem; }
+  .btn .btn:active {
+    filter: brightness(.96);
+  }
+
+  .btn--primary {
+    background: var(--surface-raise, var(--brand));
+    color: var(--brand-contrast);
+    border-color: var(--border);
+
+    &:hover {
+      background-color: var(--core--colors--primary--200);
+      color: var(--text);
+    }
+  }
+
+  .btn--secondary {
+    background: var(--surface);
+    color: var(--text);
+    border-color: var(--border);
+  }
+
+  .btn--ghost {
+    background: transparent;
+    color: var(--text);
+    border-color: var(--border);
+  }
+
+  .btn--danger {
+    background: var(--danger);
+    color: #fff;
+  }
+
+  .btn--text {
+    background: transparent;
+    color: var(--text);
+  }
+
+  .btn--sm {
+    padding: .5rem .75rem;
+    border-radius: var(--radius-sm);
+  }
+
+  .btn--lg {
+    padding: .75rem 1.25rem;
+    font-size: 1.0625rem;
+  }
 }

@@ -10,14 +10,25 @@
 
     /* خلفية وحدود متناغمة مع سطح الثيم */
     background: color-mix(in oklab, var(--surface, #0f172a), #fff 6%);
+    background: color-mix(in oklab, var(--accent-2, #0f172a), #fff 6%);
     border: 1px solid color-mix(in oklab, var(--surface, #0f172a), #fff 12%);
   }
 
-  .avatar--sm { inline-size: 28px; block-size: 28px; }
-  .avatar--lg { inline-size: 56px; block-size: 56px; }
+  .avatar--sm {
+    inline-size: 28px;
+    block-size: 28px;
+  }
+
+  .avatar--lg {
+    inline-size: 56px;
+    block-size: 56px;
+  }
 
   /* شارة الحالة (أونلاين مثلاً) */
-  .avatar-badge { position: relative; }
+  .avatar-badge {
+    position: relative;
+  }
+
   .avatar-badge::after {
     content: "";
     position: absolute;
@@ -38,9 +49,13 @@
     display: inline-flex;
     align-items: center;
   }
-  .avatar-stack > .avatar {
+
+  .avatar-stack>.avatar {
     margin-inline-start: -10px;
     border: 2px solid var(--page-bg, #0b1220);
   }
-  .avatar-stack > .avatar:first-child { margin-inline-start: 0; }
+
+  .avatar-stack>.avatar:first-child {
+    margin-inline-start: 0;
+  }
 }
