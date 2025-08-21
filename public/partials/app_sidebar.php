@@ -99,8 +99,12 @@ function render_icon(string $name): void {
         
       </nav>
 
-      <div class="side-nav__dash--img">
+      <!-- <div class="side-nav__dash--img">
         <img src="/assets/img/dash--sidebar--img.png" alt="">
+      </div> -->
+
+      <div class="side-nav__dash--img">
+        <video class="side-nav__media" src="/assets/img/dash--sidebar--vf.mp4" poster="/assets/img/dash--sidebar--img.png" autoplay muted loop playsinline preload="metadata"></video>
       </div>
 
 
