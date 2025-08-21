@@ -92,17 +92,37 @@ include __DIR__ . '/partials/app_header.php';
       <div class="twoup u-mb-16">
         <div class="panel">
           <div class="panel__body">
-            <div class="panel__title">Clicks trend</div>
+            <div class="panel__title u-flex u-ai-center u-jc-between">
+              <span>Clicks trend</span>
+              <div class="segmented" role="tablist" aria-label="Range selector">
+                <button class="segmented__btn is-active" role="tab" aria-selected="true" data-range="7d">7d</button>
+                <button class="segmented__btn" role="tab" aria-selected="false" data-range="30d">30d</button>
+                <button class="segmented__btn" role="tab" aria-selected="false" data-range="90d">90d</button>
+              </div>
+            </div>
             <div class="chart" role="img" aria-label="Clicks trend area chart placeholder"></div>
+            <div class="empty muted" aria-hidden="true">No data yet – create your first link to see trends.</div>
           </div>
         </div>
         <div class="panel">
           <div class="panel__body">
-            <div class="panel__title">Recent activity</div>
-            <ul class="muted list-plain">
-              <li><strong>os.me/summer</strong> • 312 clicks • 09:30 AM</li>
-              <li><strong>os.me/menu-qr</strong> • 128 scans • 08:47 AM</li>
-              <li><strong>os.me/launch</strong> • 1.2k clicks • Yesterday</li>
+            <div class="panel__title u-flex u-ai-center u-jc-between">
+              <span>Recent activity</span>
+              <a href="/activity.php" class="link-muted" aria-label="View all activity">View all</a>
+            </div>
+            <ul class="activity list-plain">
+              <li class="activity__item">
+                <span class="activity__icon" aria-hidden="true">🔗</span>
+                <span class="activity__main"><strong>os.me/summer</strong> <span class="muted">· 312 clicks · 09:30 AM</span></span>
+              </li>
+              <li class="activity__item">
+                <span class="activity__icon" aria-hidden="true">📷</span>
+                <span class="activity__main"><strong>os.me/menu-qr</strong> <span class="muted">· 128 scans · 08:47 AM</span></span>
+              </li>
+              <li class="activity__item">
+                <span class="activity__icon" aria-hidden="true">🚀</span>
+                <span class="activity__main"><strong>os.me/launch</strong> <span class="muted">· 1.2k clicks · Yesterday</span></span>
+              </li>
             </ul>
           </div>
         </div>
@@ -112,6 +132,15 @@ include __DIR__ . '/partials/app_header.php';
       <div class="panel">
         <div class="panel__body">
           <div class="panel__title">Top links & QR</div>
+          <div class="u-flex u-ai-center u-jc-between u-mb-4">
+            <div class="filters segmented" role="tablist" aria-label="Filter type">
+              <button class="segmented__btn is-active" role="tab" aria-selected="true" data-filter="all">All</button>
+              <button class="segmented__btn" role="tab" aria-selected="false" data-filter="links">Links</button>
+              <button class="segmented__btn" role="tab" aria-selected="false" data-filter="qr">QR</button>
+              <button class="segmented__btn" role="tab" aria-selected="false" data-filter="pages">Pages</button>
+            </div>
+            <a href="/exports/top-items.csv" class="btn btn--ghost btn--sm">Export CSV</a>
+          </div>
           <table class="table" role="table">
             <thead>
               <tr>
@@ -125,21 +154,22 @@ include __DIR__ . '/partials/app_header.php';
             <tbody>
               <tr>
                 <td>Summer Campaign</td>
-                <td>Short link</td>
+                <td><span class="badge">Short link</span></td>
                 <td>9,842</td>
-                <td><span class="badge badge--up">+4.8%</span></td>
+                <td>
+                  <span class="badge badge--up">+4.8%</span></td>
                 <td>Mar 03</td>
               </tr>
               <tr>
                 <td>Restaurant Menu</td>
-                <td>QR</td>
+                <td><span class="badge">QR</span></td>
                 <td>5,103</td>
                 <td><span class="badge badge--down">−1.2%</span></td>
                 <td>Feb 27</td>
               </tr>
               <tr>
                 <td>Landing — Spring</td>
-                <td>Short link</td>
+                <td><span class="badge">Short link</span></td>
                 <td>3,258</td>
                 <td><span class="badge badge--up">+2.1%</span></td>
                 <td>Feb 18</td>
@@ -154,4 +184,13 @@ include __DIR__ . '/partials/app_header.php';
 
 </main>
 
+<script>
+document.addEventListener('click', (e)=>{
+  const btn = e.target.closest('.segmented__btn');
+  if(!btn) return;
+  const group = btn.closest('.segmented');
+  group.querySelectorAll('.segmented__btn').forEach(b=>b.classList.remove('is-active'));
+  btn.classList.add('is-active');
+});
+</script>
 <?php include __DIR__ . '/partials/app_footer.php'; ?>

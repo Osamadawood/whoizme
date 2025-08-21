@@ -171,21 +171,6 @@
   }
 }
 
-.badge {
-  font-size: 1.2rem;
-  padding: 0.25rem 0.6rem;
-  border-radius: 999px;
-  border: 1px solid currentColor;
-}
-
-.badge--up {
-  color: var(--success);
-}
-
-.badge--down {
-  color: var(--danger);
-}
-
 /* Entry point: compile to /public/assets/css/app(.min).css */
 /* === Core @use must come first (no rules before them) === */
 /* Entry point: compile to /public/assets/css/app(.min).css */
@@ -1568,7 +1553,6 @@ html[data-theme=dark] .theme-toggle .moon {
   /* Two-up row */
   /* Chart placeholder */
   /* Table */
-  /* badges */
   /* helpers */
   /* Ensure badges are always perfect pills regardless of font-size */
 }
@@ -1620,8 +1604,10 @@ html[data-theme=dark] .theme-toggle .moon {
 }
 .dashboard .panel__title {
   color: var(--muted);
-  font-size: 0.95rem;
-  margin-bottom: 8px;
+  color: var(--text);
+  font-size: 1.125rem;
+  margin-bottom: 1rem;
+  font-weight: 500;
 }
 .dashboard .kpis {
   display: grid;
@@ -1686,26 +1672,111 @@ html[data-theme=dark] .theme-toggle .moon {
 .dashboard .table td:last-child {
   border-radius: 0 10px 10px 0;
 }
-.dashboard .badge {
-  font-size: 0.75rem;
-  padding: 0.25rem 0.5rem;
-  border-radius: 999px;
-  border: 1px solid currentColor;
-}
-.dashboard .badge--up {
-  color: var(--success);
-}
-.dashboard .badge--down {
-  color: var(--danger);
-}
 .dashboard .u-mb-16 {
   margin-bottom: 16px;
 }
 .dashboard .u-mb-8 {
   margin-bottom: 8px;
 }
-.dashboard .badge {
-  border-radius: 9999px;
+
+/* ===== Dashboard widgets (trend, activity, table filters) ===== */
+/* segmented control */
+.segmented {
+  display: inline-flex;
+  gap: 0.4rem;
+  padding: 0.2rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-default);
+  background: var(--surface);
+}
+
+.segmented__btn {
+  height: 2.8rem;
+  min-width: 3.6rem;
+  padding: 0 0.8rem;
+  border: 0;
+  border-radius: var(--radius-default);
+  cursor: pointer;
+  background: transparent;
+  color: var(--text);
+  font-size: 1rem;
+  line-height: 2.8rem;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.segmented__btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.segmented__btn.is-active {
+  background: var(--primary);
+  color: var(--text-inverse);
+}
+
+/* small link variant */
+.link-muted {
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.link-muted:hover {
+  color: var(--text);
+  text-decoration: underline;
+}
+
+/* activity feed */
+.activity {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.activity__item {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.activity__icon {
+  width: 1.8rem;
+  text-align: center;
+  opacity: 0.9;
+}
+
+.activity__main .muted {
+  color: var(--text-muted);
+}
+
+/* empty state under chart */
+.empty {
+  margin-top: 0.8rem;
+  color: var(--text-muted);
+  font-size: 1rem;
+}
+
+/* chart placeholder */
+.chart {
+  width: 100%;
+  min-height: 22rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px dashed var(--border);
+}
+
+.u-flex {
+  display: flex;
+}
+
+.u-ai-center {
+  align-items: center;
+}
+
+.u-jc-between {
+  justify-content: space-between;
+}
+
+.u-mb-8 {
+  margin-bottom: 0.8rem;
 }
 
 /* === Utilities === */
@@ -1796,7 +1867,8 @@ html[data-theme=dark] .theme-toggle .moon {
   --ok: #22c55e;
   --warn: #f59e0b;
   --info: #38bdf8;
-  --danger: #ef4444;
+  --success: #7fdca4;
+  --danger: #ff5a65;
 }
 
 /* - ثيم فاتح - */
@@ -2431,28 +2503,42 @@ a:focus-visible {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  font-size: 0.75rem;
-  line-height: 1;
-  padding: 0.4rem 0.6rem;
-  border-radius: var(--radius-sm, 0.5rem);
-  background: color-mix(in oklab, var(--surface, #0f172a), #fff 8%);
-  border: 1px solid color-mix(in oklab, var(--surface, #0f172a), #fff 16%);
-  color: var(--text, #e5e7eb);
+  font-size: 0.875rem;
+  position: relative;
 }
-
+.badge::before {
+  font-family: "uicons-regular-rounded";
+  font-size: 0.75rem;
+  position: absolute;
+  right: 0.4rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.badge--up::before {
+  content: "\f187";
+}
+.badge--down::before {
+  content: "\f163";
+}
 .badge--brand {
-  background: color-mix(in oklab, var(--brand, #6d28d9), #000 20%);
-  color: #fff;
+  background: color-mix(in oklab, var(--brand, #6d28d9), --surface 20%);
+  color: var(--text);
   border-color: transparent;
 }
-
 .badge--muted {
-  color: var(--muted, #94a3b8);
+  color: var(--muted, --text-muted);
 }
-
 .badge--ghost {
   background: transparent;
-  border-color: color-mix(in oklab, var(--surface, #0f172a), #fff 16%);
+  border-color: color-mix(in oklab, var(--surface, --surface), white 16%);
+}
+.badge--up {
+  color: var(--success);
+  padding-inline-end: 1.75rem;
+}
+.badge--down {
+  color: var(--danger);
+  padding-inline-end: 1.75rem;
 }
 
 .tooltip {

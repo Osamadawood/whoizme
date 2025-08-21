@@ -21,7 +21,8 @@
         ok: #22c55e,
         warn: #f59e0b,
         info: #38bdf8,
-        danger: #ef4444));
+        success: #7fdca4,
+        danger: #ff5a65));
 
   $colors-light: if(map.has-key($brand-vars, "colors-light"),
       map.get($brand-vars, "colors-light"),

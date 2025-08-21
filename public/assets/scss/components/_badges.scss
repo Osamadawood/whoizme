@@ -2,14 +2,63 @@
 
 @mixin apply() {
   .badge {
-    display:inline-flex; align-items:center; gap:.35rem;
-    font-size:.75rem; line-height:1; padding:.4rem .6rem;
-    border-radius: var(--radius-sm, .5rem);
-    background: color-mix(in oklab, var(--surface, #0f172a), #fff 8%);
-    border: 1px solid color-mix(in oklab, var(--surface, #0f172a), #fff 16%);
-    color: var(--text, #e5e7eb);
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    font-size: .875rem;
+    position: relative;
+
+    &::before {
+      // position: absolute;
+      // content: '';
+      // right: 0;
+      // transition: opacity .15s ease-in-out;
+
+      font-family: "uicons-regular-rounded";
+      font-size: .75rem;
+      position: absolute;
+      right: .4rem;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    &--up::before {
+      content: "\f187";
+    }
+
+    &--down::before {
+      content: "\f163";
+    }
+
+    // Arrow down
+
+    &--brand {
+      background: color-mix(in oklab, var(--brand, #6d28d9), --surface 20%);
+      color: var(--text);
+      border-color: transparent;
+    }
+
+    &--muted {
+      color: var(--muted, --text-muted);
+    }
+
+    &--ghost {
+      background: transparent;
+      border-color: color-mix(in oklab, var(--surface, --surface), white 16%);
+    }
+
+    &--up {
+      color: var(--success);
+      padding-inline-end: 1.75rem;
+    }
+
+    &--down {
+      color: var(--danger);
+      padding-inline-end: 1.75rem;
+    }
   }
-  .badge--brand  { background: color-mix(in oklab, var(--brand, #6d28d9), #000 20%); color:#fff; border-color: transparent; }
-  .badge--muted  { color: var(--muted, #94a3b8); }
-  .badge--ghost  { background: transparent; border-color: color-mix(in oklab, var(--surface, #0f172a), #fff 16%); }
+
+
+
+
 }

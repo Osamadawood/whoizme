@@ -81,8 +81,10 @@
 
     &__title {
       color: var(--muted);
-      font-size: .95rem;
-      margin-bottom: 8px;
+      color: var(--text);
+      font-size: 1.125rem;
+      margin-bottom: 1rem;
+      font-weight: 500;
     }
   }
 
@@ -171,21 +173,6 @@
     }
   }
 
-  /* badges */
-  .badge {
-    font-size: .75rem;
-    padding: .25rem .5rem;
-    border-radius: 999px;
-    border: 1px solid currentColor;
-  }
-
-  .badge--up {
-    color: var(--success);
-  }
-
-  .badge--down {
-    color: var(--danger);
-  }
 
   /* helpers */
   .u-mb-16 {
@@ -197,7 +184,134 @@
   }
 
   /* Ensure badges are always perfect pills regardless of font-size */
-  .badge {
-    border-radius: 9999px;
-  }
+
+}
+
+/* ===== Dashboard widgets (trend, activity, table filters) ===== */
+
+/* segmented control */
+.segmented {
+  display: inline-flex;
+  gap: .4rem;
+  padding: .2rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-default);
+  background: var(--surface);
+}
+
+.segmented__btn {
+  height: 2.8rem;
+  min-width: 3.6rem;
+  padding: 0 .8rem;
+  border: 0;
+  border-radius: var(--radius-default);
+  cursor: pointer;
+  background: transparent;
+  color: var(--text);
+  font-size: 1rem;
+  line-height: 2.8rem;
+  transition: background .15s ease, color .15s ease;
+}
+
+.segmented__btn:hover {
+  background: rgba(255, 255, 255, .06);
+}
+
+.segmented__btn.is-active {
+  background: var(--primary);
+  color: var(--text-inverse);
+}
+
+/* small link variant */
+.link-muted {
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.link-muted:hover {
+  color: var(--text);
+  text-decoration: underline;
+}
+
+/* activity feed */
+.activity {
+  display: flex;
+  flex-direction: column;
+  gap: .8rem;
+}
+
+.activity__item {
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+}
+
+.activity__icon {
+  width: 1.8rem;
+  text-align: center;
+  opacity: .9;
+}
+
+.activity__main .muted {
+  color: var(--text-muted);
+}
+
+/* empty state under chart */
+.empty {
+  margin-top: .8rem;
+  color: var(--text-muted);
+  font-size: 1rem;
+}
+
+/* chart placeholder */
+.chart {
+  width: 100%;
+  min-height: 22rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .03);
+  border: 1px dashed var(--border);
+}
+
+// .badge {
+//   display: inline-flex;
+//   align-items: center;
+//   justify-content: center;
+//   height: 2.4rem;
+//   padding: 0 .8rem;
+//   border-radius: 999px;
+//   font-size: 1.2rem;
+//   line-height: 2.4rem;
+//   color: var(--text);
+//   background: rgba(255, 255, 255, .06);
+//   border: 1px solid var(--border);
+// }
+
+// .badge--up {
+//   color: #16A34A;
+//   /* success-600 */
+//   background: rgba(22, 163, 74, .08);
+//   border-color: rgba(22, 163, 74, .25);
+// }
+
+// .badge--down {
+//   color: #EF4444;
+//   /* danger-500 */
+//   background: rgba(239, 68, 68, .08);
+//   border-color: rgba(239, 68, 68, .25);
+// }
+
+.u-flex {
+  display: flex;
+}
+
+.u-ai-center {
+  align-items: center;
+}
+
+.u-jc-between {
+  justify-content: space-between;
+}
+
+.u-mb-8 {
+  margin-bottom: .8rem;
 }
