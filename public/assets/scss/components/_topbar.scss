@@ -85,13 +85,6 @@
             border-color: var(--border-500);
         }
 
-        &:focus {
-            // outline: none;
-            // border-color: var(--primary-400);
-            // box-shadow: 0 0 0 2px color-mix(in oklab, var(--primary-400) 28%, transparent);
-            // background: var(--surface-850, var(--surface-800));
-        }
-
         // Hide Safari/Chromium default search decorations (white square)
         &::-webkit-search-decoration,
         &::-webkit-search-cancel-button,
