@@ -51,7 +51,8 @@
   .panel {
     background: var(--surface);
     border: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
-    border-radius: 12px;
+    border-color: #0a0e1a;
+    border-radius: var(--radius-default);
     box-shadow: var(--shadow-sm);
 
     &--ghost {
@@ -121,7 +122,7 @@
 
   .kpi {
     padding: 16px;
-    border-radius: 12px;
+    border-radius: var(--radius-default);
     border: 1px dashed color-mix(in oklab, var(--text) 10%, transparent);
 
     &__value {

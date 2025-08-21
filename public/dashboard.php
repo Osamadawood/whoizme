@@ -9,8 +9,7 @@ include __DIR__ . '/partials/app_header.php';
 <?php
   // Topbar (shared across authenticated pages)
   $breadcrumbs = [
-    ['label' => 'Home', 'url' => '/dashboard.php'],
-    ['label' => $page_title]
+    ['label' => 'Dashboard']
   ];
   include __DIR__ . '/partials/app_topbar.php';
 ?>
@@ -18,21 +17,18 @@ include __DIR__ . '/partials/app_header.php';
   <div class="container dash-grid">
 
     <!-- ============ Sidebar ============ -->
-    <aside class="panel side-nav">
-      <div class="panel__body">
-        <div class="side__title">Dashboard</div>
-        <nav class="side-list u-mb-16" aria-label="Sidebar">
-          <a class="side-link is-active" href="/dashboard.php">Overview</a>
-          <a class="side-link" href="/links.php">Links</a>
-          <a class="side-link" href="/qr.php">QR Codes</a>
-          <a class="side-link" href="/analytics.php">Analytics</a>
-          <a class="side-link" href="/templates.php">Templates</a>
-          <a class="side-link" href="/menus.php">Menus</a>
-          <a class="side-link" href="/settings.php">Settings</a>
-        </nav>
-        <a class="btn btn-primary" href="/create-link.php">Create link</a>
-      </div>
-    </aside>
+    <?php
+      $sidebar_path = __DIR__ . '/partials/app_sidebar.php';
+      if (file_exists($sidebar_path)) {
+        include $sidebar_path;
+      } else {
+        error_log("[whoizme] Sidebar partial missing: {$sidebar_path}");
+        echo '<aside class="sidebar sidebar--placeholder">'
+           . '<div class="sidebar__section"><strong>Sidebar</strong></div>'
+           . '<p class="muted">Sidebar partial not found. Please add <code>/partials/app_sidebar.php</code>.</p>'
+           . '</aside>';
+      }
+    ?>
 
     <!-- ============ Main content ============ -->
     <section class="maincol">

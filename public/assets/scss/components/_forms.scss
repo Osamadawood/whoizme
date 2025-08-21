@@ -1,12 +1,29 @@
 @use "../core/mixins" as m;
 
 @mixin apply() {
-  .form { display: grid; gap: 1rem; }
+  .form {
+    display: grid;
+    gap: 1rem;
+  }
 
-  .form-group { display: grid; gap: .5rem; margin-block-end: var(--sp-4); }
-  label { color: var(--text); font-weight: 600;margin-bottom: 1.6rem;
-    display: block; }
-  .help, .hint { color: var(--text-muted); font-size: .875rem; }
+  .form-group {
+    display: grid;
+    gap: .5rem;
+    margin-block-end: var(--sp-4);
+  }
+
+  label {
+    color: var(--text);
+    font-weight: 600;
+    margin-bottom: 1.6rem;
+    display: block;
+  }
+
+  .help,
+  .hint {
+    color: var(--text-muted);
+    font-size: .875rem;
+  }
 
   input[type="text"],
   input[type="email"],
@@ -16,9 +33,18 @@
   input[type="number"],
   select,
   textarea,
-  .form-control { @include m.input-base; }
+  .form-control {
+    @include m.input-base;
+  }
 
-  textarea { min-block-size: 120px; resize: vertical; }
+  textarea {
+    min-block-size: 120px;
+    resize: vertical;
+  }
 
-  .input-row { display:flex; gap: .75rem; align-items:center; }
+  .input-row {
+    display: flex;
+    gap: .75rem;
+    align-items: center;
+  }
 }

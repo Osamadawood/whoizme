@@ -19,7 +19,7 @@
   appearance: none;
   inline-size: 100%;
   padding: .75rem .875rem;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-default);
   border: 1px solid var(--border);
   background: var(--field-bg, color-mix(in oklab, var(--surface), white 3%));
   color: var(--text);
@@ -65,7 +65,7 @@
   justify-content: center;
   gap: .5rem;
   padding: .625rem 1rem;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-default);
   border: 1px solid transparent;
   font: inherit;
   font-weight: 600;

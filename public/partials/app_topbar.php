@@ -101,7 +101,7 @@ if (strtolower($page_title) === 'dashboard') {
   <div class="app-topbar__left">
     <nav class="breadcrumb" aria-label="Breadcrumb">
       <?php foreach ($breadcrumbs as $i => $bc): ?>
-        <?php if ($i > 0): ?><span class="breadcrumb__sep">›</span><?php endif; ?>
+        <?php if ($i > 0): ?><span class="breadcrumb__sep" aria-hidden="true"><i class="fi fi-rr-angle-small-right"></i></span><?php endif; ?>
         <?php if (!empty($bc['url'])): ?>
           <a class="breadcrumb__item" href="<?= htmlspecialchars($bc['url']) ?>"><?= htmlspecialchars($bc['label']) ?></a>
         <?php else: ?>
@@ -112,14 +112,17 @@ if (strtolower($page_title) === 'dashboard') {
   </div>
 
   <div class="app-topbar__right">
-    <!-- Search (جاهز للتوصيل لاحقًا) -->
     <form class="topbar-search" action="/search.php" method="get" role="search">
       <input class="topbar-search__input" type="search" name="q" placeholder="Search links &amp; QR..." />
+      <button class="topbar-search__btn" type="button" aria-hidden="true" tabindex="-1">
+        <i class="fi fi-rr-search" aria-hidden="true"></i>
+      </button>
     </form>
 
     <!-- Create new (Modal) -->
     <button type="button" class="btn btn--primary topbar__create" data-action="open-create">
-      + Create new
+      <i class="fi fi-rr-plus" aria-hidden="true"></i>
+      <span>Create new</span>
     </button>
 
     <!-- Theme toggle (LocalStorage) -->
@@ -133,7 +136,7 @@ if (strtolower($page_title) === 'dashboard') {
     </a>
 
     <!-- Account -->
-    <div class="account">
+    <div class="account" id="accountArea">
       <button type="button" class="avatar <?= $avatar ? '' : 'avatar--initial ' . wz_avatar_tint_class($user) ?>" id="accountBtn" aria-label="Account menu" aria-expanded="false">
         <?php if ($avatar): ?>
           <img src="<?= htmlspecialchars($avatar) ?>" alt="Account avatar">
@@ -143,33 +146,62 @@ if (strtolower($page_title) === 'dashboard') {
       </button>
 
       <div class="account__menu" id="accountMenu" role="menu" aria-hidden="true" hidden>
-        <a href="/profile.php" role="menuitem">Profile settings</a>
-        <a href="/logout.php" class="danger" role="menuitem">Logout</a>
+        <a href="/profile.php" role="menuitem">
+          <i class="fi fi-rr-user" aria-hidden="true"></i>
+          <span>View profile</span>
+        </a>
+
+        <a href="/settings.php" role="menuitem">
+          <i class="fi fi-rr-settings" aria-hidden="true"></i>
+          <span>Settings</span>
+        </a>
+
+        <hr class="account__menu-divider" aria-hidden="true">
+
+        <a href="/help/faqs.php" role="menuitem">
+          <!-- <i class="fi fi-rr-info" aria-hidden="true"></i> -->
+          <i class="fi fi-rr-interrogation" aria-hidden="true"></i>
+          <span>FAQs</span>
+        </a>
+
+        <a href="/support.php" role="menuitem">
+          <i class="fi fi-rr-headset" aria-hidden="true"></i>
+          <span>Support</span>
+        </a>
+
+        <a href="/logout.php" class="danger" role="menuitem">
+          <i class="fi fi-rr-sign-out-alt" aria-hidden="true"></i>
+          <span>Log out</span>
+        </a>
       </div>
+      
     </div>
   </div>
 </div>
 
-<!-- Lightweight create modal -->
-<div class="modal" id="createModal" aria-hidden="true" role="dialog" aria-labelledby="createTitle" hidden>
-  <div class="modal__backdrop" data-close="modal"></div>
-  <div class="modal__panel" role="document">
-    <div class="modal__header">
-      <h3 id="createTitle">What do you want to create?</h3>
-      <button type="button" class="modal__close" data-close="modal" aria-label="Close">×</button>
+<!-- Quick Create Modal (Whoizme DS) -->
+<div id="createModal" class="create-modal" role="dialog" aria-modal="true" aria-labelledby="createTitle" aria-hidden="true" hidden>
+  <div class="create-modal__backdrop" data-close="modal"></div>
+  <div class="create-modal__panel create-modal__dialog" role="document">
+    <div class="create-modal__header">
+      <h3 id="createTitle" class="create-modal__title">What do you want to create?</h3>
+      <button type="button" class="create-modal__close" data-close="modal" aria-label="Close">×</button>
     </div>
-    <div class="modal__grid">
-      <a class="modal__card" href="/links/create.php">
-        <span class="modal__icon" aria-hidden="true">🔗</span>
-        <span class="modal__title">Shorten a link</span>
+    <div class="create-modal__grid">
+      <a class="create-card" href="/links/create.php">
+        <i class="create-card__icon fi fi-rr-link" aria-hidden="true"></i>
+        <span class="create-card__title">Shorten a link</span>
+        <span class="create-card__kbd">L</span>
       </a>
-      <a class="modal__card" href="/qr/create.php">
-        <span class="modal__icon" aria-hidden="true">🔳</span>
-        <span class="modal__title">Create a QR Code</span>
+      <a class="create-card" href="/qr/create.php">
+        <i class="create-card__icon fi fi-rr-qrcode" aria-hidden="true"></i>
+        <span class="create-card__title">Create a QR Code</span>
+        <span class="create-card__kbd">Q</span>
       </a>
-      <a class="modal__card" href="/templates/create.php">
-        <span class="modal__icon" aria-hidden="true">📄</span>
-        <span class="modal__title">Build a landing page</span>
+      <a class="create-card" href="/templates/create.php">
+        <i class="create-card__icon fi fi-rr-browser" aria-hidden="true"></i>
+        <span class="create-card__title">Build a landing page</span>
+        <span class="create-card__kbd">P</span>
       </a>
     </div>
   </div>
@@ -254,24 +286,27 @@ if (strtolower($page_title) === 'dashboard') {
   // ===== Create modal =====
   const openBtn = document.querySelector('[data-action="open-create"]');
   const modal   = document.getElementById('createModal');
-  const closeEls= modal ? modal.querySelectorAll('[data-close="modal"]') : null;
+  const backdrop = modal ? modal.querySelector('.create-modal__backdrop') : null;
+  const closeEls = modal ? modal.querySelectorAll('[data-close="modal"]') : null;
 
   function openModal(){
     if (!modal) return;
-    modal.setAttribute('aria-hidden', 'false');
     modal.classList.add('is-open');
     modal.hidden = false;
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('no-scroll');
   }
   function closeModal(){
     if (!modal) return;
-    modal.setAttribute('aria-hidden', 'true');
     modal.classList.remove('is-open');
     modal.hidden = true;
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('no-scroll');
   }
 
   openBtn && openBtn.addEventListener('click', (e)=>{ e.preventDefault(); openModal(); });
+  backdrop && backdrop.addEventListener('click', closeModal);
   closeEls && closeEls.forEach(el => el.addEventListener('click', (e)=>{ e.preventDefault(); closeModal(); }));
-  modal && modal.addEventListener('click', (e)=>{ if(e.target.classList.contains('modal__backdrop')) closeModal(); });
   document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeModal(); });
 })();
 </script>

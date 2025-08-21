@@ -117,7 +117,23 @@
     --muted: #a6adbb;
     --brand: #6c47ff;
     /* primary */
+    --radius-default: 12px;
     --radius-full: 200px;
+
+    /* Extended tokens (dark) to match DS scale */
+    --surface-900: #0b0f14;
+    /* deepest bg */
+    --surface-800: #0f141b;
+    /* panel bg */
+    --surface-700: #131a23;
+    /* raised card */
+    --surface-600: #161c26;
+    /* headers / popovers */
+    --border-700: #2a3340;
+    /* strong border */
+    --border-600: #22252d;
+    /* default border (alias of --border) */
+    --text-muted: var(--muted);
   }
 
   :root[data-theme="light"] {
@@ -127,7 +143,23 @@
     --text: #111318;
     --muted: #6b7280;
     --brand: #5b7cfa;
+    --radius-default: 12px;
     --radius-full: 200px;
+
+    /* Extended tokens (light) to match DS scale */
+    --surface-900: #ffffff;
+    /* page */
+    --surface-800: #f7f8fa;
+    /* panel */
+    --surface-700: #eef2f7;
+    /* raised card */
+    --surface-600: #eef2f7;
+    /* headers / popovers (same as 700 for now) */
+    --border-700: #d6e0ea;
+    /* strong border */
+    --border-600: #e6e8ee;
+    /* default border (alias of --border) */
+    --text-muted: var(--muted);
   }
 
   /* Guarantee page colors even if a page forgets to set them */

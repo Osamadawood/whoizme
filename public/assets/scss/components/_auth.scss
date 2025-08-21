@@ -250,7 +250,7 @@
   align-items: center;
   gap: .55rem;
   padding: .5rem .9rem;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-default);
   background: color-mix(in oklab, var(--surface), #fff 1%);
   border: 1px solid var(--border);
   color: var(--text);
@@ -322,7 +322,7 @@ html[data-theme="dark"] .theme-toggle .moon {
     justify-content: space-between;
     padding: 1.6rem 2rem;
     border: 1px solid var(--color-border, rgba(255, 255, 255, 0.1));
-    border-radius: 12px;
+    border-radius: var(--radius-default);
     background: var(--surface-elevated, rgba(255, 255, 255, 0.02));
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
 

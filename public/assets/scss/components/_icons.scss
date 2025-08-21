@@ -1,13 +1,14 @@
-/* components/_icons.scss
-   - مساعد بسيط للأيقونات يعتمد على CSS variables الموجودة في الثيم
-   - بدون أي @use لتفادي الـ loops، ويشتغل مباشرة مع app.scss
-*/
+// public/assets/scss/core/_icons.scss
+@import url("https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css");
+@import url("https://cdn-uicons.flaticon.com/uicons-brands/css/uicons-brands.css");
 
 @mixin apply() {
+
   /* أيقونة عامة: إما <svg class="icon"> أو <i class="icon"></i> */
   .icon {
     display: inline-block;
-    inline-size: 1.125rem;  /* 18px */
+    inline-size: 1.125rem;
+    /* 18px */
     block-size: 1.125rem;
     line-height: 1;
     color: var(--text, #e5e7eb);
@@ -15,8 +16,18 @@
   }
 
   /* أحجام إضافية */
-  .icon--sm { inline-size: .875rem; block-size: .875rem; }   /* 14px */
-  .icon--lg { inline-size: 1.375rem; block-size: 1.375rem; } /* 22px */
+  .icon--sm {
+    inline-size: .875rem;
+    block-size: .875rem;
+  }
+
+  /* 14px */
+  .icon--lg {
+    inline-size: 1.375rem;
+    block-size: 1.375rem;
+  }
+
+  /* 22px */
 
   /* ضبط الـ SVG ليرث اللون والحجم */
   .icon svg {
@@ -31,7 +42,8 @@
   .icon-btn {
     display: inline-grid;
     place-items: center;
-    inline-size: 2.25rem;   /* 36px */
+    inline-size: 2.25rem;
+    /* 36px */
     block-size: 2.25rem;
     border-radius: var(--radius-sm, .5rem);
     border: 1px solid color-mix(in oklab, var(--surface, #0f172a), #fff 14%);
@@ -56,9 +68,46 @@
   }
 
   /* حالات لونية اختيارية */
-  .icon--muted   { color: var(--muted, #94a3b8); }
-  .icon--brand   { color: var(--brand, #7c3aed); }
-  .icon--danger  { color: #ef4444; }
-  .icon--success { color: #22c55e; }
-  .icon--warning { color: #f59e0b; }
+  .icon--muted {
+    color: var(--muted, #94a3b8);
+  }
+
+  .icon--brand {
+    color: var(--brand, #7c3aed);
+  }
+
+  .icon--danger {
+    color: #ef4444;
+  }
+
+  .icon--success {
+    color: #22c55e;
+  }
+
+  .icon--warning {
+    color: #f59e0b;
+  }
+}
+
+/* دمج Flaticon UIcons مع هيلبرزنا */
+.fi {
+  // كل أيقونات UIcons
+  display: inline-block;
+  font-size: 1.125rem; // 18px (خدها من tokens لو حابب)
+  line-height: 1;
+  vertical-align: middle;
+  color: var(--text, #e5e7eb);
+}
+
+/* أحجام سريعة */
+.fi--sm {
+  font-size: .875rem;
+}
+
+.fi--md {
+  font-size: 18px;
+}
+
+.fi--lg {
+  font-size: 1.375rem;
 }

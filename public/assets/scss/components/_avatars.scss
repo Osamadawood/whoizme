@@ -4,7 +4,7 @@
   .avatar {
     inline-size: 40px;
     block-size: 40px;
-    border-radius: 999px;
+    border-radius: var(--radius-default);
     overflow: hidden;
     display: inline-block;
 

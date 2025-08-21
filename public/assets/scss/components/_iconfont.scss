@@ -1,7 +1,10 @@
 /* components/_iconfont.scss
    جهّزناه لو هتضيف Icon Font لاحقًا. غيّر --icon-font-name عند الربط. */
 @mixin apply() {
-  :root { --icon-font-name: "WhoizmeIcons"; }
+  :root {
+    --icon-font-name: "WhoizmeIcons";
+  }
+
   /* مثال ربط لاحقًا:
   @font-face {
     font-family: var(--icon-font-name);
@@ -9,6 +12,11 @@
     font-display: swap;
   }
   */
-  .if { font-family: var(--icon-font-name), ui-sans-serif, system-ui; font-style: normal; font-weight: 400; }
+  .if {
+    font-family: var(--icon-font-name), ui-sans-serif, system-ui;
+    font-style: normal;
+    font-weight: 400;
+  }
+
   /* أمثلة: <i class="if"></i> أو <span class="if icon-home"></span> لو عندك mapping */
 }
