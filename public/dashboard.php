@@ -6,19 +6,14 @@ require_once __DIR__ . '/../includes/auth_guard.php';
 $page_title = 'Dashboard';
 include __DIR__ . '/partials/app_header.php';
 ?>
-<?php
-  // Topbar (shared across authenticated pages)
-  $breadcrumbs = [
-    ['label' => 'Dashboard']
-  ];
-  include __DIR__ . '/partials/app_topbar.php';
-?>
+
 <main class="dashboard">
-  <div class="container dash-grid">
+
 
     <!-- ============ Sidebar ============ -->
     <?php
       $sidebar_path = __DIR__ . '/partials/app_sidebar.php';
+      $sidebar_fixed = true; // hint for fixed/sticky layout (optional in partial)
       if (file_exists($sidebar_path)) {
         include $sidebar_path;
       } else {
@@ -29,6 +24,47 @@ include __DIR__ . '/partials/app_header.php';
            . '</aside>';
       }
     ?>
+
+  <div class="container dash-grid" role="region" aria-label="Dashboard layout">
+
+  <!-- ============ Topbar ============ -->
+  <div class="container topbar--inset" role="region" aria-label="Primary toolbar">
+    <?php
+      // Breadcrumbs: dashboard is root, so we do not repeat "Home"
+      $breadcrumbs = [ ['label' => 'Dashboard', 'href' => '/dashboard.php'] ];
+
+      // Topbar config handed to the partial (the partial should read $topbar if present)
+      $topbar = [
+        'search' => [
+          'enabled'     => true,
+          'placeholder' => 'Search links & QR…',
+          'action'      => '/search.php',
+          'name'        => 'q',
+          'method'      => 'GET',
+        ],
+        'actions' => [
+          'create_button' => [
+            'label' => '+ Create new',
+            'id'    => 'js-create-new',
+            'data'  => [ 'toggle' => 'create-dialog' ]
+          ],
+          'theme_toggle' => true,   // light/dark switch
+          'language'     => [
+            'enabled' => true,
+            'current' => (isset($_SESSION['lang']) ? $_SESSION['lang'] : 'EN'),
+            'options' => ['EN','AR']
+          ],
+          'profile'      => [
+            // the partial will fallback to initial if avatar is empty
+            'name'   => (isset($_SESSION['user_name']) ? $_SESSION['user_name'] : 'User'),
+            'avatar' => (isset($_SESSION['user_avatar']) ? $_SESSION['user_avatar'] : ''),
+          ]
+        ]
+      ];
+
+      include __DIR__ . '/partials/app_topbar.php';
+    ?>
+  </div>
 
     <!-- ============ Main content ============ -->
     <section class="maincol">
@@ -113,8 +149,132 @@ include __DIR__ . '/partials/app_header.php';
         </div>
       </div>
 
+      <!-- Table: top items -->
+      <div class="panel">
+        <div class="panel__body">
+          <div class="panel__title">Top links & QR</div>
+          <table class="table" role="table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Type</th>
+                <th>Clicks/Scans</th>
+                <th>Today</th>
+                <th>Created</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Summer Campaign</td>
+                <td>Short link</td>
+                <td>9,842</td>
+                <td><span class="badge badge--up">+4.8%</span></td>
+                <td>Mar 03</td>
+              </tr>
+              <tr>
+                <td>Restaurant Menu</td>
+                <td>QR</td>
+                <td>5,103</td>
+                <td><span class="badge badge--down">−1.2%</span></td>
+                <td>Feb 27</td>
+              </tr>
+              <tr>
+                <td>Landing — Spring</td>
+                <td>Short link</td>
+                <td>3,258</td>
+                <td><span class="badge badge--up">+2.1%</span></td>
+                <td>Feb 18</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Table: top items -->
+      <div class="panel">
+        <div class="panel__body">
+          <div class="panel__title">Top links & QR</div>
+          <table class="table" role="table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Type</th>
+                <th>Clicks/Scans</th>
+                <th>Today</th>
+                <th>Created</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Summer Campaign</td>
+                <td>Short link</td>
+                <td>9,842</td>
+                <td><span class="badge badge--up">+4.8%</span></td>
+                <td>Mar 03</td>
+              </tr>
+              <tr>
+                <td>Restaurant Menu</td>
+                <td>QR</td>
+                <td>5,103</td>
+                <td><span class="badge badge--down">−1.2%</span></td>
+                <td>Feb 27</td>
+              </tr>
+              <tr>
+                <td>Landing — Spring</td>
+                <td>Short link</td>
+                <td>3,258</td>
+                <td><span class="badge badge--up">+2.1%</span></td>
+                <td>Feb 18</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Table: top items -->
+      <div class="panel">
+        <div class="panel__body">
+          <div class="panel__title">Top links & QR</div>
+          <table class="table" role="table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Type</th>
+                <th>Clicks/Scans</th>
+                <th>Today</th>
+                <th>Created</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Summer Campaign</td>
+                <td>Short link</td>
+                <td>9,842</td>
+                <td><span class="badge badge--up">+4.8%</span></td>
+                <td>Mar 03</td>
+              </tr>
+              <tr>
+                <td>Restaurant Menu</td>
+                <td>QR</td>
+                <td>5,103</td>
+                <td><span class="badge badge--down">−1.2%</span></td>
+                <td>Feb 27</td>
+              </tr>
+              <tr>
+                <td>Landing — Spring</td>
+                <td>Short link</td>
+                <td>3,258</td>
+                <td><span class="badge badge--up">+2.1%</span></td>
+                <td>Feb 18</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
     </section>
   </div>
+
 </main>
 
 <?php include __DIR__ . '/partials/app_footer.php'; ?>

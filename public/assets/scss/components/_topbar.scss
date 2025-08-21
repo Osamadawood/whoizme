@@ -1,4 +1,10 @@
 /* Topbar sizing refinements */
+.topbar--inset {
+    width: 100%;
+    inline-size: 100% !important;
+    padding-inline: 0 !important;
+}
+
 .app-topbar {
     --tb-h: 56px;
     --tb-gap: 12px;
@@ -9,9 +15,7 @@
     align-items: center;
     justify-content: space-between;
     gap: var(--tb-gap);
-    padding: 12px var(--tb-pad-x);
-    border-bottom: 1px solid var(--border-700);
-    background: var(--surface-900);
+    padding-block-end: .5rem;
 }
 
 .app-topbar__left .breadcrumb {

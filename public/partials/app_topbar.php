@@ -97,82 +97,86 @@ if (strtolower($page_title) === 'dashboard') {
   }
 }
 ?>
-<div class="app-topbar" role="banner">
-  <div class="app-topbar__left">
-    <nav class="breadcrumb" aria-label="Breadcrumb">
-      <?php foreach ($breadcrumbs as $i => $bc): ?>
-        <?php if ($i > 0): ?><span class="breadcrumb__sep" aria-hidden="true"><i class="fi fi-rr-angle-small-right"></i></span><?php endif; ?>
-        <?php if (!empty($bc['url'])): ?>
-          <a class="breadcrumb__item" href="<?= htmlspecialchars($bc['url']) ?>"><?= htmlspecialchars($bc['label']) ?></a>
-        <?php else: ?>
-          <span class="breadcrumb__item is-current"><?= htmlspecialchars($bc['label']) ?></span>
-        <?php endif; ?>
-      <?php endforeach; ?>
-    </nav>
-  </div>
 
-  <div class="app-topbar__right">
-    <form class="topbar-search" action="/search.php" method="get" role="search">
-      <input class="topbar-search__input" type="search" name="q" placeholder="Search links &amp; QR..." />
-      <button class="topbar-search__btn" type="button" aria-hidden="true" tabindex="-1">
-        <i class="fi fi-rr-search" aria-hidden="true"></i>
-      </button>
-    </form>
+<div class="topbar--contained">
+  <div class="app-topbar" role="banner">
+    <div class="app-topbar__left">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <?php foreach ($breadcrumbs as $i => $bc): ?>
+          <?php if ($i > 0): ?><span class="breadcrumb__sep" aria-hidden="true"><i class="fi fi-rr-angle-small-right"></i></span><?php endif; ?>
+          <?php if (!empty($bc['url'])): ?>
+            <a class="breadcrumb__item" href="<?= htmlspecialchars($bc['url']) ?>"><?= htmlspecialchars($bc['label']) ?></a>
+          <?php else: ?>
+            <span class="breadcrumb__item is-current"><?= htmlspecialchars($bc['label']) ?></span>
+          <?php endif; ?>
+        <?php endforeach; ?>
+      </nav>
+    </div>
 
-    <!-- Create new (Modal) -->
-    <button type="button" class="btn btn--primary topbar__create" data-action="open-create">
-      <i class="fi fi-rr-plus" aria-hidden="true"></i>
-      <span>Create new</span>
-    </button>
+    <div class="app-topbar__right">
+      <form class="topbar-search" action="/search.php" method="get" role="search">
+        <input class="topbar-search__input" type="search" name="q" placeholder="Search links &amp; QR..." />
+        <button class="topbar-search__btn" type="button" aria-hidden="true" tabindex="-1">
+          <i class="fi fi-rr-search" aria-hidden="true"></i>
+        </button>
+      </form>
 
-    <!-- Theme toggle (LocalStorage) -->
-    <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle theme" aria-pressed="false">
-      <span class="theme-toggle__icon"></span>
-    </button>
-
-    <!-- Language pill: بتعرض اللغة الأخرى فقط -->
-    <a class="lang-pill" href="?lang=<?= $other ?>" title="Switch language">
-      <?= strtoupper($other) ?>
-    </a>
-
-    <!-- Account -->
-    <div class="account" id="accountArea">
-      <button type="button" class="avatar <?= $avatar ? '' : 'avatar--initial ' . wz_avatar_tint_class($user) ?>" id="accountBtn" aria-label="Account menu" aria-expanded="false">
-        <?php if ($avatar): ?>
-          <img src="<?= htmlspecialchars($avatar) ?>" alt="Account avatar">
-        <?php else: ?>
-          <span><?= htmlspecialchars($initial) ?></span>
-        <?php endif; ?>
+      <!-- Create new (Modal) -->
+      <button type="button" class="btn btn--primary topbar__create" data-action="open-create">
+        <i class="fi fi-rr-plus" aria-hidden="true"></i>
+        <span>Create new</span>
       </button>
 
-      <div class="account__menu" id="accountMenu" role="menu" aria-hidden="true" hidden>
-        <a href="/profile.php" role="menuitem">
-          <i class="fi fi-rr-user" aria-hidden="true"></i>
-          <span>View profile</span>
-        </a>
+      <!-- Theme toggle (LocalStorage) -->
+      <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle theme" aria-pressed="false">
+        <span class="theme-toggle__icon"></span>
+      </button>
 
-        <a href="/settings.php" role="menuitem">
-          <i class="fi fi-rr-settings" aria-hidden="true"></i>
-          <span>Settings</span>
-        </a>
+      <!-- Language pill: بتعرض اللغة الأخرى فقط -->
+      <a class="lang-pill" href="?lang=<?= $other ?>" title="Switch language">
+        <?= strtoupper($other) ?>
+      </a>
 
-        <hr class="account__menu-divider" aria-hidden="true">
+      <!-- Account -->
+      <div class="account" id="accountArea">
+        <button type="button" class="avatar <?= $avatar ? '' : 'avatar--initial ' . wz_avatar_tint_class($user) ?>" id="accountBtn" aria-label="Account menu" aria-expanded="false">
+          <?php if ($avatar): ?>
+            <img src="<?= htmlspecialchars($avatar) ?>" alt="Account avatar">
+          <?php else: ?>
+            <span><?= htmlspecialchars($initial) ?></span>
+          <?php endif; ?>
+        </button>
 
-        <a href="/help/faqs.php" role="menuitem">
-          <!-- <i class="fi fi-rr-info" aria-hidden="true"></i> -->
-          <i class="fi fi-rr-interrogation" aria-hidden="true"></i>
-          <span>FAQs</span>
-        </a>
+        <div class="account__menu" id="accountMenu" role="menu" aria-hidden="true" hidden>
+          <a href="/profile.php" role="menuitem">
+            <i class="fi fi-rr-user" aria-hidden="true"></i>
+            <span>View profile</span>
+          </a>
 
-        <a href="/support.php" role="menuitem">
-          <i class="fi fi-rr-headset" aria-hidden="true"></i>
-          <span>Support</span>
-        </a>
+          <a href="/settings.php" role="menuitem">
+            <i class="fi fi-rr-settings" aria-hidden="true"></i>
+            <span>Settings</span>
+          </a>
 
-        <a href="/logout.php" class="danger" role="menuitem">
-          <i class="fi fi-rr-sign-out-alt" aria-hidden="true"></i>
-          <span>Log out</span>
-        </a>
+          <hr class="account__menu-divider" aria-hidden="true">
+
+          <a href="/help/faqs.php" role="menuitem">
+            <!-- <i class="fi fi-rr-info" aria-hidden="true"></i> -->
+            <i class="fi fi-rr-interrogation" aria-hidden="true"></i>
+            <span>FAQs</span>
+          </a>
+
+          <a href="/support.php" role="menuitem">
+            <i class="fi fi-rr-headset" aria-hidden="true"></i>
+            <span>Support</span>
+          </a>
+
+          <a href="/logout.php" class="danger" role="menuitem">
+            <i class="fi fi-rr-sign-out-alt" aria-hidden="true"></i>
+            <span>Log out</span>
+          </a>
+        </div>
+        
       </div>
       
     </div>

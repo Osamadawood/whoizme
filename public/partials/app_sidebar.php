@@ -45,111 +45,113 @@ function render_icon(string $name): void {
 }
 ?>
 
-<aside class="side-nav" role="navigation" aria-label="Main sidebar">
-  <div class="side-nav__inner">
+<div class="sidebar-wrapper">
+  <aside class="side-nav" role="navigation" aria-label="Main sidebar">
+    <div class="side-nav__inner">
 
-    <!-- Brand / logo -->
-    <header class="side-nav__brand">
-      <a class="brand" href="/dashboard.php" aria-label="Whoizme Home">
-        <span class="brand__logo" aria-hidden="true"></span>
-        <span class="brand__name">Whoizme</span>
-      </a>
-    </header>
+      <!-- Brand / logo -->
+      <header class="side-nav__brand">
+        <a class="brand" href="/dashboard.php" aria-label="Whoizme Home">
+          <span class="brand__logo" aria-hidden="true"></span>
+          <span class="brand__name">Whoizme</span>
+        </a>
+      </header>
 
-    <!-- Search in dashboard -->
-    <form class="side-nav__search" action="/search.php" method="get" role="search">
-      <label class="visually-hidden" for="sidebar-search">Search dashboard</label>
-      <input id="sidebar-search" class="input input--search" type="search" name="q" placeholder="Search dashboard…" autocomplete="off">
-    </form>
+      <!-- Search in dashboard -->
+      <form class="side-nav__search" action="/search.php" method="get" role="search">
+        <label class="visually-hidden" for="sidebar-search">Search dashboard</label>
+        <input id="sidebar-search" class="input input--search" type="search" name="q" placeholder="Search dashboard…" autocomplete="off">
+      </form>
 
-    <!-- Primary links -->
-    <nav class="side-nav__list" aria-label="Sidebar items">
-      <a class="side-nav__link<?= $__is_active('dashboard.php') ?>" href="/dashboard.php">
-        <span class="side-nav__icon" aria-hidden="true">
-          <?php render_icon('home'); ?>
-        </span>
-        <span class="side-nav__text">Home</span>
-        <span class="side-nav__chev" aria-hidden="true"></span>
-      </a>
+      <!-- Primary links -->
+      <nav class="side-nav__list" aria-label="Sidebar items">
+        <a class="side-nav__link<?= $__is_active('dashboard.php') ?>" href="/dashboard.php">
+          <span class="side-nav__icon" aria-hidden="true">
+            <?php render_icon('home'); ?>
+          </span>
+          <span class="side-nav__text">Home</span>
+          <span class="side-nav__chev" aria-hidden="true"></span>
+        </a>
 
-      <a class="side-nav__link<?= $__is_active('features.php') ?>" href="/features.php">
-        <span class="side-nav__icon" aria-hidden="true">
-          <?php render_icon('star'); ?>
-        </span>
-        <span class="side-nav__text">Features</span>
-        <span class="side-nav__chev" aria-hidden="true"></span>
-      </a>
+        <a class="side-nav__link<?= $__is_active('features.php') ?>" href="/features.php">
+          <span class="side-nav__icon" aria-hidden="true">
+            <?php render_icon('star'); ?>
+          </span>
+          <span class="side-nav__text">Features</span>
+          <span class="side-nav__chev" aria-hidden="true"></span>
+        </a>
 
-      <a class="side-nav__link<?= $__is_active('users.php') ?>" href="/users.php">
-        <span class="side-nav__icon" aria-hidden="true">
-          <?php render_icon('users'); ?>
-        </span>
-        <span class="side-nav__text">Users</span>
-        <span class="side-nav__chev" aria-hidden="true"></span>
-      </a>
+        <a class="side-nav__link<?= $__is_active('users.php') ?>" href="/users.php">
+          <span class="side-nav__icon" aria-hidden="true">
+            <?php render_icon('users'); ?>
+          </span>
+          <span class="side-nav__text">Users</span>
+          <span class="side-nav__chev" aria-hidden="true"></span>
+        </a>
 
-      <a class="side-nav__link<?= $__is_active('pricing.php') ?>" href="/pricing.php">
-        <span class="side-nav__icon" aria-hidden="true">
-          <?php render_icon('tag'); ?>
-        </span>
-        <span class="side-nav__text">Pricing</span>
-        <span class="side-nav__chev" aria-hidden="true"></span>
-      </a>
+        <a class="side-nav__link<?= $__is_active('pricing.php') ?>" href="/pricing.php">
+          <span class="side-nav__icon" aria-hidden="true">
+            <?php render_icon('tag'); ?>
+          </span>
+          <span class="side-nav__text">Pricing</span>
+          <span class="side-nav__chev" aria-hidden="true"></span>
+        </a>
 
-      <a class="side-nav__link<?= $__is_active('integrations.php') ?>" href="/integrations.php">
-        <span class="side-nav__icon" aria-hidden="true">
-          <?php render_icon('plug'); ?>
-        </span>
-        <span class="side-nav__text">Integrations</span>
-        <span class="side-nav__chev" aria-hidden="true"></span>
-      </a>
+        <a class="side-nav__link<?= $__is_active('integrations.php') ?>" href="/integrations.php">
+          <span class="side-nav__icon" aria-hidden="true">
+            <?php render_icon('plug'); ?>
+          </span>
+          <span class="side-nav__text">Integrations</span>
+          <span class="side-nav__chev" aria-hidden="true"></span>
+        </a>
 
-      <a class="side-nav__link<?= $__is_active('settings.php') ?>" href="/settings.php">
-        <span class="side-nav__icon" aria-hidden="true">
-          <?php render_icon('settings'); ?>
-        </span>
-        <span class="side-nav__text">Settings</span>
-        <span class="side-nav__chev" aria-hidden="true"></span>
-      </a>
+        <a class="side-nav__link<?= $__is_active('settings.php') ?>" href="/settings.php">
+          <span class="side-nav__icon" aria-hidden="true">
+            <?php render_icon('settings'); ?>
+          </span>
+          <span class="side-nav__text">Settings</span>
+          <span class="side-nav__chev" aria-hidden="true"></span>
+        </a>
 
-      <a class="side-nav__link<?= $__is_active('utility.php') ?>" href="/utility.php">
-        <span class="side-nav__icon" aria-hidden="true">
-          <?php render_icon('wrench'); ?>
-        </span>
-        <span class="side-nav__text">Utility pages</span>
-        <span class="side-nav__chev" aria-hidden="true"></span>
-      </a>
+        <a class="side-nav__link<?= $__is_active('utility.php') ?>" href="/utility.php">
+          <span class="side-nav__icon" aria-hidden="true">
+            <?php render_icon('wrench'); ?>
+          </span>
+          <span class="side-nav__text">Utility pages</span>
+          <span class="side-nav__chev" aria-hidden="true"></span>
+        </a>
 
-      <a class="side-nav__link<?= $__is_active('webflow.php') ?>" href="/webflow.php">
-        <span class="side-nav__icon" aria-hidden="true">
-          <?php render_icon('layers'); ?>
-        </span>
-        <span class="side-nav__text">Webflow pages</span>
-        <span class="side-nav__chev" aria-hidden="true"></span>
-      </a>
-    </nav>
+        <a class="side-nav__link<?= $__is_active('webflow.php') ?>" href="/webflow.php">
+          <span class="side-nav__icon" aria-hidden="true">
+            <?php render_icon('layers'); ?>
+          </span>
+          <span class="side-nav__text">Webflow pages</span>
+          <span class="side-nav__chev" aria-hidden="true"></span>
+        </a>
+      </nav>
 
-    <!-- Divider -->
-    <hr class="side-nav__divider"/>
+      <!-- Divider -->
+      <hr class="side-nav__divider"/>
 
-    <!-- Account card / CTA -->
-    <div class="side-nav__account">
-      <div class="account">
-        <div class="account__avatar">
-          <?php if ($__user_avatar): ?>
-            <img src="<?= htmlspecialchars($__user_avatar) ?>" alt="<?= htmlspecialchars($__user_name) ?>" loading="lazy">
-          <?php else: ?>
-            <span class="avatar-badge" aria-hidden="true"><?= $__user_initial ?></span>
-          <?php endif; ?>
+      <!-- Account card / CTA -->
+      <div class="side-nav__account">
+        <div class="account">
+          <div class="account__avatar">
+            <?php if ($__user_avatar): ?>
+              <img src="<?= htmlspecialchars($__user_avatar) ?>" alt="<?= htmlspecialchars($__user_name) ?>" loading="lazy">
+            <?php else: ?>
+              <span class="avatar-badge" aria-hidden="true"><?= $__user_initial ?></span>
+            <?php endif; ?>
+          </div>
+          <div class="account__meta">
+            <div class="account__name"><?= htmlspecialchars($__user_name) ?></div>
+            <a class="account__link" href="/account.php">Account settings</a>
+          </div>
+          <button class="account__toggle" type="button" aria-haspopup="menu" aria-expanded="false" data-menu="account-menu"></button>
         </div>
-        <div class="account__meta">
-          <div class="account__name"><?= htmlspecialchars($__user_name) ?></div>
-          <a class="account__link" href="/account.php">Account settings</a>
-        </div>
-        <button class="account__toggle" type="button" aria-haspopup="menu" aria-expanded="false" data-menu="account-menu"></button>
+        <a class="btn btn-primary btn-block" href="/create-link.php">Get template</a>
       </div>
-      <a class="btn btn-primary btn-block" href="/create-link.php">Get template</a>
-    </div>
 
-  </div>
-</aside>
+    </div>
+  </aside>
+</div>

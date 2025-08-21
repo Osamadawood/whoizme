@@ -252,11 +252,29 @@
 /* components/_breadcrumbs.scss */
 /* components/_pagination.scss */
 /* components/_prose.scss */
+.sidebar-wrapper {
+  padding-top: 2rem;
+  padding-inline-start: 2rem;
+  height: 100%;
+}
+
 .side-nav {
+  top: clamp(32px, 2.5vw, 24px);
+  position: sticky;
+  align-self: start;
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
+  border-color: #0a0e1a;
   border-radius: var(--radius-default);
   box-shadow: var(--shadow-sm);
+  width: 18rem;
+  padding: 2rem 1rem 4rem;
+  flex-flow: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  max-height: 100vh;
+  display: flex;
+  overflow: auto;
 }
 .side-nav__body {
   padding: 1.6rem;
@@ -268,33 +286,43 @@
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--text);
+  margin-bottom: 8px;
 }
 .side-nav__list {
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
+  gap: 6px;
+  margin-top: 10px;
 }
 .side-nav__link {
   display: flex;
-  align-items: center;
   gap: 0.8rem;
+  align-items: center;
   padding: 1rem 1.2rem;
-  border-radius: 10px;
-  text-decoration: none;
+  border-radius: var(--radius-default);
+  color: var(--muted);
   color: var(--text-muted);
+  text-decoration: none;
   border: 1px solid color-mix(in oklab, var(--text) 10%, transparent);
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 .side-nav__link:hover {
-  background: color-mix(in oklab, var(--surface) 80%, var(--text) 4%);
+  background: color-mix(in oklab, var(--surface) 70%, var(--text) 4%);
   color: var(--text);
 }
 .side-nav__link.is-active {
-  background: color-mix(in oklab, var(--surface) 85%, var(--primary) 10%);
-  border-color: color-mix(in oklab, var(--primary) 30%, transparent);
+  background: color-mix(in oklab, var(--surface) 80%, var(--primary) 6%);
+  border-color: color-mix(in oklab, var(--primary) 22%, transparent);
   color: var(--text);
 }
 
 /* Topbar sizing refinements */
+.topbar--inset {
+  width: 100%;
+  inline-size: 100% !important;
+  padding-inline: 0 !important;
+}
+
 .app-topbar {
   --tb-h: 56px;
   --tb-gap: 12px;
@@ -304,9 +332,7 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--tb-gap);
-  padding: 12px var(--tb-pad-x);
-  border-bottom: 1px solid var(--border-700);
-  background: var(--surface-900);
+  padding-block-end: 0.5rem;
 }
 
 .app-topbar__left .breadcrumb {
@@ -1425,16 +1451,24 @@ html[data-theme=dark] .theme-toggle .moon {
    - بدون inline styles؛ أي ستايل permanent يبقى هنا
 */
 .dashboard {
-  padding-block: clamp(2.4rem, 4vw, 4.8rem);
+  grid-column-gap: 0;
+  grid-row-gap: 0;
+  flex: 1;
+  grid-template-rows: auto;
+  grid-template-columns: auto 1fr;
+  grid-auto-columns: 1fr;
+  place-items: start stretch;
+  width: 100%;
+  display: grid;
   /* Grid: sidebar + main */
   /* Panels (cards) */
-  /* Sidebar */
   /* KPIs */
   /* Two-up row */
   /* Chart placeholder */
   /* Table */
   /* badges */
   /* helpers */
+  /* Ensure badges are always perfect pills regardless of font-size */
 }
 .dashboard .container {
   max-width: 1200px;
@@ -1444,11 +1478,11 @@ html[data-theme=dark] .theme-toggle .moon {
 .dashboard .dash-grid {
   display: grid;
   gap: 1.6rem;
-}
-@media (min-width: 980px) {
-  .dashboard .dash-grid {
-    grid-template-columns: 260px 1fr;
-  }
+  align-items: start;
+  scroll-behavior: smooth;
+  padding-inline: 0;
+  padding-block-start: 2rem;
+  height: 100%;
 }
 .dashboard .maincol {
   min-width: 0;
@@ -1486,36 +1520,6 @@ html[data-theme=dark] .theme-toggle .moon {
   color: var(--muted);
   font-size: 0.95rem;
   margin-bottom: 8px;
-}
-.dashboard .side-nav .side__title {
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--text);
-}
-.dashboard .side-nav .side-list {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-top: 10px;
-}
-.dashboard .side-nav .side-link {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  padding: 10px 12px;
-  border-radius: 10px;
-  color: var(--muted);
-  text-decoration: none;
-  border: 1px solid color-mix(in oklab, var(--text) 10%, transparent);
-}
-.dashboard .side-nav .side-link:hover {
-  background: color-mix(in oklab, var(--surface) 70%, var(--text) 4%);
-  color: var(--text);
-}
-.dashboard .side-nav .side-link.is-active {
-  background: color-mix(in oklab, var(--surface) 80%, var(--primary) 6%);
-  border-color: color-mix(in oklab, var(--primary) 22%, transparent);
-  color: var(--text);
 }
 .dashboard .kpis {
   display: grid;
@@ -1597,6 +1601,9 @@ html[data-theme=dark] .theme-toggle .moon {
 }
 .dashboard .u-mb-8 {
   margin-bottom: 8px;
+}
+.dashboard .badge {
+  border-radius: 9999px;
 }
 
 /* === Utilities === */

@@ -1,8 +1,26 @@
+.sidebar-wrapper {
+    padding-top: 2rem;
+    padding-inline-start: 2rem;
+    height: 100%;
+}
+
 .side-nav {
+    top: clamp(32px, 2.5vw, 24px);
+    position: sticky;
+    align-self: start;
     background: var(--surface);
-    border: 1px solid var(--border);
+    border: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
+    border-color: #0a0e1a;
     border-radius: var(--radius-default);
     box-shadow: var(--shadow-sm);
+    width: 18rem;
+    padding: 2rem 1rem 4rem;
+    flex-flow: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    max-height: 100vh;
+    display: flex;
+    overflow: auto;
 
     &__body {
         padding: 1.6rem;
@@ -13,35 +31,40 @@
 
     &__title {
         font-weight: 700;
-        letter-spacing: -.02em;
+        letter-spacing: -0.02em;
         color: var(--text);
+        margin-bottom: 8px;
     }
 
     &__list {
         display: flex;
         flex-direction: column;
-        gap: .8rem;
+        gap: 6px;
+        margin-top: 10px;
     }
 
     &__link {
         display: flex;
-        align-items: center;
         gap: .8rem;
+        align-items: center;
         padding: 1rem 1.2rem;
-        border-radius: 10px;
-        text-decoration: none;
+        border-radius: var(--radius-default);
+        color: var(--muted);
         color: var(--text-muted);
+        text-decoration: none;
         border: 1px solid color-mix(in oklab, var(--text) 10%, transparent);
+        transition: background .2s ease, color .2s ease, border-color .2s ease;
 
         &:hover {
-            background: color-mix(in oklab, var(--surface) 80%, var(--text) 4%);
+            background: color-mix(in oklab, var(--surface) 70%, var(--text) 4%);
             color: var(--text);
         }
 
         &.is-active {
-            background: color-mix(in oklab, var(--surface) 85%, var(--primary) 10%);
-            border-color: color-mix(in oklab, var(--primary) 30%, transparent);
+            background: color-mix(in oklab, var(--surface) 80%, var(--primary) 6%);
+            border-color: color-mix(in oklab, var(--primary) 22%, transparent);
             color: var(--text);
         }
+
     }
 }
