@@ -128,8 +128,23 @@ if (strtolower($page_title) === 'dashboard') {
       </button>
 
       <!-- Theme toggle (LocalStorage) -->
-      <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle theme" aria-pressed="false">
+      <!-- <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle theme" aria-pressed="false">
         <span class="theme-toggle__icon"></span>
+      </button> -->
+      <button type="button" class="theme-toggle theme-toggle--pill" id="themeToggle" aria-label="Toggle theme" aria-pressed="false">
+        <span class="tt__track" aria-hidden="true">
+          <span class="tt__icon tt__icon--sun">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="4"/>
+              <path d="M12 2v3M12 19v3M4.22 4.22 6.34 6.34M17.66 17.66 19.78 19.78M2 12h3M19 12h3M4.22 19.78 6.34 17.66M17.66 6.34 19.78 4.22"/>
+            </svg>
+          </span>
+          <span class="tt__icon tt__icon--moon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+          </span>
+        </span>
       </button>
 
       <!-- Language pill: بتعرض اللغة الأخرى فقط -->

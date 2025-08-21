@@ -259,8 +259,8 @@
 }
 
 .theme-toggle:hover {
-  border-color: color-mix(in oklab, var(--brand), var(--border) 78%);
-  box-shadow: 0 0 0 4px var(--ring);
+  // border-color: color-mix(in oklab, var(--brand), var(--border) 78%);
+  // box-shadow: 0 0 0 4px var(--ring);
 }
 
 .theme-toggle:active {

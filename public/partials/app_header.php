@@ -7,10 +7,10 @@ declare(strict_types=1);
  * - فيه toggle للثيم (dark / light) يخزّن الاختيار في كوكي
  */
 
-$page_title = $page_title ?? 'Whoizme';
+$page_title = $page_title ?? 'Whoiz.me';
 $themeCookie = $_COOKIE['theme'] ?? 'dark';
 $theme = in_array($themeCookie, ['dark','light'], true) ? $themeCookie : 'dark';
-$meta_description = $meta_description ?? 'Whoizme is a modern link management and QR analytics platform. Create, track, and optimize your links easily.';
+$meta_description = $meta_description ?? 'Whoiz.me is a modern link management and QR analytics platform. Create, track, and optimize your links easily.';
 $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
 $host = $_SERVER['HTTP_HOST'] ?? '';
 $path = isset($_SERVER['REQUEST_URI']) ? strtok($_SERVER['REQUEST_URI'], '?') : '/';
@@ -22,7 +22,7 @@ $canonical = $host ? $scheme . '://' . $host . $path : '';
   <meta charset="utf-8"/>
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="robots" content="index, follow">
-  <meta name="author" content="Whoizme Team">
+  <meta name="author" content="Whoiz.me Team">
   <meta name="description" content="<?= htmlspecialchars($meta_description) ?>">
   <link rel="canonical" href="<?= htmlspecialchars($canonical) ?>">
   <!-- Language alternates (basic) -->
@@ -35,7 +35,7 @@ $canonical = $host ? $scheme . '://' . $host . $path : '';
   <meta name="geo.position" content="30.033333;31.233334">
   <meta name="ICBM" content="30.033333, 31.233334">
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title><?= htmlspecialchars($page_title) ?> · Whoizme</title>
+  <title><?= htmlspecialchars($page_title) ?> · Whoiz.me</title>
 
   <!-- Performance: preconnect for Google Fonts (Onest) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
@@ -59,8 +59,8 @@ $canonical = $host ? $scheme . '://' . $host . $path : '';
   <meta name="theme-color" content="#111827">
   <!-- Open Graph -->
   <meta property="og:type" content="website">
-  <meta property="og:site_name" content="Whoizme">
-  <meta property="og:title" content="<?= htmlspecialchars($page_title) ?> · Whoizme">
+  <meta property="og:site_name" content="Whoiz.me">
+  <meta property="og:title" content="<?= htmlspecialchars($page_title) ?> · Whoiz.me">
   <meta property="og:description" content="<?= htmlspecialchars($meta_description) ?>">
   <meta property="og:url" content="<?= htmlspecialchars($canonical) ?>">
   <meta property="og:image" content="/assets/favicon/apple-icon-180x180.png">
@@ -69,7 +69,7 @@ $canonical = $host ? $scheme . '://' . $host . $path : '';
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="<?= htmlspecialchars($page_title) ?> · Whoizme">
+  <meta name="twitter:title" content="<?= htmlspecialchars($page_title) ?> · Whoiz.me">
   <meta name="twitter:description" content="<?= htmlspecialchars($meta_description) ?>">
   <meta name="twitter:image" content="/assets/favicon/apple-icon-180x180.png">
 

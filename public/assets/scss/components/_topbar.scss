@@ -16,6 +16,40 @@
     justify-content: space-between;
     gap: var(--tb-gap);
     padding-block-end: .5rem;
+
+    .theme-toggle {
+        padding: 0;
+
+        .theme-toggle--pill .tt__track {
+            display: flex;
+        }
+
+        .tt__icon--sun,
+        .tt__icon--moon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: var(--radius-default);
+        }
+
+        .tt__icon--sun {
+            background: var(--text);
+            color: var(--border) !important;
+        }
+    }
+
+    .is-on {
+        .tt__icon--sun {
+            background: transparent;
+            color: var(--text) !important;
+        }
+
+        .tt__icon--moon {
+            background: color-mix(in oklab, var(--border), #fff 20%);
+        }
+    }
 }
 
 .app-topbar__left .breadcrumb {
@@ -49,9 +83,9 @@
 .topbar-search {
     position: relative;
     display: flex;
-    flex: 1 1 256px;
     max-width: 256px;
     align-items: center;
+    max-height: 2.5rem;
 
     .topbar-search__btn {
         position: absolute;
@@ -68,7 +102,7 @@
     }
 
     &__input {
-        height: 44px;
+        height: 2.5rem;
         min-width: clamp(220px, 28vw, 256px);
         padding: 0 14px 0 44px; // room for the icon
         border-radius: var(--radius-default);
@@ -107,7 +141,7 @@
 
     i {
         color: var(--brand-contrast);
-        font-size: 1rem;
+        font-size: .9rem;
         margin-top: 2px;
         transition: 0.3s ease-in-out;
     }
@@ -118,31 +152,6 @@
             color: var(--text, #e5e7eb) !important;
         }
     }
-}
-
-/* Theme toggle (small pill) */
-.theme-toggle {
-    width: 64px;
-    height: 40px;
-    border-radius: 999px;
-    background: var(--surface-800);
-    border: 1px solid var(--border-700);
-    position: relative;
-
-    .theme-toggle__icon {
-        // position: absolute;
-        top: 50%;
-        // transform: translateY(-50%);
-        left: 8px;
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        background: var(--text);
-        content: "";
-        display: inline-block;
-    }
-
-    /* you can animate left/right via [data-theme] with a small transition if you like */
 }
 
 /* Language pill showing other locale only */
@@ -278,9 +287,6 @@
     }
 }
 
-
-
-
 .account__menu-divider {
     height: 1px;
     border: 0;
@@ -290,33 +296,6 @@
 
 .account__menu.is-open {
     display: block;
-}
-
-.theme-toggle {
-    &.is-on {
-        box-shadow: 0 0 0 2px var(--primary) inset;
-    }
-
-    .theme-toggle__icon {
-        transition: transform .2s ease;
-    }
-
-    &.is-on .theme-toggle__icon {
-        transform: translateX(16px);
-    }
-}
-
-
-.theme-toggle.is-on {
-    box-shadow: 0 0 0 2px var(--primary) inset;
-}
-
-.theme-toggle .theme-toggle__icon {
-    transition: transform .2s ease;
-}
-
-.theme-toggle.is-on .theme-toggle__icon {
-    transform: translateX(16px);
 }
 
 /* =============================
@@ -444,4 +423,78 @@
 /* Prevent body scroll when modal is open */
 .no-scroll {
     overflow: hidden;
+}
+
+/* ===== Theme toggle – pill (sun/moon) ===== */
+
+.theme-toggle--pill .tt__track {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: var(--radius-default);
+    transition: background .2s ease, border-color .2s ease;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .04);
+    height: 2.5rem;
+}
+
+.theme-toggle--pill .tt__icon {
+    width: 16px;
+    height: 16px;
+    display: grid;
+    place-items: center;
+    opacity: .85;
+    color: var(--text);
+    z-index: 1;
+}
+
+.theme-toggle--pill .tt__icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+.theme-toggle--pill .tt__knob {
+    position: absolute;
+    inset: 2px auto 2px 2px;
+    width: 26px;
+    height: 24px;
+    border-radius: 12px;
+    background: var(--primary);
+    transition: transform .22s ease, background .2s ease;
+    transform: translateX(0);
+}
+
+/* Light = الشمس مفعّلة (knob يسار) */
+:root:not([data-theme="dark"]) .theme-toggle--pill .tt__knob {
+    background: var(--primary);
+    transform: translateX(0);
+}
+
+:root:not([data-theme="dark"]) .theme-toggle--pill .tt__icon--sun {
+    color: var(--text-inverse);
+}
+
+/* Dark = القمر مفعّل (knob يمين) */
+:root[data-theme="dark"] .theme-toggle--pill .tt__knob {
+    transform: translateX(28px);
+    background: var(--surface);
+    border: 1px solid var(--border);
+}
+
+:root[data-theme="dark"] .theme-toggle--pill .tt__track {
+    // background: rgba(255, 255, 255, .06);
+}
+
+:root[data-theme="dark"] .theme-toggle--pill .tt__icon--moon {
+    // color: var(--text);
+}
+
+/* Hover/Focus */
+.theme-toggle--pill:focus-visible .tt__track {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+.theme-toggle--pill:hover .tt__track {
+    border-color: color-mix(in oklab, var(--border), var(--text) 20%);
 }
