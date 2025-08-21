@@ -14,7 +14,7 @@
     border-radius: var(--radius-default);
     box-shadow: var(--shadow-sm);
     width: 18rem;
-    padding: 2rem 1rem 4rem;
+    padding: 2rem 1rem;
     flex-flow: column;
     justify-content: flex-start;
     align-items: stretch;
@@ -39,32 +39,83 @@
     &__list {
         display: flex;
         flex-direction: column;
-        gap: 6px;
-        margin-top: 10px;
+        gap: .5rem;
     }
 
     &__link {
         display: flex;
-        gap: .8rem;
         align-items: center;
-        padding: 1rem 1.2rem;
-        border-radius: var(--radius-default);
+        padding: 1rem 2rem;
         color: var(--muted);
-        color: var(--text-muted);
         text-decoration: none;
-        border: 1px solid color-mix(in oklab, var(--text) 10%, transparent);
-        transition: background .2s ease, color .2s ease, border-color .2s ease;
+        font-size: 1rem;
+        font-weight: 500;
+        border-radius: var(--radius-default);
+        position: relative;
+        transition: padding .3s ease-in-out, background-color .3s ease-in-out, color .3s ease-in-out;
+
+        &::before {
+            position: absolute;
+            content: '';
+            left: 1.25rem;
+            background-color: var(--text-muted);
+            width: 0;
+            height: 0;
+            transition: width .3s ease-in-out, height .3s ease-in-out;
+            border-radius: var(--radius-default);
+        }
 
         &:hover {
             background: color-mix(in oklab, var(--surface) 70%, var(--text) 4%);
             color: var(--text);
+            padding-inline-start: 2.25rem;
+
+            &::before {
+                width: .2rem;
+                height: 1.25rem;
+            }
         }
 
         &.is-active {
             background: color-mix(in oklab, var(--surface) 80%, var(--primary) 6%);
             border-color: color-mix(in oklab, var(--primary) 22%, transparent);
             color: var(--text);
+            background-color: var(--border);
+            background-color: color-mix(in oklab, var(--surface) 80%, var(--brand) 14%);
+            padding-inline-start: 2.25rem;
+
+            &::before {
+                position: absolute;
+                content: '';
+                background-color: var(--brand);
+                width: .2rem !important;
+                height: 1.25rem !important;
+                transition: width .3s ease-in-out, height .3s ease-in-out;
+            }
         }
 
+        i {
+            font-size: 1rem;
+            padding-inline-end: 1.8rem;
+            width: 1rem;
+            height: 1rem;
+            text-align: center;
+            line-height: 1rem;
+        }
+
+    }
+
+    &__inner {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    &__dash--img {
+        background-color: red;
+        width: 100%;
+        border-radius: 1.5rem;
+        overflow: hidden;
+        margin-block-start: 16rem;
     }
 }

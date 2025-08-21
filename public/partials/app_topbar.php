@@ -133,12 +133,12 @@ if (strtolower($page_title) === 'dashboard') {
       </button>
 
       <!-- Language pill: بتعرض اللغة الأخرى فقط -->
-      <a class="lang-pill" href="?lang=<?= $other ?>" title="Switch language">
+      <!-- <a class="lang-pill" href="?lang=<?= $other ?>" title="Switch language">
         <?= strtoupper($other) ?>
-      </a>
+      </a> -->
 
       <!-- Account -->
-      <div class="account" id="accountArea">
+      <div class="account account--topbar" id="accountArea">
         <button type="button" class="avatar <?= $avatar ? '' : 'avatar--initial ' . wz_avatar_tint_class($user) ?>" id="accountBtn" aria-label="Account menu" aria-expanded="false">
           <?php if ($avatar): ?>
             <img src="<?= htmlspecialchars($avatar) ?>" alt="Account avatar">

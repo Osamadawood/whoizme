@@ -57,101 +57,78 @@ function render_icon(string $name): void {
         </a>
       </header>
 
-      <!-- Search in dashboard -->
-      <form class="side-nav__search" action="/search.php" method="get" role="search">
-        <label class="visually-hidden" for="sidebar-search">Search dashboard</label>
-        <input id="sidebar-search" class="input input--search" type="search" name="q" placeholder="Search dashboard…" autocomplete="off">
-      </form>
-
       <!-- Primary links -->
       <nav class="side-nav__list" aria-label="Sidebar items">
+
         <a class="side-nav__link<?= $__is_active('dashboard.php') ?>" href="/dashboard.php">
           <span class="side-nav__icon" aria-hidden="true">
             <?php render_icon('home'); ?>
           </span>
+          <i class="fi fi-rr-home" aria-hidden="true"></i>
           <span class="side-nav__text">Home</span>
           <span class="side-nav__chev" aria-hidden="true"></span>
         </a>
 
-        <a class="side-nav__link<?= $__is_active('features.php') ?>" href="/features.php">
-          <span class="side-nav__icon" aria-hidden="true">
-            <?php render_icon('star'); ?>
-          </span>
-          <span class="side-nav__text">Features</span>
-          <span class="side-nav__chev" aria-hidden="true"></span>
-        </a>
-
-        <a class="side-nav__link<?= $__is_active('users.php') ?>" href="/users.php">
-          <span class="side-nav__icon" aria-hidden="true">
-            <?php render_icon('users'); ?>
-          </span>
-          <span class="side-nav__text">Users</span>
-          <span class="side-nav__chev" aria-hidden="true"></span>
-        </a>
-
-        <a class="side-nav__link<?= $__is_active('pricing.php') ?>" href="/pricing.php">
-          <span class="side-nav__icon" aria-hidden="true">
-            <?php render_icon('tag'); ?>
-          </span>
-          <span class="side-nav__text">Pricing</span>
-          <span class="side-nav__chev" aria-hidden="true"></span>
-        </a>
-
-        <a class="side-nav__link<?= $__is_active('integrations.php') ?>" href="/integrations.php">
-          <span class="side-nav__icon" aria-hidden="true">
-            <?php render_icon('plug'); ?>
-          </span>
-          <span class="side-nav__text">Integrations</span>
-          <span class="side-nav__chev" aria-hidden="true"></span>
-        </a>
-
-        <a class="side-nav__link<?= $__is_active('settings.php') ?>" href="/settings.php">
-          <span class="side-nav__icon" aria-hidden="true">
-            <?php render_icon('settings'); ?>
-          </span>
-          <span class="side-nav__text">Settings</span>
-          <span class="side-nav__chev" aria-hidden="true"></span>
-        </a>
-
-        <a class="side-nav__link<?= $__is_active('utility.php') ?>" href="/utility.php">
-          <span class="side-nav__icon" aria-hidden="true">
-            <?php render_icon('wrench'); ?>
-          </span>
-          <span class="side-nav__text">Utility pages</span>
-          <span class="side-nav__chev" aria-hidden="true"></span>
-        </a>
-
-        <a class="side-nav__link<?= $__is_active('webflow.php') ?>" href="/webflow.php">
+        <a class="side-nav__link<?= $__is_active('webflow.php') ?>" href="/qr.php">
           <span class="side-nav__icon" aria-hidden="true">
             <?php render_icon('layers'); ?>
           </span>
-          <span class="side-nav__text">Webflow pages</span>
+          <i class="create-card__icon fi fi-rr-qrcode" aria-hidden="true"></i>
+          <span class="side-nav__text">QR Codes</span>
           <span class="side-nav__chev" aria-hidden="true"></span>
         </a>
+
+        <a class="side-nav__link<?= $__is_active('webflow.php') ?>" href="/pages.php">
+          <span class="side-nav__icon" aria-hidden="true">
+            <?php render_icon('layers'); ?>
+          </span>
+          <i class="fi fi-rr-file" aria-hidden="true"></i>
+          <span class="side-nav__text">Pages</span>
+          <span class="side-nav__chev" aria-hidden="true"></span>
+        </a>
+
+
+        <a class="side-nav__link<?= $__is_active('webflow.php') ?>" href="/analytics.php">
+          <span class="side-nav__icon" aria-hidden="true">
+            <?php render_icon('layers'); ?>
+          </span>
+          <i class="fi fi-rr-chart-mixed" aria-hidden="true"></i>
+          <span class="side-nav__text">Analytics</span>
+          <span class="side-nav__chev" aria-hidden="true"></span>
+        </a>
+        
       </nav>
 
-      <!-- Divider -->
-      <hr class="side-nav__divider"/>
-
-      <!-- Account card / CTA -->
-      <div class="side-nav__account">
-        <div class="account">
-          <div class="account__avatar">
-            <?php if ($__user_avatar): ?>
-              <img src="<?= htmlspecialchars($__user_avatar) ?>" alt="<?= htmlspecialchars($__user_name) ?>" loading="lazy">
-            <?php else: ?>
-              <span class="avatar-badge" aria-hidden="true"><?= $__user_initial ?></span>
-            <?php endif; ?>
-          </div>
-          <div class="account__meta">
-            <div class="account__name"><?= htmlspecialchars($__user_name) ?></div>
-            <a class="account__link" href="/account.php">Account settings</a>
-          </div>
-          <button class="account__toggle" type="button" aria-haspopup="menu" aria-expanded="false" data-menu="account-menu"></button>
-        </div>
-        <a class="btn btn-primary btn-block" href="/create-link.php">Get template</a>
+      <div class="side-nav__dash--img">
+        <img src="/assets/img/dash--sidebar--img.png" alt="">
       </div>
+
 
     </div>
   </aside>
 </div>
+<script>
+  (function(){
+    const card = document.getElementById('account-card');
+    const menu = document.getElementById('account-menu');
+    if(!card || !menu) return;
+
+    function open(){
+      menu.hidden = false;
+      menu.setAttribute('aria-hidden','false');
+      card.setAttribute('aria-expanded','true');
+      menu.classList.add('is-open');
+    }
+    function close(){
+      menu.hidden = true;
+      menu.setAttribute('aria-hidden','true');
+      card.setAttribute('aria-expanded','false');
+      menu.classList.remove('is-open');
+    }
+    function toggle(){ menu.classList.contains('is-open') ? close() : open(); }
+
+    card.addEventListener('click', (e)=>{ e.preventDefault(); toggle(); });
+    document.addEventListener('click', (e)=>{ if(!card.contains(e.target) && !menu.contains(e.target)) close(); });
+    document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') close(); });
+  })();
+</script>
