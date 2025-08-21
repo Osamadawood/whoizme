@@ -481,14 +481,6 @@
     border: 1px solid var(--border);
 }
 
-:root[data-theme="dark"] .theme-toggle--pill .tt__track {
-    // background: rgba(255, 255, 255, .06);
-}
-
-:root[data-theme="dark"] .theme-toggle--pill .tt__icon--moon {
-    // color: var(--text);
-}
-
 /* Hover/Focus */
 .theme-toggle--pill:focus-visible .tt__track {
     outline: 2px solid var(--primary);
