@@ -262,7 +262,8 @@
     border: 1px solid var(--border-700);
     box-shadow: 0 24px 60px rgba(0, 0, 0, .45);
 
-    a {
+    a,
+    button {
         display: flex;
         align-items: center;
         gap: 12px;
@@ -283,7 +284,28 @@
     }
 
     .danger {
-        color: var(--red-400);
+        color: var(--danger);
+    }
+
+    form {
+        display: block;
+        padding: 0 12px;
+        border-radius: var(--radius-default);
+        cursor: pointer;
+
+        i {
+            color: var(--danger);
+        }
+
+        &:hover {
+            background: var(--surface-800);
+            color: var(--danger);
+        }
+
+        button {
+            display: inline-block;
+            cursor: pointer;
+        }
     }
 }
 

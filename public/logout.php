@@ -12,10 +12,10 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
   session_start();
 }
 
-// لازم POST
+// لازم POST (AR/EN)
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
   http_response_code(405);
-  exit('Method Not Allowed');
+  exit(isset($_SESSION['lang']) && $_SESSION['lang']==='ar' ? 'الطريقة غير مسموحة' : 'Method Not Allowed');
 }
 
 // جِب التوكن (من دالة csrf_token() لو موجودة أو من السيشن)
@@ -28,7 +28,10 @@ if (function_exists('csrf_verify')) {
 }
 if (!$valid) {
   if (function_exists('flash')) {
-    flash('error', 'Security token invalid. Please try again.');
+    $msg = (isset($_SESSION['lang']) && $_SESSION['lang']==='ar')
+      ? 'رمز الأمان غير صالح. حاول مرة أخرى.'
+      : 'Security token invalid. Please try again.';
+    flash('error', $msg);
   }
   header('Location: /dashboard.php');
   exit;
@@ -66,7 +69,10 @@ if ($keepLang) {
 
 // رسالة نجاح (اختياري)
 if (function_exists('flash')) {
-  flash('success', 'You have been logged out.');
+  $msg = (isset($_SESSION['lang']) && $_SESSION['lang']==='ar')
+    ? 'تم تسجيل خروجك.'
+    : 'You have been logged out.';
+  flash('success', $msg);
 }
 
 // رجّع لصفحة اللوج إن

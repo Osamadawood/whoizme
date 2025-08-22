@@ -2,9 +2,27 @@
 // Boot & guards
 require_once __DIR__ . '/../includes/bootstrap.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
+require_once __DIR__ . '/../includes/events.php';
 
 $page_title = 'Dashboard';
 include __DIR__ . '/partials/app_header.php';
+?>
+
+<?php
+  // Shared params
+  $p = $_GET['p'] ?? '7d';
+  $p = in_array($p, ['7d','30d','90d'], true) ? $p : '7d';
+
+  $t = $_GET['t'] ?? 'all';
+  $t = in_array($t, ['all','links','qr','pages'], true) ? $t : 'all';
+  $t_param = [
+    'all'   => 'all',
+    'links' => 'link',
+    'qr'    => 'qr',
+    'pages' => 'page',
+  ][$t];
+
+  $uid = (int)($_SESSION['user_id'] ?? 0);
 ?>
 
 <main class="dashboard">
@@ -93,15 +111,33 @@ include __DIR__ . '/partials/app_header.php';
         <div class="panel">
           <div class="panel__body">
             <div class="panel__title u-flex u-ai-center u-jc-between">
-              <span>Clicks trend</span>
-              <div class="segmented" role="tablist" aria-label="Range selector">
-                <button class="segmented__btn is-active" role="tab" aria-selected="true" data-range="7d">7d</button>
-                <button class="segmented__btn" role="tab" aria-selected="false" data-range="30d">30d</button>
-                <button class="segmented__btn" role="tab" aria-selected="false" data-range="90d">90d</button>
-              </div>
+              <span>Traffic trend</span>
+              <form method="get" class="segmented" role="tablist" aria-label="Range selector">
+                <?php $trend = ($uid && isset($pdo)) ? wz_events_trend($pdo, $uid, $p) : []; ?>
+                <input type="hidden" name="t" value="<?= htmlspecialchars($t) ?>">
+                <button class="segmented__btn <?php echo $p==='7d'?'is-active':''; ?>" name="p" value="7d" role="tab" aria-selected="<?php echo $p==='7d'?'true':'false'; ?>">7d</button>
+                <button class="segmented__btn <?php echo $p==='30d'?'is-active':''; ?>" name="p" value="30d" role="tab" aria-selected="<?php echo $p==='30d'?'true':'false'; ?>">30d</button>
+                <button class="segmented__btn <?php echo $p==='90d'?'is-active':''; ?>" name="p" value="90d" role="tab" aria-selected="<?php echo $p==='90d'?'true':'false'; ?>">90d</button>
+              </form>
             </div>
-            <div class="chart" role="img" aria-label="Clicks trend area chart placeholder"></div>
-            <div class="empty muted" aria-hidden="true">No data yet – create your first link to see trends.</div>
+            <div class="chart" role="img" aria-label="Traffic trend data">
+              <?php if (!$trend): ?>
+                <div class="empty muted" aria-hidden="true">No data yet – create your first link to see trends.</div>
+              <?php else: ?>
+                <ul class="list-plain">
+                  <?php foreach ($trend as $row): ?>
+                    <li>
+                      <span class="muted"><?php echo htmlspecialchars($row['date']); ?></span>
+                      · <?php echo (int)($row['click'] ?? 0); ?> clicks
+                      · <?php echo (int)($row['scan'] ?? 0); ?> scans
+                      · <?php echo (int)($row['open'] ?? 0); ?> opens
+                      · <?php echo (int)($row['create'] ?? 0); ?> creates
+                      · <strong><?php echo (int)($row['total'] ?? 0); ?> total</strong>
+                    </li>
+                  <?php endforeach; ?>
+                </ul>
+              <?php endif; ?>
+            </div>
           </div>
         </div>
         <div class="panel">
@@ -134,12 +170,12 @@ include __DIR__ . '/partials/app_header.php';
           <div class="panel__title">Top links & QR</div>
           <div class="u-flex u-ai-center u-jc-between u-mb-4">
             <div class="filters segmented" role="tablist" aria-label="Filter type">
-              <button class="segmented__btn is-active" role="tab" aria-selected="true" data-filter="all">All</button>
-              <button class="segmented__btn" role="tab" aria-selected="false" data-filter="links">Links</button>
-              <button class="segmented__btn" role="tab" aria-selected="false" data-filter="qr">QR</button>
-              <button class="segmented__btn" role="tab" aria-selected="false" data-filter="pages">Pages</button>
+              <a class="segmented__btn <?= $t==='all'?'is-active':'' ?>"   href="/dashboard.php?t=all&p=<?= $p ?>">All</a>
+              <a class="segmented__btn <?= $t==='links'?'is-active':'' ?>" href="/dashboard.php?t=links&p=<?= $p ?>">Links</a>
+              <a class="segmented__btn <?= $t==='qr'?'is-active':'' ?>"    href="/dashboard.php?t=qr&p=<?= $p ?>">QR</a>
+              <a class="segmented__btn <?= $t==='pages'?'is-active':'' ?>" href="/dashboard.php?t=pages&p=<?= $p ?>">Pages</a>
             </div>
-            <a href="/exports/top-items.csv" class="btn btn--ghost btn--sm">Export CSV</a>
+            <a class="btn btn--ghost btn--sm" href="/exports/top-items.php?p=<?= $p ?>&t=<?= $t ?>">Export CSV</a>
           </div>
           <table class="table" role="table">
             <thead>
@@ -152,28 +188,18 @@ include __DIR__ . '/partials/app_header.php';
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>Summer Campaign</td>
-                <td><span class="badge">Short link</span></td>
-                <td>9,842</td>
-                <td>
-                  <span class="badge badge--up">+4.8%</span></td>
-                <td>Mar 03</td>
-              </tr>
-              <tr>
-                <td>Restaurant Menu</td>
-                <td><span class="badge">QR</span></td>
-                <td>5,103</td>
-                <td><span class="badge badge--down">−1.2%</span></td>
-                <td>Feb 27</td>
-              </tr>
-              <tr>
-                <td>Landing — Spring</td>
-                <td><span class="badge">Short link</span></td>
-                <td>3,258</td>
-                <td><span class="badge badge--up">+2.1%</span></td>
-                <td>Feb 18</td>
-              </tr>
+              <?php $top = ($uid && isset($pdo)) ? wz_top_items($pdo, $uid, $t_param, $p, 10) : []; ?>
+              <?php if (!$top): ?>
+                <tr><td colspan="5" class="muted">No items yet.</td></tr>
+              <?php else: foreach ($top as $r): ?>
+                <tr>
+                  <td><?php echo htmlspecialchars($r['label']); ?></td>
+                  <td><span class="badge"><?php echo htmlspecialchars(strtoupper($r['item_type'])); ?></span></td>
+                  <td><?php echo number_format((int)($r['total'] ?? 0)); ?></td>
+                  <td><span class="badge badge--up"><?php echo (int)($r['today'] ?? 0); ?> today</span></td>
+                  <td><?php echo !empty($r['first_seen']) ? date('M d', strtotime($r['first_seen'])) : '-'; ?></td>
+                </tr>
+              <?php endforeach; endif; ?>
             </tbody>
           </table>
         </div>

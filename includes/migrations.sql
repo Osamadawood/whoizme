@@ -23,3 +23,39 @@ CREATE TABLE IF NOT EXISTS qr_scans (
   city VARCHAR(80) NULL,
   FOREIGN KEY (qr_id) REFERENCES qr_codes(id) ON DELETE CASCADE
 );
+
+-- Events table (Phase 2 unified schema)
+CREATE TABLE IF NOT EXISTS events (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  item_type ENUM('link','qr','page') NOT NULL,
+  item_id INT NOT NULL,
+  type ENUM('click','scan','open','create') NOT NULL,
+  label VARCHAR(255) NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Ensure indexes exist (idempotent guards)
+-- created_at index
+SET @idx_exists := (
+  SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS
+  WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME='events' AND INDEX_NAME='idx_created_at'
+);
+SET @sql := IF(@idx_exists=0, 'ALTER TABLE events ADD INDEX idx_created_at (created_at)', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+-- user_id index
+SET @idx_exists := (
+  SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS
+  WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME='events' AND INDEX_NAME='idx_user_id'
+);
+SET @sql := IF(@idx_exists=0, 'ALTER TABLE events ADD INDEX idx_user_id (user_id)', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+-- composite (item_type, item_id)
+SET @idx_exists := (
+  SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS
+  WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME='events' AND INDEX_NAME='idx_item'
+);
+SET @sql := IF(@idx_exists=0, 'ALTER TABLE events ADD INDEX idx_item (item_type, item_id)', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
