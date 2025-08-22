@@ -119,39 +119,28 @@ include __DIR__ . '/partials/app_header.php';
       <div class="twoup u-mb-16">
         <div class="panel">
           <div class="panel__body">
-            <div class="panel__title u-flex u-ai-center u-jc-between">
-              <span>Traffic trend</span>
-              <form method="get" class="segmented" role="tablist" aria-label="Range selector">
-                <?php $trend = ($uid && isset($pdo)) ? wz_events_trend($pdo, $uid, $p) : []; ?>
-                <input type="hidden" name="t" value="<?= htmlspecialchars($t) ?>">
-                <button class="segmented__btn <?php echo $p==='7d'?'is-active':''; ?>" name="p" value="7d" role="tab" aria-selected="<?php echo $p==='7d'?'true':'false'; ?>">7d</button>
-                <button class="segmented__btn <?php echo $p==='30d'?'is-active':''; ?>" name="p" value="30d" role="tab" aria-selected="<?php echo $p==='30d'?'true':'false'; ?>">30d</button>
-                <button class="segmented__btn <?php echo $p==='90d'?'is-active':''; ?>" name="p" value="90d" role="tab" aria-selected="<?php echo $p==='90d'?'true':'false'; ?>">90d</button>
-              </form>
-            </div>
-            <div class="chart" role="img" aria-label="Traffic trend data">
-              <canvas id="trend-canvas" height="120"></canvas>
+            <?php $trend_days = ($uid && isset($pdo)) ? wz_event_series($pdo, $uid, $p) : []; ?>
+            <section class="dash-card dash-card--trend" data-trend-root>
+              <header class="dash-card__head">
+                <h3 class="dash-card__title">Traffic Trend</h3>
+                <div class="pill-switch" data-trend-tabs>
+                  <button type="button" data-p="7d"  class="pill is-active">7d</button>
+                  <button type="button" data-p="30d" class="pill">30d</button>
+                  <button type="button" data-p="90d" class="pill">90d</button>
+                </div>
+              </header>
+
+              <!-- Chart goes here -->
+              <div id="trend-chart" class="trend-chart" aria-label="Daily traffic trend" role="img"></div>
+
               <noscript>
-                <?php if (!$trend): ?>
-                  <div class="empty muted" aria-hidden="true">No data yet – create your first link to see trends.</div>
-                <?php else: ?>
-                  <ul class="list-plain">
-                    <?php foreach ($trend as $row): ?>
-                      <li>
-                        <span class="muted"><?php echo htmlspecialchars($row['date']); ?></span>
-                        · <?php echo (int)($row['click'] ?? 0); ?> clicks
-                        · <?php echo (int)($row['scan'] ?? 0); ?> scans
-                        · <?php echo (int)($row['open'] ?? 0); ?> opens
-                        · <?php echo (int)($row['create'] ?? 0); ?> creates
-                        · <strong><?php echo (int)($row['total'] ?? 0); ?> total</strong>
-                      </li>
-                    <?php endforeach; ?>
-                  </ul>
-                <?php endif; ?>
+                <ul class="trend-fallback">
+                  <?php foreach (($trend_days ?? []) as $d): ?>
+                    <li><?= htmlspecialchars($d['date']) ?> — <?= (int)($d['total'] ?? 0) ?></li>
+                  <?php endforeach; ?>
+                </ul>
               </noscript>
-            </div>
-            <?php $series = ($uid && isset($pdo)) ? wz_event_series($pdo, $uid, $p) : []; ?>
-            <script id="trend-data" type="application/json"><?php echo json_encode($series, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?></script>
+            </section>
           </div>
         </div>
         <div class="panel">
@@ -238,7 +227,8 @@ document.addEventListener('click', (e)=>{
   btn.classList.add('is-active');
 });
 </script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/apexcharts@3.49.0"></script>
+<script defer src="/assets/js/trend.js"></script>
 <script>
 (function(){
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -294,7 +284,7 @@ document.addEventListener('click', (e)=>{
   }
 
   function pushState(){ history.replaceState({}, '', '/dashboard'); }
-  async function refreshAll(){ pushState(); await Promise.all([loadTrend(), loadTop()]); }
+  async function refreshAll(){ pushState(); await Promise.all([loadTop()]); }
 
   $tabs.forEach(el=>el.addEventListener('click',e=>{ e.preventDefault(); tab=el.dataset.tab; page=1; refreshAll(); }));
   $periods.forEach(el=>el.addEventListener('click',e=>{ e.preventDefault(); period=el.dataset.period; page=1; refreshAll(); }));

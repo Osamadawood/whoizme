@@ -2,10 +2,15 @@
 // Sidebar – app shell (Whoizme)
 // NOTE: no inline styles; all styling lives in SCSS (components/_sidebar.scss)
 
-// Helper: resolve active state by current script name
-$__current = basename($_SERVER['PHP_SELF']);
-$__is_active = function(string $file) use ($__current) {
-  return $__current === $file ? ' is-active' : '';
+// Helper: resolve active state by request path (supports pretty URLs)
+$__req_path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+$__req_path = rtrim($__req_path, '/');
+if ($__req_path === '') $__req_path = '/';
+$__is_active = function(string $pattern) use ($__req_path) {
+  $p = '/' . ltrim(preg_replace('~\.php$~i', '', $pattern), '/');
+  $p = rtrim($p, '/'); if ($p === '') $p = '/';
+  if ($p === '/') return $__req_path === '/' ? ' is-active' : '';
+  return ($__req_path === $p || strpos($__req_path, $p . '/') === 0) ? ' is-active' : '';
 };
 
 // User (from session) – fallbacks are safe
@@ -60,7 +65,7 @@ function render_icon(string $name): void {
       <!-- Primary links -->
       <nav class="side-nav__list" aria-label="Sidebar items">
 
-        <a class="side-nav__link<?= $__is_active('dashboard') ?>" href="/dashboard">
+        <a class="side-nav__link<?= $__is_active('/dashboard') ?>" href="/dashboard">
           <span class="side-nav__icon" aria-hidden="true">
             <?php render_icon('home'); ?>
           </span>
@@ -69,7 +74,7 @@ function render_icon(string $name): void {
           <span class="side-nav__chev" aria-hidden="true"></span>
         </a>
 
-        <a class="side-nav__link<?= $__is_active('webflow') ?>" href="/qr">
+        <a class="side-nav__link<?= $__is_active('/qr-codes') ?>" href="/qr-codes">
           <span class="side-nav__icon" aria-hidden="true">
             <?php render_icon('layers'); ?>
           </span>
@@ -78,7 +83,7 @@ function render_icon(string $name): void {
           <span class="side-nav__chev" aria-hidden="true"></span>
         </a>
 
-        <a class="side-nav__link<?= $__is_active('webflow') ?>" href="/pages">
+        <a class="side-nav__link<?= $__is_active('/pages') ?>" href="/pages">
           <span class="side-nav__icon" aria-hidden="true">
             <?php render_icon('layers'); ?>
           </span>
@@ -88,7 +93,7 @@ function render_icon(string $name): void {
         </a>
 
 
-        <a class="side-nav__link<?= $__is_active('webflow') ?>" href="/analytics">
+        <a class="side-nav__link<?= $__is_active('/analytics') ?>" href="/analytics">
           <span class="side-nav__icon" aria-hidden="true">
             <?php render_icon('layers'); ?>
           </span>

@@ -201,23 +201,16 @@
     background: var(--surface);
 
     &__btn {
-        height: 2.8rem;
-        min-width: 3.6rem;
         // padding: 0 .8rem;
-        border: 0;
-        border-radius: var(--radius-default);
+        border-radius: .5rem;
         cursor: pointer;
         background: transparent;
         color: var(--text);
         font-size: 1rem;
         font-weight: 500;
-        line-height: 2.8rem;
         transition: background .15s ease, color .15s ease;
         text-align: center;
-
-
-
-
+        padding: 4px 18px;
 
         &:hover {
             background: rgba(255, 255, 255, .06);
@@ -225,14 +218,12 @@
     }
 }
 
-
 .segmented__btn.is-active {
-    // background: var(--brand);
-    // color: var(--text-inverse);
-
-    background: color-mix(in oklab, var(--brand), #000 90%);
-    border-color: color-mix(in oklab, var(--brand), #000 35%);
-    color: #fff;
+    background: var(--brand);
+    color: var(--text-inverse);
+    // background: color-mix(in oklab, var(--brand), #000 90%);
+    // border-color: color-mix(in oklab, var(--brand), #000 35%);
+    // color: #fff;
 }
 
 
@@ -291,6 +282,68 @@
     border-radius: 12px;
     background: rgba(255, 255, 255, .03);
     border: 1px dashed var(--border);
+}
+
+
+/* Premium trend card */
+
+.dash-card--trend {
+    .dash-card__head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: .8rem
+    }
+
+    .dash-card__title {
+        margin: 0;
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--text)
+    }
+
+    .trend-chart {
+        // height: 32rem;
+        width: 100%
+    }
+
+    .pill-switch {
+        display: flex;
+        gap: .8rem;
+        background: color-mix(in srgb, var(--surface) 78%, transparent);
+        padding: .4rem;
+        border-radius: 999rem;
+        border: 1px solid var(--border)
+    }
+
+    .pill-switch .pill {
+        padding: .6rem 1.2rem;
+        border-radius: 999rem;
+        background: transparent;
+        color: var(--text);
+        font-weight: 600;
+        border: 0;
+        line-height: 1;
+        cursor: pointer
+    }
+
+    .pill-switch .pill.is-active {
+        background: var(--text);
+        color: var(--bg)
+    }
+
+    .apexcharts-tooltip {
+        background: var(--surface) !important;
+        border: 1px solid var(--border) !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, .22);
+        border-radius: 12px
+    }
+
+    .apexcharts-xaxis-label,
+    .apexcharts-yaxis-label {
+        fill: color-mix(in srgb, var(--text-muted) 70%, transparent) !important;
+        font-size: 12px
+    }
 }
 
 // .badge {
