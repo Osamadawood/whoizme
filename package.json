@@ -1,0 +1,13 @@
+{
+  "name": "whoizme",
+  "private": true,
+  "version": "0.9.0",
+  "scripts": {
+    "build:css": "sass public/assets/scss/app.scss public/assets/css/app.css --load-path=public/assets/scss",
+    "build:css:min": "sass public/assets/scss/app.scss:public/assets/css/app.min.css --style=compressed --load-path=public/assets/scss",
+    "watch:css": "sass public/assets/scss/app.scss public/assets/css/app.css --watch --load-path=public/assets/scss"
+  },
+  "devDependencies": {
+    "sass": "^1.71.0"
+  }
+}
