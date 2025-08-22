@@ -86,32 +86,35 @@ function wz_kpis(PDO $pdo, int $uid): array {
   ];
 }
 
-function wz_recent_activity(PDO $pdo, int $uid, int $limit=10): array {
+function wz_recent_activity(PDO $pdo, int $uid, int $limit=6): array {
   [$evSQL,] = wz_unified_events_sql($pdo);
-  $sql="SELECT item_type,event_type,created_at,item_id FROM ({$evSQL}) ev
-        WHERE ev.user_id=:uid ORDER BY created_at DESC LIMIT :lim";
+  // Group by item, order by most recent activity
+  $sql="SELECT item_type, item_id,
+               MAX(created_at) AS last_at,
+               SUM(CASE WHEN DATE(created_at)=CURDATE() THEN 1 ELSE 0 END) AS today_cnt
+        FROM ({$evSQL}) ev
+        WHERE ev.user_id=:uid
+        GROUP BY item_type, item_id
+        ORDER BY last_at DESC
+        LIMIT :lim";
   $st=$pdo->prepare($sql);
   $st->bindValue(':uid',$uid,PDO::PARAM_INT);
   $st->bindValue(':lim',$limit,PDO::PARAM_INT);
   $st->execute();
   $rows=$st->fetchAll(PDO::FETCH_ASSOC) ?: [];
-
   if (!$rows) return [];
 
-  // Attach titles from links/qrcodes
+  // Attach titles
   $m = wz_detect_schema($pdo);
   $linksT=$m['links']['table']; $lc=$m['links']['cols'];
   $qrT   =$m['qrcodes']['table']; $qc=$m['qrcodes']['cols'];
 
   $linkIds=[]; $qrIds=[];
-  foreach($rows as $r){
-    if ($r['item_type']==='link') $linkIds[]=(int)$r['item_id'];
-    if ($r['item_type']==='qr')   $qrIds[]  =(int)$r['item_id'];
-  }
+  foreach($rows as $r){ if ($r['item_type']==='link') $linkIds[]=(int)$r['item_id']; if ($r['item_type']==='qr') $qrIds[]=(int)$r['item_id']; }
   $linkIds=array_values(array_unique(array_filter($linkIds)));
   $qrIds  =array_values(array_unique(array_filter($qrIds)));
 
-  $titleBy=['link'=>[],'qr'=>[]];
+  $titleBy=['link'=>[],'qr'=>[],'page'=>[]];
   if ($linkIds){
     $in=implode(',', array_fill(0,count($linkIds),'?'));
     $st2=$pdo->prepare("SELECT `{$lc['id']}` id, `{$lc['title']}` title FROM `{$linksT}` WHERE `{$lc['id']}` IN ({$in})");
@@ -125,12 +128,17 @@ function wz_recent_activity(PDO $pdo, int $uid, int $limit=10): array {
     foreach($st2->fetchAll(PDO::FETCH_ASSOC) as $r){ $titleBy['qr'][(int)$r['id']]=$r['title']; }
   }
 
-  foreach($rows as &$r){
-    $iid=(int)$r['item_id'];
-    $r['title']=$titleBy[$r['item_type']][$iid] ?? (($r['item_type']==='qr')?'QR code #'.$iid:'Link #'.$iid);
+  $out=[];
+  foreach($rows as $r){
+    $iid=(int)$r['item_id']; $typ=$r['item_type'];
+    $title=$titleBy[$typ][$iid] ?? ($typ==='qr'?'QR code #'.$iid:($typ==='link'?'Link #'.$iid:'Page #'.$iid));
+    $ts=strtotime($r['last_at']);
+    $isToday = date('Y-m-d',$ts)===date('Y-m-d');
+    $isYest  = date('Y-m-d',$ts)===date('Y-m-d', strtotime('yesterday'));
+    $when = $isToday ? date('h:i A',$ts) : ($isYest ? 'Yesterday' : date('M d',$ts));
+    $out[]=[ 'title'=>$title, 'type'=>$typ, 'delta'=>(int)$r['today_cnt'], 'at'=>$when ];
   }
-  unset($r);
-  return $rows;
+  return $out;
 }
 
 function wz_top_items(PDO $pdo, int $uid, int $limit=10): array {

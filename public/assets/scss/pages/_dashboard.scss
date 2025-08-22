@@ -80,8 +80,14 @@
         &__title {
             color: var(--muted);
             color: var(--text);
-            font-size: 1.125rem;
+            font-size: 1.25rem;
             margin-bottom: 1rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .view-all {
+            font-size: 1rem;
             font-weight: 500;
         }
     }
@@ -193,29 +199,40 @@
     border: 1px solid var(--border);
     border-radius: var(--radius-default);
     background: var(--surface);
+
+    &__btn {
+        height: 2.8rem;
+        min-width: 3.6rem;
+        // padding: 0 .8rem;
+        border: 0;
+        border-radius: var(--radius-default);
+        cursor: pointer;
+        background: transparent;
+        color: var(--text);
+        font-size: 1rem;
+        font-weight: 500;
+        line-height: 2.8rem;
+        transition: background .15s ease, color .15s ease;
+        text-align: center;
+
+
+
+
+
+        &:hover {
+            background: rgba(255, 255, 255, .06);
+        }
+    }
 }
 
-.segmented__btn {
-    height: 2.8rem;
-    min-width: 3.6rem;
-    padding: 0 .8rem;
-    border: 0;
-    border-radius: var(--radius-default);
-    cursor: pointer;
-    background: transparent;
-    color: var(--text);
-    font-size: 1rem;
-    line-height: 2.8rem;
-    transition: background .15s ease, color .15s ease;
-}
-
-.segmented__btn:hover {
-    background: rgba(255, 255, 255, .06);
-}
 
 .segmented__btn.is-active {
-    background: var(--primary);
-    color: var(--text-inverse);
+    // background: var(--brand);
+    // color: var(--text-inverse);
+
+    background: color-mix(in oklab, var(--brand), #000 90%);
+    border-color: color-mix(in oklab, var(--brand), #000 35%);
+    color: #fff;
 }
 
 

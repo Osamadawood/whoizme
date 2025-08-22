@@ -4,14 +4,14 @@ require_once __DIR__ . '/../includes/bootstrap.php';
 
 // لو اليوزر داخل بالفعل ما نرجّعهوش للّوجين
 if (function_exists('auth_is_logged_in') && auth_is_logged_in()) {
-  header('Location: /dashboard.php'); exit;
+  header('Location: /dashboard'); exit;
 }
 
 // رسائل فلاش/كويري
 $registered = isset($_GET['registered']) ? 1 : 0;
 $email      = isset($_GET['email']) ? trim($_GET['email']) : '';
 $err        = isset($_GET['err']) ? $_GET['err'] : '';
-$returnTo   = isset($_GET['return']) ? $_GET['return'] : '/dashboard.php';
+$returnTo   = isset($_GET['return']) ? $_GET['return'] : '/dashboard';
 
 // خرائط الأخطاء
 $errors = [
@@ -41,7 +41,7 @@ require __DIR__ . '/partials/landing_header.php';
 
       <h1 class="auth-title">Log in</h1>
       <p class="auth-sub form-desc">
-        New to Whoiz.me? <a href="/register.php">Create one</a>
+        New to Whoiz.me? <a href="/register">Create one</a>
       </p>
 
         <?php if ($msg): ?>
@@ -51,7 +51,7 @@ require __DIR__ . '/partials/landing_header.php';
         <?php endif; ?>
 
 
-        <form class="form log-form" method="post" action="/do_login.php">
+        <form class="form log-form" method="post" action="/do_login">
           <input type="hidden" name="return" value="<?= htmlspecialchars($returnTo) ?>">
           <?php if (function_exists('csrf_input')) csrf_input(); ?>
 
@@ -72,7 +72,7 @@ require __DIR__ . '/partials/landing_header.php';
                 <span>Remember me</span>
               </div>
 
-              <a class="link" href="/forgot.php">Forgot password?</a>
+              <a class="link" href="/forgot-password">Forgot password?</a>
           </label>
 
           <div class="go-btn">

@@ -82,7 +82,7 @@ function wz_events_recent(PDO $pdo, int $userId, int $limit=6): array {
  * Top items aggregated within a period, optionally filtered by itemType.
  * Returns rows: [item_type,item_id,label,total,today,clicks,scans,opens,creates,first_seen]
  */
-function wz_top_items(PDO $pdo, int $userId, string $itemType='all', string $period='7d', int $limit=10): array {
+function wz_top_items(PDO $pdo, int $userId, string $itemType='all', string $period='7d', int $limit=10, string $sort='total', string $dir='desc', int $page=1, int $per=10): array {
     $days = ($period === '30d') ? 30 : (($period === '90d') ? 90 : 7);
     $since = (new DateTime('-'. $days .' days'))->format('Y-m-d 00:00:00');
 
@@ -101,15 +101,72 @@ function wz_top_items(PDO $pdo, int $userId, string $itemType='all', string $per
     if ($itemType !== 'all') {
         $base .= " AND item_type=:it";
     }
-    $base .= " GROUP BY item_type, item_id, label ORDER BY total DESC LIMIT :lim";
+    $base .= " GROUP BY item_type, item_id, label";
+
+    // Sorting whitelist
+    $sortKey = strtolower($sort);
+    $sortCol = 'total';
+    if ($sortKey === 'today') $sortCol = 'today';
+    elseif ($sortKey === 'first_seen') $sortCol = 'first_seen';
+
+    $dirKey = strtolower($dir) === 'asc' ? 'ASC' : 'DESC';
+    $base .= " ORDER BY {$sortCol} {$dirKey} LIMIT :lim OFFSET :off";
 
     $st = $pdo->prepare($base);
     $st->bindValue(':uid', $userId, PDO::PARAM_INT);
     $st->bindValue(':since', $since);
     if ($itemType !== 'all') $st->bindValue(':it', $itemType);
-    $st->bindValue(':lim', $limit, PDO::PARAM_INT);
+    $page = max(1, (int)$page);
+    $per  = (int)$per > 0 ? (int)$per : (int)$limit;
+    $off  = ($page - 1) * $per;
+    $st->bindValue(':lim', $per, PDO::PARAM_INT);
+    $st->bindValue(':off', $off, PDO::PARAM_INT);
     $st->execute();
     return $st->fetchAll(PDO::FETCH_ASSOC) ?: [];
+}
+
+/**
+ * Daily time-series for clicks/scans/views (open) with zero-filled dates
+ * Returns: [ [date, clicks, scans, views, total], ... ] ascending by date
+ */
+function wz_event_series(PDO $pdo, int $userId, string $period): array {
+    $days = ($period === '30d') ? 30 : (($period === '90d') ? 90 : 7);
+    $since = (new DateTime('-'. $days .' days'))->format('Y-m-d 00:00:00');
+
+    $sql = "SELECT DATE(created_at) AS d,
+                   SUM(CASE WHEN type='click' THEN 1 ELSE 0 END) AS clicks,
+                   SUM(CASE WHEN type='scan'  THEN 1 ELSE 0 END) AS scans,
+                   SUM(CASE WHEN type='open'  THEN 1 ELSE 0 END) AS views,
+                   COUNT(*) AS total
+            FROM events
+            WHERE user_id=:uid AND created_at>=:since
+            GROUP BY DATE(created_at)
+            ORDER BY d ASC";
+    $st = $pdo->prepare($sql);
+    $st->execute([':uid'=>$userId, ':since'=>$since]);
+    $rows = $st->fetchAll(PDO::FETCH_ASSOC) ?: [];
+
+    $by = [];
+    foreach ($rows as $r) {
+        $by[$r['d']] = [
+            'date'   => $r['d'],
+            'clicks' => (int)$r['clicks'],
+            'scans'  => (int)$r['scans'],
+            'views'  => (int)$r['views'],
+            'total'  => (int)$r['total'],
+        ];
+    }
+
+    // zero-fill spine
+    $out = [];
+    $cur = new DateTime($since);
+    $today = new DateTime('today');
+    while ($cur <= $today) {
+        $k = $cur->format('Y-m-d');
+        $out[] = $by[$k] ?? ['date'=>$k,'clicks'=>0,'scans'=>0,'views'=>0,'total'=>0];
+        $cur->modify('+1 day');
+    }
+    return $out;
 }
 
 

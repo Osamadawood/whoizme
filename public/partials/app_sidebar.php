@@ -51,7 +51,7 @@ function render_icon(string $name): void {
 
       <!-- Brand / logo -->
       <header class="side-nav__brand">
-        <a class="brand" href="/dashboard.php" aria-label="Whoizme Home">
+        <a class="brand" href="/dashboard" aria-label="Whoizme Home">
           <span class="brand__logo" aria-hidden="true"><img src="assets/img/logo.png" alt="<?= htmlspecialchars($page_title) ?>"></span>
           <span class="brand__name">Whoiz.me</span>
         </a>
@@ -60,7 +60,7 @@ function render_icon(string $name): void {
       <!-- Primary links -->
       <nav class="side-nav__list" aria-label="Sidebar items">
 
-        <a class="side-nav__link<?= $__is_active('dashboard.php') ?>" href="/dashboard.php">
+        <a class="side-nav__link<?= $__is_active('dashboard') ?>" href="/dashboard">
           <span class="side-nav__icon" aria-hidden="true">
             <?php render_icon('home'); ?>
           </span>
@@ -69,7 +69,7 @@ function render_icon(string $name): void {
           <span class="side-nav__chev" aria-hidden="true"></span>
         </a>
 
-        <a class="side-nav__link<?= $__is_active('webflow.php') ?>" href="/qr.php">
+        <a class="side-nav__link<?= $__is_active('webflow') ?>" href="/qr">
           <span class="side-nav__icon" aria-hidden="true">
             <?php render_icon('layers'); ?>
           </span>
@@ -78,7 +78,7 @@ function render_icon(string $name): void {
           <span class="side-nav__chev" aria-hidden="true"></span>
         </a>
 
-        <a class="side-nav__link<?= $__is_active('webflow.php') ?>" href="/pages.php">
+        <a class="side-nav__link<?= $__is_active('webflow') ?>" href="/pages">
           <span class="side-nav__icon" aria-hidden="true">
             <?php render_icon('layers'); ?>
           </span>
@@ -88,7 +88,7 @@ function render_icon(string $name): void {
         </a>
 
 
-        <a class="side-nav__link<?= $__is_active('webflow.php') ?>" href="/analytics.php">
+        <a class="side-nav__link<?= $__is_active('webflow') ?>" href="/analytics">
           <span class="side-nav__icon" aria-hidden="true">
             <?php render_icon('layers'); ?>
           </span>

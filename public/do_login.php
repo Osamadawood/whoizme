@@ -10,6 +10,7 @@
  */
 
 require_once __DIR__ . '/../includes/bootstrap.php';
+require_once __DIR__ . '/../includes/helpers.php';
 
 try {
   // Optional CSRF check if available
@@ -21,12 +22,15 @@ try {
   $remember = !empty($_POST['remember']);
 
   // return can arrive via GET on the login page, or POST if the form carries it forward
-  $returnRaw = $_POST['return'] ?? $_GET['return'] ?? '/dashboard.php';
+  $returnRaw = $_POST['return'] ?? $_GET['return'] ?? '/dashboard';
+  $errReturn = '/dashboard';
+  if (wz_is_safe_next($returnRaw)) {
+    $errReturn = preg_replace('~\.php($|\?)~i', '$1', (string)$returnRaw);
+  }
 
   // 2) Basic validation
   if (!filter_var($email, FILTER_VALIDATE_EMAIL) || $password === '') {
-    header('Location: /login.php?err=badinput&return=' . urlencode($returnRaw) . '&email=' . urlencode($email));
-    exit;
+    wz_redirect('/login', ['err'=>'badinput','return'=>$errReturn,'email'=>$email]);
   }
 
   // 3) Fetch user
@@ -37,14 +41,12 @@ try {
 
   // 4) Verify password
   if (!$user || empty($user['password_hash']) || !password_verify($password, $user['password_hash'])) {
-    header('Location: /login.php?err=badpass&return=' . urlencode($returnRaw) . '&email=' . urlencode($email));
-    exit;
+    wz_redirect('/login', ['err'=>'badpass','return'=>$errReturn,'email'=>$email]);
   }
 
   // 5) Account state
   if ((int)$user['is_active'] !== 1) {
-    header('Location: /login.php?err=inactive&return=' . urlencode($returnRaw) . '&email=' . urlencode($email));
-    exit;
+    wz_redirect('/login', ['err'=>'inactive','return'=>$errReturn,'email'=>$email]);
   }
 
   // 6) Log the user in
@@ -68,42 +70,19 @@ try {
     }
   }
 
-  // 7) Safe redirect target
-  $ret = $returnRaw;
+  // 7) Final redirect (pretty, no query)
 
-  // (a) Decode nested encodings safely (max 5 rounds)
-  $rounds = 0;
-  while ($rounds < 5) {
-    $decoded = urldecode($ret);
-    if ($decoded === $ret) { break; }
-    $ret = $decoded;
-    $rounds++;
+  // Final redirect (pretty, no query)
+  $retParam = $_POST['return'] ?? $_GET['return'] ?? $returnRaw ?? null;
+  if (wz_is_safe_next($retParam)) {
+    $clean = preg_replace('~\.php($|\?)~i', '$1', (string)$retParam);
+    wz_redirect($clean);
+  } else {
+    wz_redirect('/dashboard');
   }
-
-  // (b) Extract only the path component and normalize
-  $path = parse_url($ret, PHP_URL_PATH);
-  if (!$path || $path === '' || $path === '/' ) {
-    $path = '/dashboard.php';
-  }
-
-  // (c) Disallow redirecting back to login/register/this endpoint
-  $blocked = ['/login.php', '/register.php', '/do_login.php'];
-  if (in_array($path, $blocked, true)) {
-    $path = '/dashboard.php';
-  }
-
-  // (d) Make sure we only redirect to internal paths
-  if ($path[0] !== '/') {
-    $path = '/dashboard.php';
-  }
-
-  // Final redirect
-  header('Location: ' . $path);
-  exit;
 
 } catch (Throwable $e) {
   // Avoid leaking details in query string; keep it simple and safe
-  $fallback = '/dashboard.php';
-  header('Location: /login.php?err=exception&return=' . urlencode($fallback) . '&email=' . urlencode($_POST['email'] ?? ''));
-  exit;
+  $fallback = '/dashboard';
+  wz_redirect('/login', ['err'=>'exception','return'=>$fallback,'email'=>($_POST['email'] ?? '')]);
 }

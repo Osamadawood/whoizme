@@ -81,7 +81,7 @@ $canonical = $host ? $scheme . '://' . $host . $path : '';
 <header class="landing-header" role="banner">
   <div class="landing-header__bar">
     <a class="landing-header__logo" href="/">
-      <img src="/assets/img/logo.png" alt="" width="28" height="28">
+      <img src="/assets/img/logo.png" alt="<?= htmlspecialchars($page_title) ?>">
       <span>Whoiz.me</span>
     </a>
 
@@ -92,7 +92,7 @@ $canonical = $host ? $scheme . '://' . $host . $path : '';
 
     <div class="nav__spacer"></div>
 
-    <a href="/login.php" class="landing-header__link">Log in</a>
-    <a class="btn btn--cta" href="/register.php">Get started</a>
+    <a href="/login" class="landing-header__link">Log in</a>
+    <a class="btn btn--cta" href="/register">Get started</a>
   </div>
 </header>

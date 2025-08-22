@@ -1215,7 +1215,6 @@ html[data-theme=dark] .theme-toggle .moon {
   padding-inline: 2rem;
   padding-block: clamp(2rem, 1.25vw, 4rem) clamp(3rem, 1.25vw, 4rem);
 }
-
 .landing-header__bar {
   display: flex;
   align-items: center;
@@ -1229,7 +1228,6 @@ html[data-theme=dark] .theme-toggle .moon {
   border-radius: 24px;
   box-shadow: var(--shadow-sm);
 }
-
 .landing-header__logo {
   display: inline-flex;
   align-items: center;
@@ -1240,6 +1238,7 @@ html[data-theme=dark] .theme-toggle .moon {
 }
 .landing-header__logo img {
   display: block;
+  width: 2.5rem;
 }
 .landing-header__logo span {
   line-height: 1;
@@ -1624,8 +1623,13 @@ html[data-theme=dark] .theme-toggle .moon {
 .dashboard .panel__title {
   color: var(--muted);
   color: var(--text);
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   margin-bottom: 1rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+.dashboard .panel .view-all {
+  font-size: 1rem;
   font-weight: 500;
 }
 .dashboard .kpis {
@@ -1710,28 +1714,28 @@ html[data-theme=dark] .theme-toggle .moon {
   border-radius: var(--radius-default);
   background: var(--surface);
 }
-
 .segmented__btn {
   height: 2.8rem;
   min-width: 3.6rem;
-  padding: 0 0.8rem;
   border: 0;
   border-radius: var(--radius-default);
   cursor: pointer;
   background: transparent;
   color: var(--text);
   font-size: 1rem;
+  font-weight: 500;
   line-height: 2.8rem;
   transition: background 0.15s ease, color 0.15s ease;
+  text-align: center;
 }
-
 .segmented__btn:hover {
   background: rgba(255, 255, 255, 0.06);
 }
 
 .segmented__btn.is-active {
-  background: var(--primary);
-  color: var(--text-inverse);
+  background: color-mix(in oklab, var(--brand), #000 90%);
+  border-color: color-mix(in oklab, var(--brand), #000 35%);
+  color: #fff;
 }
 
 /* small link variant */

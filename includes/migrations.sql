@@ -59,3 +59,11 @@ SET @idx_exists := (
 );
 SET @sql := IF(@idx_exists=0, 'ALTER TABLE events ADD INDEX idx_item (item_type, item_id)', 'SELECT 1');
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+-- compound (user_id, created_at) for timeseries queries
+SET @idx_exists := (
+  SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS
+  WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME='events' AND INDEX_NAME='idx_events_user_created'
+);
+SET @sql := IF(@idx_exists=0, 'ALTER TABLE events ADD INDEX idx_events_user_created (user_id, created_at)', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;

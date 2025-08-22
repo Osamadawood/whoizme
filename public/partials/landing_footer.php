@@ -13,30 +13,30 @@
           <div class="col">
             <h4 class="h6">Main pages</h4>
             <ul class="link-list">
-              <li><a href="/index.php">Home</a></li>
-              <li><a href="/features.php">Features</a></li>
-              <li><a href="/qr.php">Create QR</a></li>
-              <li><a href="/links.php">Create Links</a></li>
-              <li><a href="/landing-pages.php">Landing Pages</a> <span class="soon">soon</span></li>
+              <li><a href="/">Home</a></li>
+              <li><a href="/features">Features</a></li>
+              <li><a href="/qr-codes">Create QR</a></li>
+              <li><a href="/links">Create Links</a></li>
+              <li><a href="/landing-pages">Landing Pages</a> <span class="soon">soon</span></li>
             </ul>
           </div>
 
           <div class="col">
             <h4 class="h6">Product</h4>
             <ul class="link-list">
-              <li><a href="/login.php">Sign in</a></li>
-              <li><a href="/register.php">Create account</a></li>
-              <li><a href="/forgot.php">Forgot password</a></li>
+              <li><a href="/login">Sign in</a></li>
+              <li><a href="/register">Create account</a></li>
+              <li><a href="/forgot-password">Forgot password</a></li>
             </ul>
           </div>
 
           <div class="col">
             <h4 class="h6">Company</h4>
             <ul class="link-list">
-              <li><a href="/terms.php">Terms</a></li>
-              <li><a href="/privacy.php">Privacy</a></li>
-              <li><a href="/faq.php">FAQs</a></li>
-              <li><a href="/contact-us.php">Contact Us</a></li>
+              <li><a href="/terms">Terms</a></li>
+              <li><a href="/privacy">Privacy</a></li>
+              <li><a href="/faq">FAQs</a></li>
+              <li><a href="/contact-us">Contact Us</a></li>
             </ul>
           </div>
         </div>
@@ -45,7 +45,7 @@
         <div class="mb-12"></div>
 
         <div class="brand-row">
-          <a class="brand" href="/index.php">
+          <a class="brand" href="/">
             <img class="brand-mark" src="/assets/img/logo.png" alt="" loading="lazy" />
             <span class="brand-name">Whoiz.me</span>
           </a>
@@ -60,8 +60,8 @@
           <h3 class="cta-title">Get started with Whoiz.me today</h3>
 
           <div class="cta-actions">
-            <a class="btn btn--sm btn--primary" href="/register.php">Get started</a>
-            <a class="btn btn--sm btn--ghost" href="/features.php">Explore features</a>
+            <a class="btn btn--sm btn--primary" href="/register">Get started</a>
+            <a class="btn btn--sm btn--ghost" href="/features">Explore features</a>
           </div>
 
         </div>

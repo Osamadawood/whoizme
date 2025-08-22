@@ -86,7 +86,7 @@ if (strtolower($page_title) === 'dashboard') {
   $breadcrumbs = [['label' => 'Dashboard', 'url' => null]];
 } elseif (empty($breadcrumbs)) {
   $breadcrumbs = [
-    ['label' => 'Home', 'url' => '/dashboard.php'],
+    ['label' => 'Home', 'url' => '/dashboard'],
     ['label' => $page_title, 'url' => null]
   ];
 } else {
@@ -114,7 +114,7 @@ if (strtolower($page_title) === 'dashboard') {
     </div>
 
     <div class="app-topbar__right">
-      <form class="topbar-search" action="/search.php" method="get" role="search">
+      <form class="topbar-search" action="/search" method="get" role="search">
         <input class="topbar-search__input" type="search" name="q" placeholder="Search links &amp; QR..." />
         <button class="topbar-search__btn" type="button" aria-hidden="true" tabindex="-1">
           <i class="fi fi-rr-search" aria-hidden="true"></i>
@@ -163,25 +163,25 @@ if (strtolower($page_title) === 'dashboard') {
         </button>
 
         <div class="account__menu" id="accountMenu" role="menu" aria-hidden="true" hidden>
-          <a href="/profile.php" role="menuitem">
+          <a href="/profile" role="menuitem">
             <i class="fi fi-rr-user" aria-hidden="true"></i>
             <span>View profile</span>
           </a>
 
-          <a href="/settings.php" role="menuitem">
+          <a href="/settings" role="menuitem">
             <i class="fi fi-rr-settings" aria-hidden="true"></i>
             <span>Settings</span>
           </a>
 
           <hr class="account__menu-divider" aria-hidden="true">
 
-          <a href="/help/faqs.php" role="menuitem">
+          <a href="/help/faqs" role="menuitem">
             <!-- <i class="fi fi-rr-info" aria-hidden="true"></i> -->
             <i class="fi fi-rr-interrogation" aria-hidden="true"></i>
             <span>FAQs</span>
           </a>
 
-          <a href="/support.php" role="menuitem">
+          <a href="/support" role="menuitem">
             <i class="fi fi-rr-headset" aria-hidden="true"></i>
             <span>Support</span>
           </a>
@@ -194,7 +194,7 @@ if (strtolower($page_title) === 'dashboard') {
           <?php
             $WZ_CSRF = function_exists('csrf_token') ? csrf_token() : ($_SESSION['csrf_token'] ?? '');
           ?>
-          <form action="/logout.php" class="danger" method="POST">
+          <form action="/logout" class="danger" method="POST">
             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($WZ_CSRF, ENT_QUOTES); ?>">
             <i class="fi fi-rr-sign-out-alt" aria-hidden="true"></i>
             <button type="submit" class="dropdown__item">Logout</button>

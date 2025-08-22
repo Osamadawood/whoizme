@@ -23,6 +23,15 @@ include __DIR__ . '/partials/app_header.php';
   ][$t];
 
   $uid = (int)($_SESSION['user_id'] ?? 0);
+  // Sorting & pagination
+  $sort = $_GET['sort'] ?? 'total';
+  $dir  = $_GET['dir'] ?? 'desc';
+  $page = (int)($_GET['page'] ?? 1);
+  $per  = (int)($_GET['per'] ?? 10);
+  if (!in_array($sort, ['total','today','first_seen'], true)) $sort = 'total';
+  if (!in_array(strtolower($dir), ['asc','desc'], true)) $dir = 'desc';
+  if ($page < 1) $page = 1;
+  if ($per < 1 || $per > 100) $per = 10;
 ?>
 
 <main class="dashboard">
@@ -49,14 +58,14 @@ include __DIR__ . '/partials/app_header.php';
   <div class="container topbar--inset" role="region" aria-label="Primary toolbar">
     <?php
       // Breadcrumbs: dashboard is root, so we do not repeat "Home"
-      $breadcrumbs = [ ['label' => 'Dashboard', 'href' => '/dashboard.php'] ];
+      $breadcrumbs = [ ['label' => 'Dashboard', 'href' => '/dashboard'] ];
 
       // Topbar config handed to the partial (the partial should read $topbar if present)
       $topbar = [
         'search' => [
           'enabled'     => true,
           'placeholder' => 'Search links & QR…',
-          'action'      => '/search.php',
+          'action'      => '/search',
           'name'        => 'q',
           'method'      => 'GET',
         ],
@@ -121,44 +130,53 @@ include __DIR__ . '/partials/app_header.php';
               </form>
             </div>
             <div class="chart" role="img" aria-label="Traffic trend data">
-              <?php if (!$trend): ?>
-                <div class="empty muted" aria-hidden="true">No data yet – create your first link to see trends.</div>
-              <?php else: ?>
-                <ul class="list-plain">
-                  <?php foreach ($trend as $row): ?>
-                    <li>
-                      <span class="muted"><?php echo htmlspecialchars($row['date']); ?></span>
-                      · <?php echo (int)($row['click'] ?? 0); ?> clicks
-                      · <?php echo (int)($row['scan'] ?? 0); ?> scans
-                      · <?php echo (int)($row['open'] ?? 0); ?> opens
-                      · <?php echo (int)($row['create'] ?? 0); ?> creates
-                      · <strong><?php echo (int)($row['total'] ?? 0); ?> total</strong>
-                    </li>
-                  <?php endforeach; ?>
-                </ul>
-              <?php endif; ?>
+              <canvas id="trend-canvas" height="120"></canvas>
+              <noscript>
+                <?php if (!$trend): ?>
+                  <div class="empty muted" aria-hidden="true">No data yet – create your first link to see trends.</div>
+                <?php else: ?>
+                  <ul class="list-plain">
+                    <?php foreach ($trend as $row): ?>
+                      <li>
+                        <span class="muted"><?php echo htmlspecialchars($row['date']); ?></span>
+                        · <?php echo (int)($row['click'] ?? 0); ?> clicks
+                        · <?php echo (int)($row['scan'] ?? 0); ?> scans
+                        · <?php echo (int)($row['open'] ?? 0); ?> opens
+                        · <?php echo (int)($row['create'] ?? 0); ?> creates
+                        · <strong><?php echo (int)($row['total'] ?? 0); ?> total</strong>
+                      </li>
+                    <?php endforeach; ?>
+                  </ul>
+                <?php endif; ?>
+              </noscript>
             </div>
+            <?php $series = ($uid && isset($pdo)) ? wz_event_series($pdo, $uid, $p) : []; ?>
+            <script id="trend-data" type="application/json"><?php echo json_encode($series, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?></script>
           </div>
         </div>
         <div class="panel">
           <div class="panel__body">
             <div class="panel__title u-flex u-ai-center u-jc-between">
               <span>Recent activity</span>
-              <a href="/activity.php" class="link-muted" aria-label="View all activity">View all</a>
+              <a href="/activity" class="link-muted view-all" aria-label="View all activity">View all</a>
             </div>
             <ul class="activity list-plain">
+              <?php
+                $recentItems = ($uid && isset($pdo)) ? (function() use($pdo,$uid){
+                  try { return wz_recent_activity($pdo, $uid, 6); } catch(Throwable $e){ return []; }
+                })() : [];
+              ?>
+              <?php if (!$recentItems): ?>
+                <li class="activity__item"><span class="muted">No recent activity yet — create your first link</span></li>
+              <?php else: foreach ($recentItems as $it):
+                $icon = $it['type']==='link' ? '<i class="fi fi-rr-link-simple"></i>' : ($it['type']==='qr' ? '<i class="fi fi-rr-qr-code"></i>' : '<i class="fi fi-rr-file"></i>');
+                $delta = (int)($it['delta'] ?? 0);
+              ?>
               <li class="activity__item">
-                <span class="activity__icon" aria-hidden="true">🔗</span>
-                <span class="activity__main"><strong>os.me/summer</strong> <span class="muted">· 312 clicks · 09:30 AM</span></span>
+                <span class="activity__icon" aria-hidden="true"><?= $icon ?></span>
+                <span class="activity__main"><strong><?= htmlspecialchars($it['title']) ?></strong> <span class="muted">· <?= $delta ?> <?= $it['type']==='qr'?'scans':'clicks' ?> · <?= htmlspecialchars($it['at']) ?></span></span>
               </li>
-              <li class="activity__item">
-                <span class="activity__icon" aria-hidden="true">📷</span>
-                <span class="activity__main"><strong>os.me/menu-qr</strong> <span class="muted">· 128 scans · 08:47 AM</span></span>
-              </li>
-              <li class="activity__item">
-                <span class="activity__icon" aria-hidden="true">🚀</span>
-                <span class="activity__main"><strong>os.me/launch</strong> <span class="muted">· 1.2k clicks · Yesterday</span></span>
-              </li>
+              <?php endforeach; endif; ?>
             </ul>
           </div>
         </div>
@@ -170,12 +188,12 @@ include __DIR__ . '/partials/app_header.php';
           <div class="panel__title">Top links & QR</div>
           <div class="u-flex u-ai-center u-jc-between u-mb-4">
             <div class="filters segmented" role="tablist" aria-label="Filter type">
-              <a class="segmented__btn <?= $t==='all'?'is-active':'' ?>"   href="/dashboard.php?t=all&p=<?= $p ?>">All</a>
-              <a class="segmented__btn <?= $t==='links'?'is-active':'' ?>" href="/dashboard.php?t=links&p=<?= $p ?>">Links</a>
-              <a class="segmented__btn <?= $t==='qr'?'is-active':'' ?>"    href="/dashboard.php?t=qr&p=<?= $p ?>">QR</a>
-              <a class="segmented__btn <?= $t==='pages'?'is-active':'' ?>" href="/dashboard.php?t=pages&p=<?= $p ?>">Pages</a>
+              <a class="segmented__btn <?= $t==='all'?'is-active':'' ?>"   href="#" data-tab="all">All</a>
+              <a class="segmented__btn <?= $t==='links'?'is-active':'' ?>" href="#" data-tab="links">Links</a>
+              <a class="segmented__btn <?= $t==='qr'?'is-active':'' ?>"    href="#" data-tab="qr">QR</a>
+              <a class="segmented__btn <?= $t==='pages'?'is-active':'' ?>" href="#" data-tab="pages">Pages</a>
             </div>
-            <a class="btn btn--ghost btn--sm" href="/exports/top-items.php?p=<?= $p ?>&t=<?= $t ?>">Export CSV</a>
+            <a class="btn btn--ghost btn--sm" href="#" data-export>Export CSV</a>
           </div>
           <table class="table" role="table">
             <thead>
@@ -187,8 +205,8 @@ include __DIR__ . '/partials/app_header.php';
                 <th>Created</th>
               </tr>
             </thead>
-            <tbody>
-              <?php $top = ($uid && isset($pdo)) ? wz_top_items($pdo, $uid, $t_param, $p, 10) : []; ?>
+            <tbody data-top-table-body>
+              <?php $top = ($uid && isset($pdo)) ? wz_top_items($pdo, $uid, $t_param, $p, 10, $sort, $dir, $page, $per) : []; ?>
               <?php if (!$top): ?>
                 <tr><td colspan="5" class="muted">No items yet.</td></tr>
               <?php else: foreach ($top as $r): ?>
@@ -202,6 +220,7 @@ include __DIR__ . '/partials/app_header.php';
               <?php endforeach; endif; ?>
             </tbody>
           </table>
+          <div data-top-paging class="u-flex u-gap-8 u-mt-16"></div>
         </div>
       </div>
 
@@ -218,5 +237,71 @@ document.addEventListener('click', (e)=>{
   group.querySelectorAll('.segmented__btn').forEach(b=>b.classList.remove('is-active'));
   btn.classList.add('is-active');
 });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+<script>
+(function(){
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const qs = new URLSearchParams(window.location.search);
+  let period = qs.get('p') || '7d';
+  let tab    = qs.get('tab') || 'all';
+  let page   = parseInt(qs.get('page')||'1',10);
+  let per    = parseInt(qs.get('per') || '5',10);
+  let sort   = qs.get('sort') || 'today';
+  let dir    = qs.get('dir')  || 'desc';
+
+  const $trendCanvas = document.getElementById('trend-canvas');
+  const $tabs = document.querySelectorAll('[data-tab]');
+  const $periods = document.querySelectorAll('[data-period]');
+  const $tableBody = document.querySelector('[data-top-table-body]');
+  const $paging = document.querySelector('[data-top-paging]');
+  const $exportBtn = document.querySelector('[data-export]');
+
+  let chart;
+  function drawTrend(days){
+    if (!$trendCanvas) return;
+    const labels = (days||[]).map(d=>d.date);
+    const values = (days||[]).map(d=>d.total);
+    if (!chart) {
+      chart = new Chart($trendCanvas, {
+        type: 'line',
+        data: { labels, datasets: [{ label:'Total', data: values, tension:.3, borderWidth:2, pointRadius:2 }]},
+        options: { animation: prefersReduced?false:{duration:600}, responsive:true, plugins:{legend:{display:false}}, scales:{ x:{grid:{display:false}}, y:{beginAtZero:true, grid:{color:'rgba(148,163,184,.15)'}} } }
+      });
+    } else {
+      chart.data.labels = labels; chart.data.datasets[0].data = values; chart.update();
+    }
+  }
+
+  async function loadTrend(){
+    const r = await fetch(`/api/analytics/trend.php?p=${period}`, {credentials:'same-origin'});
+    const j = await r.json(); drawTrend(j.days||[]);
+  }
+  async function loadTop(){
+    const url = `/api/analytics/top.php?p=${period}&tab=${tab}&page=${page}&per=${per}&sort=${sort}&dir=${dir}`;
+    const r = await fetch(url, {credentials:'same-origin'}); const j = await r.json();
+    if ($tableBody) {
+      $tableBody.innerHTML = (j.rows||[]).map(r=>`<tr><td>${r.title}</td><td class="u-ta-right u-text-muted">${r.type}</td><td class="u-ta-right">${r.total}</td><td class="u-ta-right">${r.today}</td><td class="u-ta-right u-text-muted">${r.first_seen??'-'}</td></tr>`).join('');
+    }
+    const { total_pages } = j.paging||{ total_pages:1};
+    const max = Math.max(1,total_pages); const curr = Math.min(page,max);
+    let html=''; const make=(n,l=n)=>`<button class="u-btn u-btn--ghost ${n===curr?'is-active':''}" data-page="${n}">${l}</button>`;
+    if (curr>1) html+=make(curr-1,'&laquo;');
+    const start=Math.max(1,curr-2), end=Math.min(max,curr+2);
+    for (let i=start;i<=end;i++) html+=make(i);
+    if (curr<max) html+=make(curr+1,'&raquo;');
+    if ($paging) $paging.innerHTML=html;
+  }
+
+  function pushState(){ history.replaceState({}, '', '/dashboard'); }
+  async function refreshAll(){ pushState(); await Promise.all([loadTrend(), loadTop()]); }
+
+  $tabs.forEach(el=>el.addEventListener('click',e=>{ e.preventDefault(); tab=el.dataset.tab; page=1; refreshAll(); }));
+  $periods.forEach(el=>el.addEventListener('click',e=>{ e.preventDefault(); period=el.dataset.period; page=1; refreshAll(); }));
+  $paging?.addEventListener('click',e=>{ const b=e.target.closest('[data-page]'); if(!b) return; page=parseInt(b.dataset.page,10); refreshAll(); });
+  $exportBtn?.addEventListener('click',()=>{ const q=new URLSearchParams({p:period, tab, sort, dir, per:String(per), page:String(page)}); window.location.href=`/exports/top-items.php?${q.toString()}`; });
+
+  window.addEventListener('DOMContentLoaded', refreshAll);
+})();
 </script>
 <?php include __DIR__ . '/partials/app_footer.php'; ?>

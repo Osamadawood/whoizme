@@ -2,6 +2,7 @@
 declare(strict_types=1);
 require_once __DIR__ . '/../_bootstrap.php';
 require_once __DIR__ . '/../r.php';
+require_once __DIR__ . '/../../includes/events.php';
 
 // Debug on local
 ini_set('display_errors', 1);
@@ -22,10 +23,13 @@ if ($code === '') {
     exit;
 }
 
-// اتصال PDO (عدّل DSN/اليوزر/الباسورد حسب مشروعك)
-$pdo = new PDO('mysql:host=localhost;port=8889;dbname=whoiz;charset=utf8mb4', 'root', 'root', [
-    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-]);
+// Use existing PDO from bootstrap
+/** @var PDO $pdo */
+$pdo = $GLOBALS['pdo'] ?? null;
+if (!$pdo instanceof PDO) {
+    http_response_code(500);
+    exit('Database unavailable');
+}
 
 // لو طالب debug اعرض تفاصيل
 if (isset($_GET['debug'])) {
@@ -85,6 +89,20 @@ try {
     if (isset($_GET['debug'])) {
         echo "\n(hit-log error) ".$e->getMessage()."\n";
     }
+}
+
+// Log unified analytics event (non-blocking). For this route, treat as page open.
+try {
+    $uid = (int)($_SESSION['user_id'] ?? 0);
+    $ua  = (string)($_SERVER['HTTP_USER_AGENT'] ?? '');
+    if ($uid > 0 && $ua && !preg_match('/bot|spider/i', $ua)) {
+        $itemId = (int)($row['id'] ?? 0);
+        $slug = (string)($row['slug'] ?? $row['code'] ?? '');
+        $label = $slug ? ('os.me/'.ltrim($slug,'/')) : ((string)($row['title'] ?? $row['name'] ?? 'demo page'));
+        wz_log_event($pdo, $uid, 'page', $itemId, 'open', $label);
+    }
+} catch (Throwable $e) {
+    // ignore
 }
 
 // حوّل (prevent caching the 302 so each hit is recorded)

@@ -132,17 +132,27 @@ $skip = defined('SKIP_AUTH_GUARD') && SKIP_AUTH_GUARD === true;
 
 $publicWhitelist = [
     '/', '/index.php',
-    '/login.php', '/do_login.php', '/logout.php',
-    '/register.php', '/forgot.php', '/reset.php',
-    '/terms.php', '/privacy.php', '/styleguide.php',
-    '/health.php', '/_selfcheck.php',
+    '/login', '/login.php', '/do_login', '/do_login.php',
+    '/logout', '/logout.php',
+    '/register', '/register.php',
+    '/forgot-password', '/forgot.php',
+    '/reset-password', '/reset.php',
+    '/terms', '/terms.php',
+    '/privacy', '/privacy.php',
+    '/styleguide', '/styleguide.php',
+    '/health', '/health.php', '/_selfcheck.php',
 ];
 
 $reqPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 
 if (!$skip) {
     if (!in_array($reqPath, $publicWhitelist, true) && !current_user_id()) {
-        header('Location: /login.php?return=' . rawurlencode($_SERVER['REQUEST_URI'] ?? '/'), true, 302);
+        $here = $_SERVER['REQUEST_URI'] ?? '/dashboard';
+        $here = preg_replace('~\.php($|\?)~i', '$1', $here);
+        $qpos = strpos($here, '?');
+        $cleanHere = $qpos === false ? $here : substr($here, 0, $qpos);
+        $loginUrl = function_exists('wz_url') ? wz_url('/login', ['return' => $cleanHere]) : '/login?return=' . rawurlencode($cleanHere);
+        header('Location: ' . $loginUrl, true, 302);
         exit;
     }
 }

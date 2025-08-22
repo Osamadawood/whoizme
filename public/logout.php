@@ -75,6 +75,5 @@ if (function_exists('flash')) {
   flash('success', $msg);
 }
 
-// رجّع لصفحة اللوج إن
-header('Location: /login.php');
-exit;
+require_once __DIR__ . '/../includes/helpers.php';
+wz_redirect('/login');

@@ -25,7 +25,17 @@ if ($uid <= 0) {
 }
 
 /** @var PDO $pdo */
-$rows = isset($pdo) ? wz_top_items($pdo, $uid, $t_param, $p, 200) : [];
+// Sorting/paging for export (slice)
+$sort = $_GET['sort'] ?? 'total';
+$dir  = $_GET['dir'] ?? 'desc';
+$page = (int)($_GET['page'] ?? 1);
+$per  = (int)($_GET['per'] ?? 200);
+if (!in_array($sort, ['total','today','first_seen'], true)) $sort = 'total';
+if (!in_array(strtolower($dir), ['asc','desc'], true)) $dir = 'desc';
+if ($page < 1) $page = 1;
+if ($per < 1 || $per > 200) $per = 200;
+
+$rows = isset($pdo) ? wz_top_items($pdo, $uid, $t_param, $p, $per, $sort, $dir, $page, $per) : [];
 
 // Output CSV with UTF-8 BOM
 header('Content-Type: text/csv; charset=utf-8');

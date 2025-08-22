@@ -44,3 +44,31 @@ if (!function_exists('track_hit')) {
         }
     }
 }
+
+if (!function_exists('wz_url')) {
+    function wz_url(string $path, array $query = []): string {
+        $path = '/' . ltrim($path, '/');
+        $path = preg_replace('~\.php$~i', '', $path);
+        if ($query) {
+            return $path . '?' . http_build_query($query);
+        }
+        return $path;
+    }
+}
+
+if (!function_exists('wz_is_safe_next')) {
+    function wz_is_safe_next(?string $next): bool {
+        if (!$next) return false;
+        if (preg_match('~^https?://~i', $next)) return false;
+        if (strpos($next, "\0") !== false) return false;
+        return (bool)preg_match('~^/[A-Za-z0-9_\-./?=&]*$~', $next);
+    }
+}
+
+if (!function_exists('wz_redirect')) {
+    function wz_redirect(string $path, array $query = [], int $status = 302): void {
+        $url = wz_url($path, $query);
+        header('Location: ' . $url, true, $status);
+        exit;
+    }
+}
