@@ -186,10 +186,19 @@ if (strtolower($page_title) === 'dashboard') {
             <span>Support</span>
           </a>
 
-          <a href="/logout.php" class="danger" role="menuitem">
+          <!-- <a href="/logout.php" class="danger" role="menuitem">
             <i class="fi fi-rr-sign-out-alt" aria-hidden="true"></i>
             <span>Log out</span>
-          </a>
+          </a> -->
+
+          <?php
+            $WZ_CSRF = function_exists('csrf_token') ? csrf_token() : ($_SESSION['csrf_token'] ?? '');
+          ?>
+          <form action="/logout.php" class="danger" method="POST">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($WZ_CSRF, ENT_QUOTES); ?>">
+            <i class="fi fi-rr-sign-out-alt" aria-hidden="true"></i>
+            <button type="submit" class="dropdown__item">Logout</button>
+          </form>
         </div>
         
       </div>

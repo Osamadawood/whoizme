@@ -592,7 +592,8 @@
   border: 1px solid var(--border-700);
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
 }
-.account__menu a {
+.account__menu a,
+.account__menu button {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -601,7 +602,8 @@
   font-weight: 500;
   color: var(--text-200);
 }
-.account__menu a:hover {
+.account__menu a:hover,
+.account__menu button:hover {
   background: var(--surface-800);
   color: var(--text-100);
 }
@@ -610,7 +612,24 @@
   opacity: 0.9;
 }
 .account__menu .danger {
-  color: var(--red-400);
+  color: var(--danger);
+}
+.account__menu form {
+  display: block;
+  padding: 0 12px;
+  border-radius: var(--radius-default);
+  cursor: pointer;
+}
+.account__menu form i {
+  color: var(--danger);
+}
+.account__menu form:hover {
+  background: var(--surface-800);
+  color: var(--danger);
+}
+.account__menu form button {
+  display: inline-block;
+  cursor: pointer;
 }
 
 .account__menu-divider {
@@ -1647,6 +1666,8 @@ html[data-theme=dark] .theme-toggle .moon {
   background: var(--neutral-100);
   border-radius: 10px;
   border: 1px solid var(--border);
+  overflow: scroll;
+  scroll-behavior: smooth;
 }
 .dashboard .table {
   width: 100%;
