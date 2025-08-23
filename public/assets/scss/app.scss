@@ -40,6 +40,7 @@
 @use 'landing/header';
 @use "landing/footer";
 @use 'pages/dashboard';
+@use 'pages/qr';
 @use 'components/skeleton';
 
 /* === Utilities === */
@@ -86,6 +87,11 @@
 @include breadcrumbs.apply();
 @include pagination.apply();
 @include prose.apply();
+@include sidebar.apply();
+@include topbar.apply();
+@include table.apply();
+@include auth.apply();
+@include qr.apply();
 @include skeleton.apply();
 
 /* 5) utilities (last) */

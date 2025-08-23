@@ -155,10 +155,10 @@ include __DIR__ . '/partials/app_header.php';
             <section class="dash-card dash-card--trend" data-trend-root>
               <header class="dash-card__head">
                 <h3 class="dash-card__title">Traffic Trend</h3>
-                <div class="pill-switch" data-trend-tabs>
-                  <button type="button" data-p="7d"  class="pill is-active">7d</button>
-                  <button type="button" data-p="30d" class="pill">30d</button>
-                  <button type="button" data-p="90d" class="pill">90d</button>
+                <div class="filters segmented" data-trend-tabs>
+                  <button type="button" data-p="7d"  class="segmented__btn is-active">7d</button>
+                  <button type="button" data-p="30d" class="segmented__btn">30d</button>
+                  <button type="button" data-p="90d" class="segmented__btn">90d</button>
                 </div>
               </header>
 

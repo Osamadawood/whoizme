@@ -3,14 +3,23 @@ CREATE TABLE IF NOT EXISTS qr_codes (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT NULL,
   type ENUM('url','vcard','text','email','wifi','pdf','app','image') NOT NULL,
+  title VARCHAR(120) NOT NULL,
   payload TEXT NOT NULL,
-  style_json TEXT NOT NULL,       -- ألوان/خلفية/مقاس/قالب...
+  style_json TEXT DEFAULT '{}',       -- ألوان/خلفية/مقاس/قالب...
   is_dynamic TINYINT(1) DEFAULT 0,
   short_code VARCHAR(16) DEFAULT NULL,
+  is_active TINYINT(1) DEFAULT 1,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   KEY (user_id),
   UNIQUE KEY uq_short_code (short_code)
 );
+
+-- Add missing columns if they don't exist (idempotent)
+ALTER TABLE qr_codes ADD COLUMN IF NOT EXISTS title VARCHAR(120) NOT NULL DEFAULT 'Untitled QR Code';
+ALTER TABLE qr_codes ADD COLUMN IF NOT EXISTS is_active TINYINT(1) DEFAULT 1;
+ALTER TABLE qr_codes ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+ALTER TABLE qr_codes MODIFY COLUMN style_json TEXT DEFAULT '{}';
 
 -- scans (للديناميك فقط)
 CREATE TABLE IF NOT EXISTS qr_scans (

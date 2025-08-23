@@ -92,12 +92,13 @@ function render_icon(string $name): void {
           <span class="side-nav__chev" aria-hidden="true"></span>
         </a>
 
-        <a class="side-nav__link<?= $__is_active('/pages') ?>" href="/pages">
+        <a class="side-nav__link<?= $__is_active('/pages') ?>" href="#" aria-disabled="true" onclick="return false;">
           <span class="side-nav__icon" aria-hidden="true">
             <?php render_icon('layers'); ?>
           </span>
           <i class="fi fi-rr-file" aria-hidden="true"></i>
           <span class="side-nav__text">Pages</span>
+          <span class="badge badge--soon" aria-label="Coming soon">Soon</span>
           <span class="side-nav__chev" aria-hidden="true"></span>
         </a>
 

@@ -226,9 +226,10 @@ if (strtolower($page_title) === 'dashboard') {
         <span class="create-card__title">Create a QR Code</span>
         <span class="create-card__kbd">Q</span>
       </a>
-      <a class="create-card" href="/templates/create.php">
+      <a class="create-card" href="#" aria-disabled="true" onclick="return false;">
         <i class="create-card__icon fi fi-rr-browser" aria-hidden="true"></i>
         <span class="create-card__title">Build a landing page</span>
+        <span class="badge badge--soon" aria-label="Coming soon">Soon</span>
         <span class="create-card__kbd">P</span>
       </a>
     </div>

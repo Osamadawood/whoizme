@@ -1,9 +1,11 @@
 @use "../core/mixins" as *;
+
 @mixin apply() {
     .card {
         @include card;
         padding: 1rem;
     }
+
     .card--glass {
         background: color-mix(in oklab, var(--surface), white 3%);
         backdrop-filter: blur(6px);
@@ -13,11 +15,13 @@
 .card {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 16px;
+    border-radius: var(--radius-default);
     box-shadow: var(--shadow-md);
+
     &__body {
         padding: 1.6rem;
     }
+
     &__title {
         color: var(--text-muted);
         font-size: 1.4rem;
@@ -27,7 +31,8 @@
 
 .kpis {
     display: grid;
-    gap: 1.4rem;
+    gap: 1rem;
+
     @media (min-width: 740px) {
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
@@ -51,22 +56,27 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 12px;
+    border-radius: var(--radius-default);
     color: var(--text-inverse);
     user-select: none;
     transition: background-color .15s ease, transform .15s ease;
+
     &--links {
         background: var(--brand-blue-500);
     }
+
     &--qr {
         background: var(--brand-purple-500);
     }
+
     &--page {
         background: var(--brand-yellow-500);
     }
+
     &:hover {
         filter: brightness(0.92);
     }
+
     &:active {
         transform: translateY(1px);
         filter: brightness(0.88);
@@ -93,6 +103,7 @@
     display: grid;
     gap: 1.6rem;
     place-items: stretch stretch;
+
     @media (min-width: 980px) {
         grid-template-columns: 1fr 1fr;
     }

@@ -15,13 +15,11 @@
     place-items: start stretch;
     width: 100%;
     display: grid;
-
     .container {
         max-width: 1200px;
         margin-inline: auto;
         padding-inline: clamp(16px, 3vw, 28px);
     }
-
     /* Grid: sidebar + main */
     .dash-grid {
         display: grid;
@@ -31,34 +29,27 @@
         padding-inline: 0;
         padding-block-start: 2rem;
         height: 100%;
-
         @media (min-width: 980px) {
             // grid-template-columns: 260px 1fr;
         }
     }
-
     .maincol {
         min-width: 0;
     }
-
     .list--plain {
         list-style: none;
         margin: 0;
         padding: 0;
     }
-
     .text-success {
         color: var(--success);
     }
-
     .text-danger {
         color: var(--danger);
     }
-
     .w-100 {
         width: 100%;
     }
-
     /* Panels (cards) */
     .panel {
         background: var(--surface);
@@ -66,17 +57,14 @@
         border-color: #0a0e1a;
         border-radius: var(--radius-default);
         box-shadow: var(--shadow-sm);
-
         &--ghost {
             background: transparent;
             border: 0;
             box-shadow: none;
         }
-
         &__body {
             padding: clamp(16px, 2.2vw, 24px);
         }
-
         &__title {
             color: var(--muted);
             color: var(--text);
@@ -85,53 +73,44 @@
             font-weight: 600;
             text-transform: capitalize;
         }
-
         .view-all {
             font-size: 1rem;
             font-weight: 500;
         }
     }
-
     /* KPIs */
     .kpis {
         display: grid;
-        gap: clamp(10px, 2vw, 14px);
-
+        gap: clamp(10px, 2vw, 16px);
         @media (min-width: 740px) {
             grid-template-columns: repeat(3, minmax(0, 1fr));
         }
     }
-
     .kpi {
         padding: 16px;
         border-radius: var(--radius-default);
         border: 1px dashed color-mix(in oklab, var(--text) 10%, transparent);
-
         &__value {
             font-weight: 700;
             font-size: clamp(22px, 3.6vw, 28px);
             letter-spacing: -0.02em;
             color: var(--text);
         }
-
         &__delta {
             font-size: .8rem;
             color: var(--success);
         }
     }
-
     /* Two-up row */
     .twoup {
         display: grid;
         gap: clamp(12px, 2vw, 16px);
         grid-template-columns: 1fr .5fr;
         place-items: stretch stretch;
-
         @media (min-width: 980px) {
             grid-template-columns: 1fr .5fr;
         }
     }
-
     /* Chart placeholder */
     .chart {
         height: 23rem;
@@ -140,51 +119,43 @@
         //     radial-gradient(1200px 220px at 0% 120%, color-mix(in oklab, var(--primary) 22%, transparent), transparent 60%),
         //     radial-gradient(1200px 220px at 100% 0%, color-mix(in oklab, var(--primary) 18%, transparent), transparent 60%);
         background: var(--neutral-100);
-        border-radius: 10px;
+        border-radius: var(--radius-default);
         border: 1px solid var(--border);
         overflow: scroll;
         scroll-behavior: smooth;
     }
-
     /* Table */
     .table {
         width: 100%;
         border-collapse: separate;
         border-spacing: 0 8px;
-
         th {
             font-size: .8rem;
             color: var(--muted);
             text-align: left;
             padding: 10px 12px;
         }
-
         td {
             padding: 12px;
             border-top: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
             border-bottom: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
             background: var(--surface);
             color: var(--text);
-
             &:first-child {
-                border-radius: 10px 0 0 10px;
+                border-radius: var(--radius-default) 0 0 var(--radius-default);
             }
-
             &:last-child {
-                border-radius: 0 10px 10px 0;
+                border-radius: 0 var(--radius-default) var(--radius-default) 0;
             }
         }
     }
-
     /* helpers */
     .u-mb-16 {
         margin-bottom: 16px;
     }
-
     .u-mb-8 {
         margin-bottom: 8px;
     }
-
     /* Ensure badges are always perfect pills regardless of font-size */
 }
 
@@ -201,10 +172,9 @@
     border: 1px solid var(--border);
     border-radius: var(--radius-default);
     background: var(--surface);
-
     &__btn {
         // padding: 0 .8rem;
-        border-radius: .5rem;
+        border-radius: .564rem;
         cursor: pointer;
         background: transparent;
         color: var(--text);
@@ -213,7 +183,6 @@
         transition: background .15s ease, color .15s ease;
         text-align: center;
         padding: 4px 18px;
-
         &:hover {
             background: rgba(255, 255, 255, .06);
         }
@@ -296,19 +265,16 @@
         justify-content: space-between;
         margin-bottom: .8rem
     }
-
     .dash-card__title {
         margin: 0;
         font-size: 1.6rem;
         font-weight: 700;
         color: var(--text)
     }
-
     .trend-chart {
         // height: 32rem;
         width: 100%
     }
-
     .pill-switch {
         display: flex;
         gap: .8rem;
@@ -317,7 +283,6 @@
         border-radius: 999rem;
         border: 1px solid var(--border)
     }
-
     .pill-switch .pill {
         padding: .6rem 1.2rem;
         border-radius: 999rem;
@@ -328,19 +293,16 @@
         line-height: 1;
         cursor: pointer
     }
-
     .pill-switch .pill.is-active {
         background: var(--text);
         color: var(--bg)
     }
-
     .apexcharts-tooltip {
         background: var(--surface) !important;
         border: 1px solid var(--border) !important;
         box-shadow: 0 8px 24px rgba(0, 0, 0, .22);
         border-radius: 12px
     }
-
     .apexcharts-xaxis-label,
     .apexcharts-yaxis-label {
         fill: color-mix(in srgb, var(--text-muted) 70%, transparent) !important;
@@ -388,8 +350,6 @@
 .u-mb-8 {
     margin-bottom: .8rem;
 }
-
-
 
 @media (min-width: 768px) {
     #dash-grid-hero {

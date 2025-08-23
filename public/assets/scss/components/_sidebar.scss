@@ -1,144 +1,132 @@
-.sidebar-wrapper {
-    padding-top: 2rem;
-    padding-inline-start: 2rem;
-    height: 100%;
-}
-
-.side-nav {
-    top: clamp(32px, 2.5vw, 24px);
-    position: sticky;
-    align-self: start;
-    background: var(--surface);
-    border: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
-    border-color: #0a0e1a;
-    border-radius: var(--radius-default);
-    box-shadow: var(--shadow-sm);
-    width: 18rem;
-    padding: 2rem 1rem;
-    flex-flow: column;
-    justify-content: flex-start;
-    align-items: stretch;
-    max-height: 100vh;
-    display: flex;
-    overflow: auto;
-
-    &__body {
-        padding: 1.6rem;
-        display: flex;
-        flex-direction: column;
-        gap: 1.2rem;
+@mixin apply() {
+    .sidebar-wrapper {
+        padding-top: 2rem;
+        padding-inline-start: 2rem;
+        height: 100%;
     }
 
-    &__title {
-        font-weight: 700;
-        letter-spacing: -0.02em;
-        color: var(--text);
-        margin-bottom: 8px;
-    }
-
-    &__list {
-        display: flex;
-        flex-direction: column;
-        gap: .5rem;
-    }
-
-    &__link {
-        display: flex;
-        align-items: center;
-        padding: 1rem 1.5rem;
-        color: var(--muted);
-        text-decoration: none;
-        font-size: 1rem;
-        font-weight: 600;
+    .side-nav {
+        top: clamp(32px, 2.5vw, 24px);
+        position: sticky;
+        align-self: start;
+        background: var(--surface);
+        border: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
+        border-color: #0a0e1a;
         border-radius: var(--radius-default);
-        position: relative;
-        transition: padding .3s ease-in-out, background-color .3s ease-in-out, color .3s ease-in-out;
+        box-shadow: var(--shadow-sm);
+        width: 18rem;
+        padding: 2rem 1rem;
+        flex-flow: column;
+        justify-content: flex-start;
+        align-items: stretch;
+        max-height: 100vh;
+        display: flex;
+        overflow: auto;
 
-        &::before {
-            position: absolute;
-            content: '';
-            left: 1.25rem;
-            background-color: var(--text-muted);
-            width: 0;
-            height: 0;
-            transition: width .3s ease-in-out, height .3s ease-in-out;
+        &__body {
+            padding: 1.6rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        &__title {
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        &__list {
+            display: flex;
+            flex-direction: column;
+            gap: .5rem;
+        }
+
+        &__link {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 600;
             border-radius: var(--radius-default);
-        }
-
-        &:hover {
-            background: color-mix(in oklab, var(--surface) 70%, var(--text) 4%);
-            color: var(--text);
-            padding-inline-start: 2.25rem;
-
-            &::before {
-                width: .2rem;
-                height: 1.25rem;
-            }
-        }
-
-        &.is-active {
-            background: color-mix(in oklab, var(--surface) 80%, var(--primary) 6%);
-            border-color: color-mix(in oklab, var(--primary) 22%, transparent);
-            color: var(--text);
-            background-color: var(--border);
-            background-color: color-mix(in oklab, var(--surface) 80%, var(--brand) 14%);
-            padding-inline-start: 2.25rem;
+            position: relative;
+            transition: all .3s ease-in-out;
+            border: 1px solid transparent;
 
             &::before {
                 position: absolute;
                 content: '';
-                background-color: var(--brand);
-                width: .2rem !important;
-                height: 1.25rem !important;
-                transition: width .3s ease-in-out, height .3s ease-in-out;
+                background-color: var(--primary);
+                width: 0;
+                transition: width .3s ease-in-out;
+                border-radius: .2rem;
+                height: 0;
+                right: 1rem;
+                top: 50%;
+                transform: translateY(-50%);
+                height: 18px;
             }
 
-        }
+            &:hover {
+                background: color-mix(in oklab, var(--surface) 70%, var(--text) 4%);
+                color: var(--text);
+            }
 
-        i {
-            font-size: 1rem;
-            padding-inline-end: 1.8rem;
-            width: 1rem;
-            height: 1rem;
-            text-align: center;
-            line-height: 1rem;
-        }
+            &.is-active {
+                color: var(--text);
+                background: var(--page-bg);
+                border-color: color-mix(in oklab, var(--brand), var((--page-bg)) 56%);
 
-    }
-
-    &__inner {
-        display: flex;
-        flex-direction: column;
-        gap: 2rem;
-    }
-
-    &__dash--img {
-        width: 100%;
-        border-radius: 1.5rem;
-        overflow: hidden;
-        margin-block-start: 8rem;
-    }
-
-    &__brand {
-        text-align: center;
-
-
-        .brand {
-            gap: 1rem;
-
-            &__logo {
-                width: 3rem;
-
-                img {
-                    width: 100%;
+                &::before {
+                    width: .25rem;
+                    background-color: var(--brand);
                 }
             }
 
-            &__name {
-                font-size: 1.5rem;
+            i {
+                font-size: 1rem;
+                padding-inline-end: 1.8rem;
+                width: 1rem;
+                height: 1rem;
+                text-align: center;
+                line-height: 1rem;
+            }
+        }
+
+        &__inner {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        &__dash--img {
+            width: 100%;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            margin-block-start: 8rem;
+        }
+
+        &__brand {
+            text-align: center;
+
+            .brand {
+                gap: 1rem;
+
+                &__logo {
+                    width: 3rem;
+
+                    img {
+                        width: 100%;
+                    }
+                }
+
+                &__name {
+                    font-size: 1.5rem;
+                }
             }
         }
     }
-
-
 }
