@@ -44,6 +44,7 @@ class QRGenerator {
         this.setupStylingControls();
         this.setupCharacterCounter();
         this.setupKeyboardNavigation();
+        this.setupFormSubmission();
         this.renderDefaultQR();
     }
 
@@ -89,8 +90,8 @@ class QRGenerator {
             targetPane.classList.remove('is-hidden');
         }
 
-        // Re-render QR
-        this.scheduleRender();
+        // Re-render QR immediately when switching tabs
+        this.renderQR();
     }
 
     handleTabKeydown(e, tabs, currentIndex) {
@@ -119,127 +120,135 @@ class QRGenerator {
     }
 
     setupInputListeners() {
-        // Listen to all form inputs for live updates
-        const inputs = document.querySelectorAll('input, textarea, select');
+        // Listen to all input fields for live preview
+        const inputs = document.querySelectorAll('.qr-pane input, .qr-pane textarea');
         inputs.forEach(input => {
-            input.addEventListener('input', () => this.scheduleRender());
-            input.addEventListener('change', () => this.scheduleRender());
+            ['input', 'change', 'keyup'].forEach(eventType => {
+                input.addEventListener(eventType, () => this.scheduleRender());
+            });
+        });
+
+        // Platform preview toggle for App Stores
+        const platformRadios = document.querySelectorAll('input[name="platform_preview"]');
+        platformRadios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                this.state.platformPreview = radio.value;
+                this.scheduleRender();
+            });
         });
     }
 
     setupStylingControls() {
-        // Color pickers
         if (this.elements.qrColor) {
-            this.elements.qrColor.addEventListener('input', (e) => {
+            this.elements.qrColor.addEventListener('change', (e) => {
                 this.state.fg = e.target.value;
                 this.renderQR();
             });
         }
 
         if (this.elements.qrBg) {
-            this.elements.qrBg.addEventListener('input', (e) => {
+            this.elements.qrBg.addEventListener('change', (e) => {
                 this.state.bg = e.target.value;
                 this.renderQR();
             });
         }
 
-        // Size slider
-        if (this.elements.qrSize && this.elements.qrSizeValue) {
+        if (this.elements.qrSize) {
             this.elements.qrSize.addEventListener('input', (e) => {
                 this.state.size = parseInt(e.target.value);
-                this.elements.qrSizeValue.textContent = this.state.size;
+                if (this.elements.qrSizeValue) {
+                    this.elements.qrSizeValue.textContent = this.state.size;
+                }
                 this.renderQR();
             });
         }
 
-        // Quiet zone slider
-        if (this.elements.qrQuiet && this.elements.qrQuietValue) {
+        if (this.elements.qrQuiet) {
             this.elements.qrQuiet.addEventListener('input', (e) => {
                 this.state.quiet = parseInt(e.target.value);
-                this.elements.qrQuietValue.textContent = this.state.quiet;
+                if (this.elements.qrQuietValue) {
+                    this.elements.qrQuietValue.textContent = this.state.quiet;
+                }
                 this.renderQR();
             });
         }
 
-        // Rounded modules toggle
         if (this.elements.qrRounded) {
             this.elements.qrRounded.addEventListener('change', (e) => {
                 this.state.rounded = e.target.checked;
                 this.renderQR();
             });
         }
-
-        // Platform preview for App Stores
-        document.querySelectorAll('input[name="platform_preview"]').forEach(radio => {
-            radio.addEventListener('change', (e) => {
-                this.state.platformPreview = e.target.value;
-                this.scheduleRender();
-            });
-        });
     }
 
     setupCharacterCounter() {
         const textArea = document.getElementById('text');
-        const charCount = document.getElementById('charCount');
+        if (textArea) {
+            const counter = document.createElement('div');
+            counter.className = 'char-counter';
+            textArea.parentNode.appendChild(counter);
 
-        if (textArea && charCount) {
-            textArea.addEventListener('input', () => {
+            const updateCounter = () => {
                 const count = textArea.value.length;
-                charCount.textContent = count;
+                counter.textContent = `${count}/1000 characters`;
+            };
 
-                if (count > 900) {
-                    charCount.style.color = 'var(--warning)';
-                } else {
-                    charCount.style.color = 'var(--text-muted)';
-                }
-            });
+            textArea.addEventListener('input', updateCounter);
+            updateCounter();
         }
     }
 
     setupKeyboardNavigation() {
-        // Focus management for tab panels
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Tab') {
-                const activePane = document.querySelector('.qr-pane:not(.is-hidden)');
-                if (activePane) {
-                    const focusableElements = activePane.querySelectorAll('input, textarea, select, button');
-                    if (focusableElements.length > 0) {
-                        // Ensure focus stays within the active pane
-                        const firstElement = focusableElements[0];
-                        const lastElement = focusableElements[focusableElements.length - 1];
+        // Add keyboard navigation to form fields
+        const formFields = document.querySelectorAll('.qr-pane input, .qr-pane textarea');
+        formFields.forEach((field, index) => {
+            field.addEventListener('keydown', (e) => {
+                if (e.key === 'Tab') {
+                    // Let default tab behavior work
+                    return;
+                }
 
-                        if (e.shiftKey && document.activeElement === firstElement) {
-                            e.preventDefault();
-                            lastElement.focus();
-                        } else if (!e.shiftKey && document.activeElement === lastElement) {
-                            e.preventDefault();
-                            firstElement.focus();
-                        }
+                if (e.key === 'Enter' && e.target.tagName === 'INPUT') {
+                    e.preventDefault();
+                    const nextField = formFields[index + 1];
+                    if (nextField) {
+                        nextField.focus();
                     }
                 }
-            }
+            });
+        });
+    }
+
+    setupFormSubmission() {
+        const form = document.getElementById('qrForm');
+        if (!form) return;
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.saveQR();
         });
     }
 
     scheduleRender() {
-        clearTimeout(this.debounceTimer);
+        if (this.debounceTimer) {
+            clearTimeout(this.debounceTimer);
+        }
+
         this.debounceTimer = setTimeout(() => {
             this.renderQR();
-        }, 60);
+        }, 150);
     }
 
     renderDefaultQR() {
-        // Set default URL if empty
-        const urlInput = document.getElementById('destination_url');
-        if (urlInput && !urlInput.value.trim()) {
-            urlInput.value = this.DEFAULT_URL;
-        }
+        if (!this.elements.qrCanvas) return;
 
-        this.renderQR();
+        this.generateQRCode(this.DEFAULT_URL);
+        this.updateCaption('url', this.DEFAULT_URL);
+        this.elements.qrCanvas.setAttribute('aria-label', 'QR code preview - fill form to generate');
     }
 
     renderQR() {
-        const payload = this.buildPayload(this.state.type);
+        const payload = this.buildPayload();
 
         if (!payload) {
             this.showEmptyState();
@@ -247,37 +256,53 @@ class QRGenerator {
             return;
         }
 
-        this.state.payload = payload;
-        this.updateCreateButton(true);
         this.generateQRCode(payload);
         this.updateCaption(this.state.type, payload);
+        this.updateCreateButton(true);
     }
 
-    buildPayload(type) {
-        switch (type) {
+    buildPayload() {
+        let payload = '';
+
+        switch (this.state.type) {
             case 'url':
-                return this.buildUrl();
+                payload = this.buildUrl();
+                break;
             case 'vcard':
-                return this.buildVCard();
+                payload = this.buildVCard();
+                break;
             case 'text':
-                return this.buildText();
+                payload = this.buildText();
+                break;
             case 'email':
-                return this.buildEmail();
+                payload = this.buildEmail();
+                break;
             case 'wifi':
-                return this.buildWifi();
+                payload = this.buildWifi();
+                break;
             case 'pdf':
-                return this.buildPdf();
+                payload = this.buildPdf();
+                break;
             case 'stores':
-                return this.buildAppStores();
+                payload = this.buildAppStores();
+                break;
             case 'images':
-                return this.buildImage();
+                payload = this.buildImage();
+                break;
             default:
-                return '';
+                payload = '';
         }
+
+        // If no payload is generated, return default URL
+        if (!payload && this.state.type === 'url') {
+            return this.DEFAULT_URL;
+        }
+
+        return payload;
     }
 
     buildUrl() {
-        const url = document.getElementById('destination_url')?.value.trim();
+        const url = document.getElementById('destination_url') ?.value.trim();
         if (!url) return '';
 
         // Ensure URL has protocol
@@ -288,15 +313,15 @@ class QRGenerator {
     }
 
     buildVCard() {
-        const fullname = document.getElementById('fullname')?.value.trim();
+        const fullname = document.getElementById('fullname') ?.value.trim();
         if (!fullname) return '';
 
-        const org = document.getElementById('org')?.value.trim() || '';
-        const title = document.getElementById('job_title')?.value.trim() || '';
-        const phone = document.getElementById('phone')?.value.trim() || '';
-        const email = document.getElementById('email')?.value.trim() || '';
-        const website = document.getElementById('website')?.value.trim() || '';
-        const address = document.getElementById('address')?.value.trim() || '';
+        const org = document.getElementById('org') ?.value.trim() || '';
+        const title = document.getElementById('job_title') ?.value.trim() || '';
+        const phone = document.getElementById('phone') ?.value.trim() || '';
+        const email = document.getElementById('email') ?.value.trim() || '';
+        const website = document.getElementById('website') ?.value.trim() || '';
+        const address = document.getElementById('address') ?.value.trim() || '';
 
         let vcard = `BEGIN:VCARD\r\nVERSION:3.0\r\n`;
         vcard += `N:;${this.escapeVCardValue(fullname)};;;\r\n`;
@@ -318,16 +343,16 @@ class QRGenerator {
     }
 
     buildText() {
-        const text = document.getElementById('text')?.value.trim();
+        const text = document.getElementById('text') ?.value.trim();
         return text || '';
     }
 
     buildEmail() {
-        const to = document.getElementById('to')?.value.trim();
+        const to = document.getElementById('to') ?.value.trim();
         if (!to) return '';
 
-        const subject = document.getElementById('subject')?.value.trim() || '';
-        const body = document.getElementById('body')?.value.trim() || '';
+        const subject = document.getElementById('subject') ?.value.trim() || '';
+        const body = document.getElementById('body') ?.value.trim() || '';
 
         let mailto = `mailto:${encodeURIComponent(to)}`;
         const params = [];
@@ -343,12 +368,12 @@ class QRGenerator {
     }
 
     buildWifi() {
-        const ssid = document.getElementById('ssid')?.value.trim();
+        const ssid = document.getElementById('ssid') ?.value.trim();
         if (!ssid) return '';
 
-        const password = document.getElementById('password')?.value.trim() || '';
-        const encryption = document.getElementById('encryption')?.value || 'WPA';
-        const hidden = document.getElementById('hidden')?.checked || false;
+        const password = document.getElementById('password') ?.value.trim() || '';
+        const encryption = document.getElementById('encryption') ?.value || 'WPA';
+        const hidden = document.getElementById('hidden') ?.checked || false;
 
         let wifi = `WIFI:T:${encryption};S:${this.escapeWifiValue(ssid)};`;
 
@@ -365,13 +390,13 @@ class QRGenerator {
     }
 
     buildPdf() {
-        const url = document.getElementById('pdf_url')?.value.trim();
+        const url = document.getElementById('pdf_url') ?.value.trim();
         return url || '';
     }
 
     buildAppStores() {
-        const ios = document.getElementById('ios_url')?.value.trim() || '';
-        const android = document.getElementById('android_url')?.value.trim() || '';
+        const ios = document.getElementById('ios_url') ?.value.trim() || '';
+        const android = document.getElementById('android_url') ?.value.trim() || '';
 
         if (!ios && !android) return '';
 
@@ -382,58 +407,55 @@ class QRGenerator {
             return android;
         }
 
-        // Fallback to whichever URL is available
         return ios || android;
     }
 
     buildImage() {
-        const url = document.getElementById('image_url')?.value.trim();
+        const url = document.getElementById('image_url') ?.value.trim();
         return url || '';
     }
 
     generateQRCode(payload) {
-        if (!this.elements.qrCanvas) {
-            console.error('QR canvas not found');
-            return;
-        }
+        if (!this.elements.qrCanvas) return;
 
-        // Clear existing QR
+        // Clear previous QR
         this.elements.qrCanvas.innerHTML = '';
 
-        // Create QR code with styling options
-        this.currentQR = new QRCode(this.elements.qrCanvas, {
-            text: payload,
-            width: this.state.size,
-            height: this.state.size,
-            colorDark: this.state.fg,
-            colorLight: this.state.bg === 'transparent' ? '#ffffff' : this.state.bg,
-            correctLevel: QRCode.CorrectLevel.M
-        });
+        try {
+            // Create QR code using qrcode.min.js
+            new QRCode(this.elements.qrCanvas, {
+                text: payload,
+                width: this.state.size,
+                height: this.state.size,
+                colorDark: this.state.fg,
+                colorLight: this.state.bg,
+                correctLevel: QRCode.CorrectLevel.L
+            });
 
-        // Apply rounded modules if enabled
-        if (this.state.rounded) {
-            const qrImage = this.elements.qrCanvas.querySelector('img');
-            if (qrImage) {
-                qrImage.style.borderRadius = '4px';
+            // Apply rounded corners if enabled
+            if (this.state.rounded) {
+                const qrImage = this.elements.qrCanvas.querySelector('img');
+                if (qrImage) {
+                    qrImage.style.borderRadius = '8px';
+                }
             }
-        }
 
-        // Apply quiet zone (margin)
-        if (this.state.quiet > 0) {
-            this.elements.qrCanvas.style.padding = `${this.state.quiet}px`;
+            this.elements.qrCanvas.setAttribute('aria-label', `QR code for ${this.truncateText(payload, 50)}`);
+        } catch (error) {
+            console.error('QR generation error:', error);
+            this.showEmptyState();
         }
-
-        // Update accessibility
-        this.elements.qrCanvas.setAttribute('aria-label', `QR code preview for ${this.truncateText(payload, 50)}`);
     }
 
     showEmptyState() {
         if (!this.elements.qrCanvas) return;
 
         this.elements.qrCanvas.innerHTML = `
-            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: ${this.state.size}px; color: var(--text-muted);">
-                <i class="fi fi-rr-qr-code" style="font-size: 48px; margin-bottom: 16px;"></i>
-                <span>Fill the form to see preview</span>
+            <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--text-muted); font-size: 0.9rem;">
+                <div style="text-align: center;">
+                    <i class="fi fi-rr-qr-code" style="font-size: 2rem; margin-bottom: 8px; opacity: 0.5;"></i>
+                    <div>Fill in the form to generate QR code</div>
+                </div>
             </div>
         `;
         this.elements.qrCanvas.setAttribute('aria-label', 'QR code preview - fill form to generate');
@@ -454,18 +476,18 @@ class QRGenerator {
                 }
                 break;
             case 'vcard':
-                const name = document.getElementById('fullname')?.value.trim() || 'Contact';
+                const name = document.getElementById('fullname') ?.value.trim() || 'Contact';
                 caption = `${name} | vCard`;
                 break;
             case 'text':
                 caption = `${this.truncateText(payload, 30)} | Text`;
                 break;
             case 'email':
-                const to = document.getElementById('to')?.value.trim() || 'Email';
+                const to = document.getElementById('to') ?.value.trim() || 'Email';
                 caption = `${to} | Email`;
                 break;
             case 'wifi':
-                const ssid = document.getElementById('ssid')?.value.trim() || 'WiFi';
+                const ssid = document.getElementById('ssid') ?.value.trim() || 'WiFi';
                 caption = `${ssid} | WiFi`;
                 break;
             case 'pdf':
@@ -504,6 +526,134 @@ class QRGenerator {
             this.elements.createBtn.disabled = !enabled;
             this.elements.createBtn.style.opacity = enabled ? '1' : '0.5';
             this.elements.createBtn.style.cursor = enabled ? 'pointer' : 'not-allowed';
+        }
+    }
+
+    async saveQR() {
+        try {
+            // Disable button and show loading state
+            this.setSaveButtonState(true, 'Saving...');
+
+            // Collect form data
+            const formData = new FormData();
+
+            // Get the current payload
+            const payload = this.buildPayload();
+            if (!payload) {
+                throw new Error('Please fill in the required fields');
+            }
+
+            // Add form fields
+            formData.append('id', document.querySelector('input[name="id"]') ?.value || '');
+            formData.append('title', document.getElementById('title') ?.value.trim() || '');
+            formData.append('type', this.state.type);
+            formData.append('payload', payload);
+
+            // Add styling data
+            formData.append('fg', this.state.fg);
+            formData.append('bg', this.state.bg);
+            formData.append('size', this.state.size.toString());
+            formData.append('quiet', this.state.quiet.toString());
+            formData.append('rounded', this.state.rounded.toString());
+
+            // Send to API
+            const response = await fetch('/api/qr/save', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                this.showAlert('success', result.message);
+
+                // Update form with new ID if it's a new QR
+                if (!document.querySelector('input[name="id"]') ?.value && result.id) {
+                    const idInput = document.createElement('input');
+                    idInput.type = 'hidden';
+                    idInput.name = 'id';
+                    idInput.value = result.id;
+                    const form = document.getElementById('qrForm');
+                    if (form) {
+                        form.appendChild(idInput);
+                    }
+                }
+
+                // Update helper text with short code if available
+                if (result.short_code) {
+                    this.updateHelperText(result.short_code);
+                }
+
+            } else {
+                throw new Error(result.error || 'Failed to save QR code');
+            }
+
+        } catch (error) {
+            console.error('Save error:', error);
+            this.showAlert('error', error.message);
+        } finally {
+            // Re-enable button
+            this.setSaveButtonState(false, 'Create QR Code');
+        }
+    }
+
+    setSaveButtonState(loading, text) {
+        if (this.elements.createBtn) {
+            this.elements.createBtn.disabled = loading;
+            this.elements.createBtn.textContent = text;
+
+            if (loading) {
+                this.elements.createBtn.classList.add('btn--loading');
+            } else {
+                this.elements.createBtn.classList.remove('btn--loading');
+            }
+        }
+    }
+
+    showAlert(type, message) {
+        // Remove existing alerts
+        const existingAlert = document.querySelector('.qr-alert');
+        if (existingAlert) {
+            existingAlert.remove();
+        }
+
+        // Create alert element
+        const alert = document.createElement('div');
+        alert.className = `qr-alert qr-alert--${type}`;
+        alert.innerHTML = `
+            <div class="qr-alert__content">
+                <i class="fi fi-rr-${type === 'success' ? 'check' : 'cross'}" aria-hidden="true"></i>
+                <span>${message}</span>
+            </div>
+            <button type="button" class="qr-alert__close" aria-label="Close alert">
+                <i class="fi fi-rr-cross" aria-hidden="true"></i>
+            </button>
+        `;
+
+        // Add close functionality
+        const closeBtn = alert.querySelector('.qr-alert__close');
+        closeBtn.addEventListener('click', () => alert.remove());
+
+        // Auto-remove after 5 seconds for success
+        if (type === 'success') {
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
+
+        // Insert at the top of the form
+        const form = document.getElementById('qrForm');
+        if (form) {
+            form.insertBefore(alert, form.firstChild);
+        }
+    }
+
+    updateHelperText(shortCode) {
+        const helper = document.querySelector('.qr-helper .note span');
+        if (helper) {
+            helper.textContent = `Short link: /qrgo.php?q=${shortCode}`;
         }
     }
 }

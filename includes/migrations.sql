@@ -18,8 +18,17 @@ CREATE TABLE IF NOT EXISTS qr_codes (
 -- Add missing columns if they don't exist (idempotent)
 ALTER TABLE qr_codes ADD COLUMN IF NOT EXISTS title VARCHAR(120) NOT NULL DEFAULT 'Untitled QR Code';
 ALTER TABLE qr_codes ADD COLUMN IF NOT EXISTS is_active TINYINT(1) DEFAULT 1;
+ALTER TABLE qr_codes ADD COLUMN IF NOT EXISTS short_code VARCHAR(16) DEFAULT NULL;
 ALTER TABLE qr_codes ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
 ALTER TABLE qr_codes MODIFY COLUMN style_json TEXT DEFAULT '{}';
+
+-- Add unique index for short_code if it doesn't exist
+SET @idx_exists := (
+  SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS
+  WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME='qr_codes' AND INDEX_NAME='uq_short_code'
+);
+SET @sql := IF(@idx_exists=0, 'ALTER TABLE qr_codes ADD UNIQUE KEY uq_short_code (short_code)', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
 -- scans (للديناميك فقط)
 CREATE TABLE IF NOT EXISTS qr_scans (

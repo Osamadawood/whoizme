@@ -2,227 +2,258 @@
 declare(strict_types=1);
 require_once __DIR__ . '/../../includes/bootstrap.php';
 require_once __DIR__ . '/../../includes/auth_guard.php';
+require_once __DIR__ . '/../../includes/events.php';
+require_once __DIR__ . '/../../includes/flash.php';
 
 /** @var PDO $pdo */
 $uid = current_user_id();
-$id  = (int)($_POST['id'] ?? 0);
-
-// Validate and sanitize inputs
-$title = trim($_POST['title'] ?? '');
-$type = trim($_POST['type'] ?? '');
-$is_active = isset($_POST['is_active']) ? 1 : 0;
-
-if (empty($title) || strlen($title) > 120) {
-    header('Location: /qr/new?error=invalid_title');
-    exit;
-}
-
-if (!in_array($type, ['url', 'vcard', 'text'])) {
-    header('Location: /qr/new?error=invalid_type');
-    exit;
-}
-
-// Build payload based on type
-$payload = '';
-$code = '';
-
-switch ($type) {
-    case 'url':
-        $url = trim($_POST['url'] ?? '');
-        if (empty($url) || !filter_var($url, FILTER_VALIDATE_URL)) {
-            header('Location: /qr/new?error=invalid_url');
-            exit;
-        }
-        
-        // Build UTM parameters if provided
-        $utmParams = [];
-        $utmFields = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
-        foreach ($utmFields as $field) {
-            if (!empty($_POST[$field])) {
-                $utmParams[$field] = trim($_POST[$field]);
-            }
-        }
-        
-        if (!empty($utmParams)) {
-            $separator = strpos($url, '?') !== false ? '&' : '?';
-            $payload = $url . $separator . http_build_query($utmParams);
-        } else {
-            $payload = $url;
-        }
-        break;
-        
-    case 'vcard':
-        $name = trim($_POST['vcard_name'] ?? '');
-        if (empty($name)) {
-            header('Location: /qr/new?error=invalid_vcard_name');
-            exit;
-        }
-        
-        // Build vCard 3.0 format
-        $vcard = "BEGIN:VCARD\nVERSION:3.0\n";
-        $vcard .= "FN:" . $name . "\n";
-        
-        // Optional fields
-        $optionalFields = [
-            'vcard_org' => 'ORG',
-            'vcard_title' => 'TITLE',
-            'vcard_email' => 'EMAIL',
-            'vcard_phone' => 'TEL',
-            'vcard_website' => 'URL',
-            'vcard_address' => 'ADR',
-            'vcard_notes' => 'NOTE'
-        ];
-        
-        foreach ($optionalFields as $field => $vcardField) {
-            $value = trim($_POST[$field] ?? '');
-            if (!empty($value)) {
-                if ($vcardField === 'ADR') {
-                    // Format address properly
-                    $vcard .= "ADR;TYPE=WORK:;;" . str_replace("\n", ";", $value) . "\n";
-                } else {
-                    $vcard .= $vcardField . ":" . $value . "\n";
-                }
-            }
-        }
-        
-        $vcard .= "END:VCARD";
-        $payload = $vcard;
-        break;
-        
-    case 'text':
-        $text = trim($_POST['text_content'] ?? '');
-        if (empty($text) || strlen($text) > 1000) {
-            header('Location: /qr/new?error=invalid_text');
-            exit;
-        }
-        $payload = $text;
-        break;
-}
-
-// Generate short code if not provided
-if (empty($code)) {
-    $code = generateShortCode();
-}
+$id = (int)($_POST['id'] ?? 0);
 
 try {
+    // Validate required fields
+    $title = trim($_POST['title'] ?? '');
+    $type = trim($_POST['type'] ?? '');
+    
+    if (empty($title)) {
+        throw new Exception('Title is required');
+    }
+    
+    if (empty($type)) {
+        throw new Exception('QR type is required');
+    }
+    
+    // Validate type
+    $validTypes = ['url', 'vcard', 'text', 'email', 'wifi', 'pdf', 'app', 'image'];
+    if (!in_array($type, $validTypes, true)) {
+        throw new Exception('Invalid QR type');
+    }
+    
+    // Build payload based on type
+    $payload = buildPayloadFromForm($type, $_POST);
+    if (empty($payload)) {
+        throw new Exception('Please fill in the required fields');
+    }
+    
+    // Prepare style data
+    $styleData = [
+        'fg' => $_POST['fg'] ?? '#4B6BFB',
+        'bg' => $_POST['bg'] ?? '#ffffff',
+        'size' => (int)($_POST['size'] ?? 256),
+        'quiet' => (int)($_POST['quiet'] ?? 16),
+        'rounded' => (bool)($_POST['rounded'] ?? true)
+    ];
+    
+    $styleJson = json_encode($styleData);
+    
+    // Generate short code for new QR codes
+    $shortCode = null;
+    if (!$id) {
+        $shortCode = generateShortCode($pdo);
+    }
+    
     if ($id) {
-        // Update existing QR code
-        $stmt = $pdo->prepare("
-            UPDATE qr_codes 
-            SET title = :title, type = :type, payload = :payload, is_active = :is_active, updated_at = NOW()
-            WHERE id = :id AND user_id = :uid
-        ");
-        $stmt->execute([
+        // UPDATE existing QR code
+        $sql = "UPDATE qr_codes SET 
+                title = :title,
+                type = :type,
+                payload = :payload,
+                style_json = :style_json,
+                updated_at = NOW()
+                WHERE id = :id AND user_id = :uid";
+        
+        $st = $pdo->prepare($sql);
+        $result = $st->execute([
             ':title' => $title,
             ':type' => $type,
             ':payload' => $payload,
-            ':is_active' => $is_active,
+            ':style_json' => $styleJson,
             ':id' => $id,
             ':uid' => $uid
         ]);
         
-        if ($stmt->rowCount() === 0) {
-            header('Location: /qr?error=not_found');
-            exit;
+        if (!$result || $st->rowCount() === 0) {
+            throw new Exception('QR code not found or update failed');
         }
         
-        $qr_id = $id;
+        // Log the update event
+        wz_log_event($pdo, $uid, 'qr', $id, 'create', $title);
+        
+        flash_set('qr', 'QR code updated successfully', 'success');
+        
     } else {
-        // Insert new QR code (handle case where short_code column might not exist)
-        try {
-            $stmt = $pdo->prepare("
-                INSERT INTO qr_codes (user_id, type, title, payload, short_code, is_active, created_at)
-                VALUES (:uid, :type, :title, :payload, :code, :is_active, NOW())
-            ");
-            $stmt->execute([
-                ':uid' => $uid,
-                ':type' => $type,
-                ':title' => $title,
-                ':payload' => $payload,
-                ':code' => $code,
-                ':is_active' => $is_active
-            ]);
-        } catch (PDOException $e) {
-            // If short_code column doesn't exist, try without it
-            if (strpos($e->getMessage(), 'short_code') !== false) {
-                $stmt = $pdo->prepare("
-                    INSERT INTO qr_codes (user_id, type, title, payload, is_active, created_at)
-                    VALUES (:uid, :type, :title, :payload, :is_active, NOW())
-                ");
-                $stmt->execute([
-                    ':uid' => $uid,
-                    ':type' => $type,
-                    ':title' => $title,
-                    ':payload' => $payload,
-                    ':is_active' => $is_active
-                ]);
-            } else {
-                throw $e; // Re-throw if it's a different error
-            }
+        // INSERT new QR code
+        $sql = "INSERT INTO qr_codes (user_id, type, title, payload, style_json, short_code, created_at, updated_at)
+                VALUES (:uid, :type, :title, :payload, :style_json, :short_code, NOW(), NOW())";
+        
+        $st = $pdo->prepare($sql);
+        $result = $st->execute([
+            ':uid' => $uid,
+            ':type' => $type,
+            ':title' => $title,
+            ':payload' => $payload,
+            ':style_json' => $styleJson,
+            ':short_code' => $shortCode
+        ]);
+        
+        if (!$result) {
+            throw new Exception('Failed to create QR code');
         }
         
-        $qr_id = $pdo->lastInsertId();
+        $newId = (int)$pdo->lastInsertId();
         
-        // Log creation event
-        if (function_exists('wz_log_event')) {
-            wz_log_event($pdo, $uid, 'qr', $qr_id, 'create', $title);
-        }
+        // Log the creation event
+        wz_log_event($pdo, $uid, 'qr', $newId, 'create', $title);
+        
+        flash_set('qr', 'QR code created successfully', 'success');
     }
     
-    // Generate QR code image (optional)
-    generateQRImage($qr_id, $payload);
-    
-    // Redirect with success
-    header('Location: /qr?created=1');
+    // Redirect to QR list
+    header('Location: /qr');
     exit;
     
-} catch (PDOException $e) {
-    error_log("QR save error: " . $e->getMessage());
-    header('Location: /qr/new?error=save_failed');
+} catch (Exception $e) {
+    flash_set('qr', $e->getMessage(), 'error');
+    header('Location: /qr/new' . ($id ? "?id=$id" : ''));
     exit;
 }
 
 /**
- * Generate a unique short code
+ * Build payload from form data based on QR type
  */
-function generateShortCode(): string {
-    $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-    $length = 8;
+function buildPayloadFromForm(string $type, array $post): string {
+    switch ($type) {
+        case 'url':
+            $url = trim($post['destination_url'] ?? '');
+            if (empty($url)) return '';
+            if (!preg_match('/^https?:\/\//', $url)) {
+                $url = 'https://' . $url;
+            }
+            return $url;
+            
+        case 'vcard':
+            $fullname = trim($post['fullname'] ?? '');
+            if (empty($fullname)) return '';
+            
+            $org = trim($post['org'] ?? '');
+            $title = trim($post['job_title'] ?? '');
+            $phone = trim($post['phone'] ?? '');
+            $email = trim($post['email'] ?? '');
+            $website = trim($post['website'] ?? '');
+            $address = trim($post['address'] ?? '');
+            
+            $vcard = "BEGIN:VCARD\r\nVERSION:3.0\r\n";
+            $vcard .= "N:;" . escapeVCardValue($fullname) . ";;;\r\n";
+            $vcard .= "FN:" . escapeVCardValue($fullname) . "\r\n";
+            
+            if ($org) $vcard .= "ORG:" . escapeVCardValue($org) . "\r\n";
+            if ($title) $vcard .= "TITLE:" . escapeVCardValue($title) . "\r\n";
+            if ($phone) $vcard .= "TEL;TYPE=CELL:" . escapeVCardValue($phone) . "\r\n";
+            if ($email) $vcard .= "EMAIL:" . escapeVCardValue($email) . "\r\n";
+            if ($website) $vcard .= "URL:" . escapeVCardValue($website) . "\r\n";
+            if ($address) $vcard .= "ADR;TYPE=HOME:" . escapeVCardValue($address) . "\r\n";
+            
+            $vcard .= "END:VCARD";
+            return $vcard;
+            
+        case 'text':
+            return trim($post['text'] ?? '');
+            
+        case 'email':
+            $to = trim($post['to'] ?? '');
+            if (empty($to)) return '';
+            
+            $subject = trim($post['subject'] ?? '');
+            $body = trim($post['body'] ?? '');
+            
+            $mailto = "mailto:" . urlencode($to);
+            $params = [];
+            
+            if ($subject) $params[] = "subject=" . urlencode($subject);
+            if ($body) $params[] = "body=" . urlencode($body);
+            
+            if ($params) {
+                $mailto .= "?" . implode('&', $params);
+            }
+            
+            return $mailto;
+            
+        case 'wifi':
+            $ssid = trim($post['ssid'] ?? '');
+            if (empty($ssid)) return '';
+            
+            $password = trim($post['password'] ?? '');
+            $encryption = $post['encryption'] ?? 'WPA';
+            $hidden = isset($post['hidden']);
+            
+            $wifi = "WIFI:T:$encryption;S:" . escapeWifiValue($ssid) . ";";
+            
+            if ($password && $encryption !== 'nopass') {
+                $wifi .= "P:" . escapeWifiValue($password) . ";";
+            }
+            
+            $wifi .= "H:" . ($hidden ? 'true' : 'false') . ";;";
+            return $wifi;
+            
+        case 'pdf':
+            return trim($post['pdf_url'] ?? '');
+            
+        case 'app':
+            $ios = trim($post['ios_url'] ?? '');
+            $android = trim($post['android_url'] ?? '');
+            $platform = $post['platform_preview'] ?? 'ios';
+            
+            if ($platform === 'ios' && $ios) {
+                return $ios;
+            } elseif ($platform === 'android' && $android) {
+                return $android;
+            }
+            
+            return $ios ?: $android;
+            
+        case 'image':
+            return trim($post['image_url'] ?? '');
+            
+        default:
+            return '';
+    }
+}
+
+/**
+ * Escape vCard values
+ */
+function escapeVCardValue(string $value): string {
+    return str_replace(['\\', ';', ','], ['\\\\', '\\;', '\\,'], $value);
+}
+
+/**
+ * Escape WiFi values
+ */
+function escapeWifiValue(string $value): string {
+    return str_replace([';', ':', ','], ['\\;', '\\:', '\\,'], $value);
+}
+
+/**
+ * Generate a unique short code for QR codes
+ */
+function generateShortCode(PDO $pdo): string {
+    $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    $maxAttempts = 10;
     
-    do {
+    for ($attempt = 0; $attempt < $maxAttempts; $attempt++) {
         $code = '';
-        for ($i = 0; $i < $length; $i++) {
+        for ($i = 0; $i < 8; $i++) {
             $code .= $chars[random_int(0, strlen($chars) - 1)];
         }
         
         // Check if code already exists
-        global $pdo;
-        try {
-            $stmt = $pdo->prepare("SELECT COUNT(*) FROM qr_codes WHERE short_code = :code");
-            $stmt->execute([':code' => $code]);
-            $exists = $stmt->fetchColumn() > 0;
-        } catch (PDOException $e) {
-            // If short_code column doesn't exist, assume code doesn't exist
-            $exists = false;
+        $st = $pdo->prepare("SELECT COUNT(*) FROM qr_codes WHERE short_code = :code");
+        $st->execute([':code' => $code]);
+        
+        if ($st->fetchColumn() == 0) {
+            return $code;
         }
-    } while ($exists);
-    
-    return $code;
-}
-
-/**
- * Generate QR code image (optional)
- */
-function generateQRImage(int $qr_id, string $payload): void {
-    // This is optional - you can implement QR generation here
-    // For now, we'll skip it to keep it simple
-    // You can use libraries like phpqrcode or call external APIs
-    
-    /*
-    // Example with phpqrcode library (if installed)
-    if (class_exists('QRcode')) {
-        $filename = __DIR__ . "/../qr/{$qr_id}.png";
-        QRcode::png($payload, $filename, QR_ECLEVEL_L, 10);
     }
-    */
+    
+    // Fallback: use timestamp-based code
+    return 'QR' . time();
 }

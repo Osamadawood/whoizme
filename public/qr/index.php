@@ -44,8 +44,16 @@ $delta_visitors = $delta_scans;
 // List data
 $where = 'q.user_id = :uid';
 $params = [':uid'=>$uid];
+
+// Filter by active status (show hidden if requested)
+$showHidden = isset($_GET['show_hidden']) && $_GET['show_hidden'] === '1';
+if (!$showHidden) {
+    $where .= ' AND (q.is_active = 1 OR q.is_active IS NULL)';
+}
+
 if ($q !== '') { 
-    if ($hasShortCode) {
+    // Safe: default to searching id if short_code info not loaded yet
+    if (isset($hasShortCode) && $hasShortCode) {
         $where .= ' AND (q.title LIKE :kw OR q.payload LIKE :kw OR q.short_code LIKE :kw)'; 
     } else {
         $where .= ' AND (q.title LIKE :kw OR q.payload LIKE :kw OR q.id LIKE :kw)'; 
@@ -69,16 +77,40 @@ try {
     $hasShortCode = false;
 }
 
+// Check if style_json column exists
+$hasStyleJson = false;
+try {
+    $checkStmt = $pdo->prepare("SHOW COLUMNS FROM qr_codes LIKE 'style_json'");
+    $checkStmt->execute();
+    $hasStyleJson = $checkStmt->rowCount() > 0;
+} catch (PDOException $e) {
+    $hasStyleJson = false;
+}
+
 // Build query based on column existence
-if ($hasShortCode) {
-    $sql = "SELECT q.id, q.short_code as code, q.type, q.title, q.payload, q.is_active, q.created_at,
+if ($hasShortCode && $hasStyleJson) {
+    $sql = "SELECT q.id, q.short_code as code, q.type, q.title, q.payload, q.style_json, q.is_active, q.created_at,
+                   (SELECT COUNT(*) FROM events e WHERE e.user_id=:uid AND e.item_type='qr' AND e.item_id=q.id) AS scans
+            FROM qr_codes q
+            WHERE $where
+            ORDER BY q.created_at DESC
+            LIMIT :per OFFSET :off";
+} elseif ($hasShortCode) {
+    $sql = "SELECT q.id, q.short_code as code, q.type, q.title, q.payload, '{}' as style_json, q.is_active, q.created_at,
+                   (SELECT COUNT(*) FROM events e WHERE e.user_id=:uid AND e.item_type='qr' AND e.item_id=q.id) AS scans
+            FROM qr_codes q
+            WHERE $where
+            ORDER BY q.created_at DESC
+            LIMIT :per OFFSET :off";
+} elseif ($hasStyleJson) {
+    $sql = "SELECT q.id, q.id as code, q.type, q.title, q.payload, q.style_json, q.is_active, q.created_at,
                    (SELECT COUNT(*) FROM events e WHERE e.user_id=:uid AND e.item_type='qr' AND e.item_id=q.id) AS scans
             FROM qr_codes q
             WHERE $where
             ORDER BY q.created_at DESC
             LIMIT :per OFFSET :off";
 } else {
-    $sql = "SELECT q.id, q.id as code, q.type, q.title, q.payload, q.is_active, q.created_at,
+    $sql = "SELECT q.id, q.id as code, q.type, q.title, q.payload, '{}' as style_json, q.is_active, q.created_at,
                    (SELECT COUNT(*) FROM events e WHERE e.user_id=:uid AND e.item_type='qr' AND e.item_id=q.id) AS scans
             FROM qr_codes q
             WHERE $where
@@ -91,6 +123,9 @@ $stmt->bindValue(':per', $per, PDO::PARAM_INT);
 $stmt->bindValue(':off', $off, PDO::PARAM_INT);
 $stmt->execute();
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+
+// Debug: Log the number of rows found
+error_log("QR List: Found " . count($rows) . " QR codes for user " . $uid);
 
 $page_title = 'QR Codes';
 include __DIR__ . '/../partials/app_header.php';
@@ -148,11 +183,39 @@ include __DIR__ . '/../partials/app_header.php';
         </div>
       </div>
 
-      <!-- Success message -->
+      <!-- Success/Error messages -->
       <?php if (isset($_GET['created'])): ?>
         <div class="alert alert--success u-mb-12">
           <i class="fi fi-rr-check" aria-hidden="true"></i>
           <span>QR code created successfully!</span>
+        </div>
+      <?php endif; ?>
+      
+      <?php if (isset($_GET['duplicated'])): ?>
+        <div class="alert alert--success u-mb-12">
+          <i class="fi fi-rr-check" aria-hidden="true"></i>
+          <span>QR code duplicated successfully!</span>
+        </div>
+      <?php endif; ?>
+      
+      <?php if (isset($_GET['toggled'])): ?>
+        <div class="alert alert--success u-mb-12">
+          <i class="fi fi-rr-check" aria-hidden="true"></i>
+          <span>QR code <?= htmlspecialchars($_GET['toggled']) ?> successfully!</span>
+        </div>
+      <?php endif; ?>
+      
+      <?php if (isset($_GET['deleted'])): ?>
+        <div class="alert alert--success u-mb-12">
+          <i class="fi fi-rr-check" aria-hidden="true"></i>
+          <span>QR code deleted successfully!</span>
+        </div>
+      <?php endif; ?>
+      
+      <?php if (isset($_GET['error'])): ?>
+        <div class="alert alert--error u-mb-12">
+          <i class="fi fi-rr-exclamation" aria-hidden="true"></i>
+          <span>An error occurred. Please try again.</span>
         </div>
       <?php endif; ?>
 
@@ -238,51 +301,172 @@ include __DIR__ . '/../partials/app_header.php';
       </div>
 
       <!-- Table View (default) -->
-      <div class="qr-table" id="qrTable" data-view="table">
+      <div class="qr-list qr-table" id="qrTable" data-view="table">
         <?php if (!$rows): ?>
           <div class="card">
             <div class="card__body u-ta-center">
               <div class="u-mb-4"><span class="kpi__icon kpi__icon--qr"><i class="fi fi-rr-qrcode"></i></span></div>
               <div class="h4 u-mt-0">No QR codes yet</div>
               <p class="muted">Create your first QR and start tracking scans.</p>
-              <a class="btn btn--primary" href="/qr/new.php">Create QR</a>
+              <a class="btn btn--primary" href="/qr/new">Create QR</a>
             </div>
           </div>
         <?php else: ?>
-          <section class="secData"><div class="table-wrapper">
-                          <table class="table table--stacked">
-                <thead>
-                  <tr>
-                                         <th>Title</th>
-                     <th>Type</th>
-                     <th>Scans</th>
-                     <th>Created</th>
-                  </tr>
-                </thead>
+          <div class="table-wrapper">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th class="qr-thumb">QR</th>
+                  <th class="qr-title">Title</th>
+                  <th class="qr-destination">Destination</th>
+                  <th class="qr-scans">Scans</th>
+                  <th class="qr-created">Created</th>
+                  <th class="qr-actions">Actions</th>
+                </tr>
+              </thead>
               <tbody>
                 <?php foreach ($rows as $r): ?>
+                  <?php
+                    $qrId = (int)$r['id'];
+                    $title = htmlspecialchars($r['title'] ?: ('QR #' . $qrId));
+                    $payload = $r['payload'];
+                    $type = $r['type'];
+                    $scans = (int)($r['scans'] ?? 0);
+                    $created = date('M d, Y', strtotime((string)$r['created_at']));
+                    $shortCode = $r['code'] ?? null;
+                    $styleJson = $r['style_json'] ?? '{}';
+                    
+                    // Format destination text based on type
+                    $destinationText = '';
+                    switch ($type) {
+                        case 'url':
+                            $url = $payload;
+                            if (preg_match('/^https?:\/\/([^\/]+)/', $url, $matches)) {
+                                $destinationText = $matches[1];
+                            } else {
+                                $destinationText = $url;
+                            }
+                            break;
+                        case 'vcard':
+                            if (preg_match('/FN:([^\r\n]+)/', $payload, $matches)) {
+                                $destinationText = 'vCard • ' . $matches[1];
+                            } else {
+                                $destinationText = 'vCard • Contact';
+                            }
+                            break;
+                        case 'text':
+                            $destinationText = substr($payload, 0, 80);
+                            if (strlen($payload) > 80) {
+                                $destinationText .= '...';
+                            }
+                            break;
+                        case 'email':
+                            if (preg_match('/mailto:([^?]+)/', $payload, $matches)) {
+                                $destinationText = 'mailto:' . $matches[1];
+                            } else {
+                                $destinationText = 'Email';
+                            }
+                            break;
+                        case 'wifi':
+                            if (preg_match('/S:([^;]+)/', $payload, $matches)) {
+                                $destinationText = 'WIFI:' . $matches[1];
+                            } else {
+                                $destinationText = 'WiFi Network';
+                            }
+                            break;
+                        case 'pdf':
+                        case 'app':
+                        case 'image':
+                            if (preg_match('/^https?:\/\/([^\/]+)/', $payload, $matches)) {
+                                $destinationText = ucfirst($type) . ' • ' . $matches[1];
+                            } else {
+                                $destinationText = ucfirst($type);
+                            }
+                            break;
+                        default:
+                            $destinationText = $payload;
+                    }
+                  ?>
                   <tr>
-                    <td data-label="Title">
-                      <span class="type-chip" aria-hidden="true">
-                        <i class="fi fi-rr-qr-code"></i>
-                      </span>
-                      <?= htmlspecialchars($r['title'] ?: ('QR #'.(int)$r['id'])) ?>
+                    <td class="qr-thumb">
+                      <div class="qr-thumb-container" 
+                           data-qr-id="<?= $qrId ?>"
+                           data-qr-payload="<?= htmlspecialchars($payload) ?>"
+                           data-qr-style="<?= htmlspecialchars($styleJson) ?>"
+                           data-qr-title="<?= htmlspecialchars($title) ?>">
+                        <!-- Fallback image for no-JS -->
+                        <img src="/qr/thumb.php?id=<?= $qrId ?>&v=<?= time() ?>" 
+                             alt="QR preview: <?= $title ?>"
+                             style="width: 80px; height: 80px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); padding:8px;">
+                      </div>
                     </td>
-                    <td data-label="Type">
-                      <span class="badge"><?= htmlspecialchars(strtoupper($r['type'])) ?></span>
+                    <td class="qr-title">
+                      <div class="qr-title__text"><?= $title ?></div>
+                      <div class="qr-title__meta">
+                        <span class="badge badge--sm badge--primary"><?= strtoupper($type) ?></span>
+                        <?php if (isset($r['is_active']) && $r['is_active'] == 0): ?>
+                          <span class="badge badge--sm badge--muted">Hidden</span>
+                        <?php endif; ?>
+                      </div>
                     </td>
-                    <td data-label="Scans">
-                      <?= number_format((int)($r['scans'] ?? 0)) ?>
+                    <td class="qr-destination">
+                      <div class="qr-destination__text" title="<?= htmlspecialchars($payload) ?>">
+                        <?= htmlspecialchars($destinationText) ?>
+                      </div>
                     </td>
-                    <td data-label="Created">
-                      <?= date('M d', strtotime((string)$r['created_at'])) ?>
+                    <td class="qr-scans">
+                      <div class="qr-scans__count"><?= number_format($scans) ?></div>
                     </td>
+                    <td class="qr-created">
+                      <div class="qr-created__date"><?= $created ?></div>
+                    </td>
+                    <td class="qr-actions">
+                      <div class="qr-actions__primary">
+                        <button class="btn btn--action" data-action="copy" data-id="<?= $qrId ?>" data-code="<?= htmlspecialchars($shortCode ?? '') ?>" data-link="<?= htmlspecialchars('/qrgo.php?q=' . ($shortCode ?: $qrId)) ?>" aria-label="Copy link">
+                          <i class="fi fi-rr-copy"></i>
+                        </button>
+                        <button class="btn btn--action" data-action="edit" data-id="<?= $qrId ?>" aria-label="Edit QR">
+                          <i class="fi fi-rr-edit"></i>
+                        </button>
+                      </div>
+                      <div class="qr-actions__kebab">
+                        <button class="btn btn--action" data-action="menu" aria-label="More actions" aria-expanded="false">
+                          <i class="fi fi-rr-menu-dots"></i>
+                        </button>
+                        <div class="kebab-menu" role="menu">
+                          <button class="kebab-menu__item" data-action="copy" data-id="<?= $qrId ?>" data-code="<?= htmlspecialchars($shortCode ?? '') ?>" data-link="<?= htmlspecialchars('/qrgo.php?q=' . ($shortCode ?: $qrId)) ?>">
+                            <i class="fi fi-rr-copy"></i><span>Copy link</span>
+                          </button>
+                          <button class="kebab-menu__item" data-action="download" data-id="<?= $qrId ?>">
+                            <i class="fi fi-rr-download"></i><span>Download</span>
+                          </button>
+                          <button class="kebab-menu__item" data-action="short" data-id="<?= $qrId ?>">
+                            <i class="fi fi-rr-link"></i><span>Create short link</span>
+                          </button>
+                          <button class="kebab-menu__item" data-action="duplicate" data-id="<?= $qrId ?>">
+                            <i class="fi fi-rr-copy"></i><span>Duplicate design</span>
+                          </button>
+                          <button class="kebab-menu__item" data-action="hide" data-id="<?= $qrId ?>" data-hidden="<?= isset($r['is_active']) && $r['is_active'] == 0 ? '1' : '0' ?>">
+                            <i class="fi fi-rr-<?= (isset($r['is_active']) && $r['is_active'] == 0) ? 'eye' : 'eye-crossed' ?>"></i>
+                            <span><?= (isset($r['is_active']) && $r['is_active'] == 0) ? 'Unhide' : 'Hide' ?></span>
+                          </button>
+                          <button class="kebab-menu__item" data-action="delete" data-id="<?= $qrId ?>">
+                            <i class="fi fi-rr-trash"></i><span>Delete</span>
+                          </button>
 
+                          <noscript>
+                            <form method="post" action="/qr/duplicate.php"><input type="hidden" name="id" value="<?= $qrId ?>"><button type="submit">Duplicate</button></form>
+                            <form method="post" action="/qr/toggle.php"><input type="hidden" name="id" value="<?= $qrId ?>"><button type="submit"><?= (isset($r['is_active']) && $r['is_active'] == 0) ? 'Show' : 'Hide' ?></button></form>
+                            <form method="post" action="/qr/delete.php" onsubmit="return confirm('Are you sure?')"><input type="hidden" name="id" value="<?= $qrId ?>"><button type="submit">Delete</button></form>
+                          </noscript>
+                        </div>
+                      </div>
+                    </td>
                   </tr>
                 <?php endforeach; ?>
               </tbody>
             </table>
-          </div></section>
+          </div>
         <?php endif; ?>
       </div>
 
@@ -320,6 +504,11 @@ include __DIR__ . '/../partials/app_header.php';
   </div>
 
 </main>
+
+<!-- Include QR code library for client-side generation -->
+<script src="/assets/js/qrcode.min.js"></script>
+<!-- Include QR list enhancement module -->
+<script src="/assets/js/qr-list.js" defer></script>
 
 <script>
 // View switching with localStorage persistence
@@ -372,7 +561,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
-// Copy helper
+// Copy helper (fallback for grid view)
 document.addEventListener('click', (e)=>{
   const btn = e.target.closest('[data-copy]');
   if(!btn) return;

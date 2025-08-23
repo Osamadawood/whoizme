@@ -44,7 +44,7 @@ include __DIR__ . '/../partials/app_header.php';
     </div>
 
     <section class="maincol">
-      <div class="u-flex u-gap-16">
+      <div class="u-flex u-gap-16 new__qr">
         
         <!-- Left Column: Form -->
         <div class="u-flex-1">

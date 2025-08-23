@@ -4,7 +4,6 @@
         padding-inline-start: 2rem;
         height: 100%;
     }
-
     .side-nav {
         top: clamp(32px, 2.5vw, 24px);
         position: sticky;
@@ -22,27 +21,23 @@
         max-height: 100vh;
         display: flex;
         overflow: auto;
-
         &__body {
             padding: 1.6rem;
             display: flex;
             flex-direction: column;
             gap: 1.2rem;
         }
-
         &__title {
             font-weight: 700;
             letter-spacing: -0.02em;
             color: var(--text);
             margin-bottom: 8px;
         }
-
         &__list {
             display: flex;
             flex-direction: column;
             gap: .5rem;
         }
-
         &__link {
             display: flex;
             align-items: center;
@@ -55,7 +50,6 @@
             position: relative;
             transition: all .3s ease-in-out;
             border: 1px solid transparent;
-
             &::before {
                 position: absolute;
                 content: '';
@@ -69,23 +63,19 @@
                 transform: translateY(-50%);
                 height: 18px;
             }
-
             &:hover {
                 background: color-mix(in oklab, var(--surface) 70%, var(--text) 4%);
                 color: var(--text);
             }
-
             &.is-active {
                 color: var(--text);
                 background: var(--page-bg);
                 border-color: color-mix(in oklab, var(--brand), var((--page-bg)) 56%);
-
                 &::before {
                     width: .25rem;
                     background-color: var(--brand);
                 }
             }
-
             i {
                 font-size: 1rem;
                 padding-inline-end: 1.8rem;
@@ -95,34 +85,27 @@
                 line-height: 1rem;
             }
         }
-
         &__inner {
             display: flex;
             flex-direction: column;
             gap: 2rem;
         }
-
         &__dash--img {
             width: 100%;
-            border-radius: 1.5rem;
+            border-radius: var(--radius-default);
             overflow: hidden;
             margin-block-start: 8rem;
         }
-
         &__brand {
             text-align: center;
-
             .brand {
                 gap: 1rem;
-
                 &__logo {
                     width: 3rem;
-
                     img {
                         width: 100%;
                     }
                 }
-
                 &__name {
                     font-size: 1.5rem;
                 }
