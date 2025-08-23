@@ -128,19 +128,38 @@ try {
         
         $qr_id = $id;
     } else {
-        // Insert new QR code
-        $stmt = $pdo->prepare("
-            INSERT INTO qr_codes (user_id, type, title, payload, short_code, is_active, created_at)
-            VALUES (:uid, :type, :title, :payload, :code, :is_active, NOW())
-        ");
-        $stmt->execute([
-            ':uid' => $uid,
-            ':type' => $type,
-            ':title' => $title,
-            ':payload' => $payload,
-            ':code' => $code,
-            ':is_active' => $is_active
-        ]);
+        // Insert new QR code (handle case where short_code column might not exist)
+        try {
+            $stmt = $pdo->prepare("
+                INSERT INTO qr_codes (user_id, type, title, payload, short_code, is_active, created_at)
+                VALUES (:uid, :type, :title, :payload, :code, :is_active, NOW())
+            ");
+            $stmt->execute([
+                ':uid' => $uid,
+                ':type' => $type,
+                ':title' => $title,
+                ':payload' => $payload,
+                ':code' => $code,
+                ':is_active' => $is_active
+            ]);
+        } catch (PDOException $e) {
+            // If short_code column doesn't exist, try without it
+            if (strpos($e->getMessage(), 'short_code') !== false) {
+                $stmt = $pdo->prepare("
+                    INSERT INTO qr_codes (user_id, type, title, payload, is_active, created_at)
+                    VALUES (:uid, :type, :title, :payload, :is_active, NOW())
+                ");
+                $stmt->execute([
+                    ':uid' => $uid,
+                    ':type' => $type,
+                    ':title' => $title,
+                    ':payload' => $payload,
+                    ':is_active' => $is_active
+                ]);
+            } else {
+                throw $e; // Re-throw if it's a different error
+            }
+        }
         
         $qr_id = $pdo->lastInsertId();
         
@@ -178,9 +197,14 @@ function generateShortCode(): string {
         
         // Check if code already exists
         global $pdo;
-        $stmt = $pdo->prepare("SELECT COUNT(*) FROM qr_codes WHERE short_code = :code");
-        $stmt->execute([':code' => $code]);
-        $exists = $stmt->fetchColumn() > 0;
+        try {
+            $stmt = $pdo->prepare("SELECT COUNT(*) FROM qr_codes WHERE short_code = :code");
+            $stmt->execute([':code' => $code]);
+            $exists = $stmt->fetchColumn() > 0;
+        } catch (PDOException $e) {
+            // If short_code column doesn't exist, assume code doesn't exist
+            $exists = false;
+        }
     } while ($exists);
     
     return $code;

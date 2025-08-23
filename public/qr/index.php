@@ -44,7 +44,14 @@ $delta_visitors = $delta_scans;
 // List data
 $where = 'q.user_id = :uid';
 $params = [':uid'=>$uid];
-if ($q !== '') { $where .= ' AND (q.title LIKE :kw OR q.payload LIKE :kw OR q.short_code LIKE :kw)'; $params[':kw'] = "%$q%"; }
+if ($q !== '') { 
+    if ($hasShortCode) {
+        $where .= ' AND (q.title LIKE :kw OR q.payload LIKE :kw OR q.short_code LIKE :kw)'; 
+    } else {
+        $where .= ' AND (q.title LIKE :kw OR q.payload LIKE :kw OR q.id LIKE :kw)'; 
+    }
+    $params[':kw'] = "%$q%"; 
+}
 
 $countSql = "SELECT COUNT(*) FROM qr_codes q WHERE $where";
 $countStmt = $pdo->prepare($countSql);
@@ -52,12 +59,32 @@ foreach ($params as $k=>$v) { $countStmt->bindValue($k, $v); }
 $countStmt->execute();
 $totalRows = (int)$countStmt->fetchColumn();
 
-$sql = "SELECT q.id, q.short_code as code, q.type, q.title, q.payload, q.is_active, q.created_at,
-               (SELECT COUNT(*) FROM events e WHERE e.user_id=:uid AND e.item_type='qr' AND e.item_id=q.id) AS scans
-        FROM qr_codes q
-        WHERE $where
-        ORDER BY q.created_at DESC
-        LIMIT :per OFFSET :off";
+// Check if short_code column exists
+$hasShortCode = false;
+try {
+    $checkStmt = $pdo->prepare("SHOW COLUMNS FROM qr_codes LIKE 'short_code'");
+    $checkStmt->execute();
+    $hasShortCode = $checkStmt->rowCount() > 0;
+} catch (PDOException $e) {
+    $hasShortCode = false;
+}
+
+// Build query based on column existence
+if ($hasShortCode) {
+    $sql = "SELECT q.id, q.short_code as code, q.type, q.title, q.payload, q.is_active, q.created_at,
+                   (SELECT COUNT(*) FROM events e WHERE e.user_id=:uid AND e.item_type='qr' AND e.item_id=q.id) AS scans
+            FROM qr_codes q
+            WHERE $where
+            ORDER BY q.created_at DESC
+            LIMIT :per OFFSET :off";
+} else {
+    $sql = "SELECT q.id, q.id as code, q.type, q.title, q.payload, q.is_active, q.created_at,
+                   (SELECT COUNT(*) FROM events e WHERE e.user_id=:uid AND e.item_type='qr' AND e.item_id=q.id) AS scans
+            FROM qr_codes q
+            WHERE $where
+            ORDER BY q.created_at DESC
+            LIMIT :per OFFSET :off";
+}
 $stmt = $pdo->prepare($sql);
 foreach ($params as $k=>$v) { $stmt->bindValue($k, $v); }
 $stmt->bindValue(':per', $per, PDO::PARAM_INT);
