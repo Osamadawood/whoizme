@@ -91,6 +91,19 @@ $canonical = $host ? $scheme . '://' . $host . $path : '';
   </script>
 </head>
 <body>
+  <!-- Global Preloader (full-screen) -->
+  <style>
+    /* Lightweight, token-based preloader; respects reduced motion */
+    #preload{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:var(--surface);transition:opacity .2s ease}
+    #preload .preload__shimmer{width:160px;height:16px;border-radius:8px;background:color-mix(in oklab,var(--surface),white 6%);overflow:hidden}
+    #preload .preload__shimmer::after{content:"";display:block;height:100%;transform:translateX(-100%);background:linear-gradient(90deg,transparent,color-mix(in oklab,white,transparent 80%) 40%,transparent 80%);animation:preload-shimmer 1.1s linear infinite}
+    @keyframes preload-shimmer{100%{transform:translateX(100%)}}
+    @media (prefers-reduced-motion: reduce){#preload .preload__shimmer::after{animation:none;background:transparent}}
+  </style>
+  <div id="preload" aria-hidden="true">
+    <div class="preload__shimmer" role="img" aria-label="Loading"></div>
+  </div>
+  <noscript><style>#preload{display:none!important}</style></noscript>
   <!-- App Shell -->
   <div class="app">
 

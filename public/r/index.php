@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__ . '/../_bootstrap.php';
-require_once __DIR__ . '/../r.php';
+require_once __DIR__ . '/../../includes/helpers.php';
 require_once __DIR__ . '/../../includes/events.php';
 
 // Debug on local
@@ -13,7 +13,9 @@ $__bootstrap = __DIR__ . '/../../app/bootstrap.php';
 if (is_file($__bootstrap)) {
     require_once $__bootstrap;
 }
-$config = require __DIR__ . '/../../app/config.php';
+if (is_file(__DIR__ . '/../../app/config.php')) {
+    $config = require __DIR__ . '/../../app/config.php';
+}
 
 // استقبل الكود من الـquery
 $code = isset($_GET['c']) ? trim($_GET['c']) : '';
@@ -105,10 +107,32 @@ try {
     // ignore
 }
 
-// حوّل (prevent caching the 302 so each hit is recorded)
+// Build a clean, single 302 to target URL
+// 1) Never echo .php in internal routes; 2) Avoid nested encoding of return params.
+function clean_target(string $url): string {
+    // If it looks like an internal route, strip .php suffixes
+    $u = parse_url($url);
+    if (!isset($u['host'])) { // relative/internal
+        $path = $u['path'] ?? '/';
+        $path = preg_replace('~\.php$~i', '', $path);
+        // sanitize return param once if present
+        $qs = [];
+        if (!empty($u['query'])) parse_str($u['query'], $qs);
+        if (isset($qs['return'])) {
+            $ret = $qs['return'];
+            if (!wz_is_safe_next($ret)) unset($qs['return']);
+            else $qs['return'] = preg_replace('~\.php($|\?)~i', '$1', $ret);
+        }
+        $url = wz_url($path, $qs);
+    }
+    return $url;
+}
+
+$location = clean_target($target);
+
+// prevent caching so each hit is recorded, but do not chain redirects
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
-header('Cache-Control: post-check=0, pre-check=0', false);
 header('Pragma: no-cache');
 header('Expires: 0');
-header('Location: ' . $target, true, 302);
+header('Location: ' . $location, true, 302);
 exit;

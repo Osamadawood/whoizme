@@ -13,9 +13,23 @@
 
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    function toLocale(dstr) {
-        const d = new Date(dstr.replace(/-/g, '/'));
-        return d.toLocaleDateString(document.dir === 'rtl' ? 'ar' : 'en', { year: 'numeric', month: 'short', day: 'numeric' });
+    function toLocale(input) {
+        if (!input) return '';
+        let d;
+        if (input instanceof Date) {
+            d = input;
+        } else if (typeof input === 'number') {
+            d = new Date(input);
+        } else if (typeof input === 'string') {
+            // Normalize YYYY-MM-DD to a format Date can parse reliably across browsers
+            d = new Date(input.replace(/-/g, '/'));
+        } else {
+            return '';
+        }
+        if (isNaN(d)) return '';
+        return d.toLocaleDateString(document.dir === 'rtl' ? 'ar' : 'en', {
+            year: 'numeric', month: 'short', day: 'numeric'
+        });
     }
 
     async function load(period) {
@@ -43,6 +57,19 @@
             values = new Array(labels.length).fill(0);
         }
 
+        const tickAmountFor = (p) => {
+            const w = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+            if (p === '7d') return 7;                              // daily ticks
+            if (p === '30d') return w < 720 ? 6 : 10;               // ~weekly
+            if (p === '90d') return w < 720 ? 6 : 12;               // ~bi‑weekly/monthly
+            return 7;
+        };
+
+        const points = labels.map((v, i) => {
+            const t = new Date(String(v).replace(/-/g, '/')).getTime();
+            return { x: t, y: values[i] };
+        });
+
         const options = {
             chart: {
                 type: 'area',
@@ -52,33 +79,41 @@
                 foreColor: COLOR_MUTED,
                 parentHeightOffset: 0
             },
-            series: [{ name: 'Total', data: values }],
+            // Use x/y points so Apex renders a real time scale
+            series: [{ name: 'Total', data: points }],
             stroke: { curve: 'smooth', width: 3, colors: [COLOR_PRIMARY] },
-            fill: { type: 'gradient', gradient: { shade: 'dark', shadeIntensity: .3, opacityFrom: .28, opacityTo: 0, stops: [0, 60, 100] }, colors: [COLOR_PRIMARY] },
+            fill: {
+                type: 'gradient',
+                gradient: { shade: 'dark', shadeIntensity: .3, opacityFrom: .28, opacityTo: 0, stops: [0, 60, 100] },
+                colors: [COLOR_PRIMARY]
+            },
             dataLabels: { enabled: false },
             markers: { size: 3, strokeWidth: 2, colors: [SURFACE], strokeColors: [COLOR_PRIMARY] },
             grid: { borderColor: 'rgba(148,163,184,.15)', strokeDashArray: 4 },
             xaxis: {
-                type: 'category',
-                categories: labels,
+                type: 'datetime',
+                tickAmount: tickAmountFor(period),
                 labels: {
-                    rotate: -20,
-                    formatter: (value, _ts, opts) => {
-                        let v = value;
-                        if (!v && opts && typeof opts.dataPointIndex !== 'undefined') {
-                            v = labels[opts.dataPointIndex] || '';
-                        }
-                        if (!v) return '';
-                        const d = new Date(String(v).replace(/-/g, '/'));
-                        if (isNaN(d)) return String(v);
-                        return d.toLocaleDateString(document.dir === 'rtl' ? 'ar' : 'en', { month: 'short', day: '2-digit' });
+                    rotate: 0,
+                    datetimeUTC: false,
+                    hideOverlappingLabels: true,
+                    formatter: (value) => {
+                        if (!value) return '';
+                        const d = new Date(Number(value));
+                        const fmt = new Intl.DateTimeFormat(document.dir === 'rtl' ? 'ar' : 'en', { month: 'short', day: '2-digit' });
+                        return fmt.format(d);
                     }
                 },
                 axisBorder: { color: 'transparent' },
                 axisTicks: { color: 'transparent' }
             },
             yaxis: { min: 0, forceNiceScale: true, labels: { formatter: (v) => Math.round(v).toString() } },
-            tooltip: { theme: 'dark', x: { formatter: (v) => v ? toLocale(v) : '' }, y: { formatter: (v) => `${Math.round(v)}` }, style: { fontSize: '14px' } }
+            tooltip: {
+                theme: 'dark',
+                x: { formatter: (v) => v ? toLocale(new Date(Number(v))) : '' },
+                y: { formatter: (v) => `${Math.round(v)}` },
+                style: { fontSize: '14px' }
+            }
         };
 
         if (chart) { chart.destroy(); }

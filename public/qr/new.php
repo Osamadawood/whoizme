@@ -1,6 +1,7 @@
-<?php require_once __DIR__ . '../_bootstrap.php'; ?>
-require __DIR__ . '/../inc/db.php';
-require __DIR__ . '/../inc/auth.php';
+<?php
+declare(strict_types=1);
+require_once __DIR__ . '/../../includes/bootstrap.php';
+require_once __DIR__ . '/../../includes/auth_guard.php';
 
 $uid = current_user_id();
 $id  = (int)($_GET['id'] ?? 0);
@@ -20,41 +21,56 @@ if ($id) {
   $row = $st->fetch();
   if ($row) $record = $row;
 }
+
+$page      = 'qr';              // used by sidebar to set active item
+$page_slug = 'qr';              // secondary safety for older partials
+$page_title = $id ? 'Edit QR' : 'Create new QR';
+
+include __DIR__ . '/../partials/app_header.php';
 ?>
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title><?= $id ? 'Edit QR' : 'New QR' ?></title>
-  <link rel="stylesheet" href="/assets/css/app.css">
-</head>
-<body class="with-user-sidebar">
-<main class="container">
-  <h2 class="h4 mb-3"><?= $id ? 'Edit QR' : 'Create new QR' ?></h2>
-  <form action="/qr/save.php" method="post" class="vstack gap-3" style="max-width:720px">
+<main class="dashboard">
+  <?php include __DIR__ . '/../partials/app_sidebar.php'; ?>
+  <div class="container dash-grid" role="region" aria-label="QR editor">
+    <div class="container topbar--inset">
+      <?php
+        $breadcrumbs = [
+          ['label' => 'Dashboard', 'href' => '/dashboard'],
+          ['label' => 'QR Codes',  'href' => '/qr'],
+          ['label' => $page_title, 'href' => null],
+        ];
+        $topbar = [ 'search' => [ 'enabled' => false ] ];
+        include __DIR__ . '/../partials/app_topbar.php';
+      ?>
+    </div>
+  <section class="maincol">
+  <div class="panel"><div class="panel__body">
+  <h3 class="h3 u-mt-0"><?= htmlspecialchars($page_title) ?></h3>
+  <form action="/qr/save.php" method="post" class="u-stack-16" style="max-width:720px">
     <input type="hidden" name="id" value="<?= $id ?>">
     <div>
-      <label class="form-label">Title</label>
-      <input name="title" class="form-control" required
+      <label class="label">Title</label>
+      <input name="title" class="input" required
              value="<?= htmlspecialchars($record['title']) ?>">
     </div>
     <div>
-      <label class="form-label">Type</label>
-      <select name="type" class="form-select">
+      <label class="label">Type</label>
+      <select name="type" class="input">
         <?php foreach (['url','vcard','text'] as $t): ?>
         <option value="<?= $t ?>" <?= $record['type']===$t?'selected':'' ?>><?= strtoupper($t) ?></option>
         <?php endforeach; ?>
       </select>
     </div>
     <div>
-      <label class="form-label">Payload</label>
-      <textarea name="payload" class="form-control" rows="4" placeholder="https://example.com or raw text" required><?= htmlspecialchars($record['payload']) ?></textarea>
+      <label class="label">Payload</label>
+      <textarea name="payload" class="input" rows="5" placeholder="https://example.com or raw text" required><?= htmlspecialchars($record['payload']) ?></textarea>
     </div>
-    <div class="d-flex gap-2">
-      <button class="btn btn-primary"><?= $id ? 'Save changes' : 'Create' ?></button>
-      <a class="btn btn-light" href="/qr/">Back</a>
+    <div class="u-flex u-gap-8">
+      <button class="btn btn--primary"><?= $id ? 'Save changes' : 'Create' ?></button>
+      <a class="btn btn--ghost" href="/qr" role="button">Back</a>
     </div>
   </form>
+  </div></div>
+  </section>
+  </div>
 </main>
-</body>
-</html>
+<?php include __DIR__ . '/../partials/app_footer.php'; ?>

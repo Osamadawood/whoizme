@@ -161,9 +161,53 @@
   font-size: 1.2rem;
 }
 
+.kpi__icon {
+  width: clamp(3.6rem, 4vw, 4.4rem);
+  height: clamp(3.6rem, 4vw, 4.4rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  color: var(--text-inverse);
+  user-select: none;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+.kpi__icon--links {
+  background: var(--brand-blue-500);
+}
+.kpi__icon--qr {
+  background: var(--brand-purple-500);
+}
+.kpi__icon--page {
+  background: var(--brand-yellow-500);
+}
+.kpi__icon:hover {
+  filter: brightness(0.92);
+}
+.kpi__icon:active {
+  transform: translateY(1px);
+  filter: brightness(0.88);
+}
+
+.badge--brand-blue {
+  background: var(--brand-blue-500);
+  color: var(--text-inverse);
+}
+
+.badge--brand-purple {
+  background: var(--brand-purple-500);
+  color: var(--text-inverse);
+}
+
+.badge--brand-yellow {
+  background: var(--brand-yellow-500);
+  color: var(--text-inverse);
+}
+
 .twoup {
   display: grid;
   gap: 1.6rem;
+  place-items: stretch stretch;
 }
 @media (min-width: 980px) {
   .twoup {
@@ -1659,10 +1703,12 @@ html[data-theme=dark] .theme-toggle .moon {
 .dashboard .twoup {
   display: grid;
   gap: clamp(12px, 2vw, 16px);
+  grid-template-columns: 1fr 0.5fr;
+  place-items: stretch stretch;
 }
 @media (min-width: 980px) {
   .dashboard .twoup {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 0.5fr;
   }
 }
 .dashboard .chart {
@@ -1848,6 +1894,68 @@ html[data-theme=dark] .theme-toggle .moon {
 
 .u-mb-8 {
   margin-bottom: 0.8rem;
+}
+
+@media (min-width: 768px) {
+  #dash-grid-hero {
+    grid-template-columns: 1fr 0.5fr;
+  }
+}
+.featured-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.featured-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.featured-item + .featured-item {
+  margin-top: 10px;
+}
+
+.featured-item:hover {
+  transform: translateY(-1px);
+  background: color-mix(in srgb, var(--primary) 6%, transparent);
+}
+
+.chip {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  color: var(--primary);
+  background: rgba(75, 107, 251, 0.08);
+  font-size: 24px;
+}
+
+.thumb {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 1px solid var(--border);
+  background: #111827;
+}
+
+.meta {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.spacer {
+  flex: 1;
 }
 
 /* === Utilities === */
@@ -3058,6 +3166,80 @@ a:focus-visible {
   border-radius: var(--radius-lg, 1rem);
   background: color-mix(in oklab, var(--surface, #0f172a), #fff 4%);
   border: 1px solid color-mix(in oklab, var(--surface), #fff 14%);
+}
+
+.skeleton {
+  position: relative;
+  background: color-mix(in oklab, var(--surface), white 6%);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.skeleton--line {
+  height: 12px;
+  border-radius: 6px;
+}
+.skeleton--circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+.skeleton.kpi {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 0.8rem;
+  padding: 1.2rem;
+}
+.skeleton.trend {
+  height: 320px;
+  border: 1px solid var(--border);
+}
+.skeleton.row {
+  height: 48px;
+  border: 1px solid var(--border);
+  margin-bottom: 0.6rem;
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, color-mix(in oklab, white, transparent 80%) 40%, transparent 80%);
+  animation: shimmer 1.2s linear infinite;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after {
+    animation: none;
+    background: transparent;
+  }
+}
+/* Loading mask hooks */
+.dash {
+  position: relative;
+}
+
+.dash.is-loading .content--mask {
+  opacity: 0.35;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+.dash.is-loading .skeleton {
+  display: block;
+}
+
+.dash:not(.is-loading) .skeleton {
+  display: none;
+}
+
+/* No-JS fallback */
+.no-js .skeleton {
+  display: none !important;
 }
 
 /* 5) utilities (last) */

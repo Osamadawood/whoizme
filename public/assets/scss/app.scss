@@ -1,12 +1,15 @@
 /* Entry point: compile to /public/assets/css/app(.min).css */
 
+
 /* === Core @use must come first (no rules before them) === */
+
 @use "core/brand" as brand;
 @use "core/themes";
 @use "core/reset";
 @use "core/typography";
 
 /* === Components === */
+
 @use "components/buttons";
 @use "components/forms";
 @use "components/layout";
@@ -37,22 +40,30 @@
 @use 'landing/header';
 @use "landing/footer";
 @use 'pages/dashboard';
+@use 'components/skeleton';
 
 /* === Utilities === */
+
 @use "utilities/utilities";
 
 /* === Emit layers & tokens (order matters slightly) === */
+
+
 /* 1) color tokens */
+
 @include brand.emit-colors();
 
 /* 2) theme custom properties */
+
 @include themes.emit();
 
 /* 3) base layer */
+
 @include reset.apply();
 @include typography.apply();
 
 /* 4) components */
+
 @include buttons.apply();
 @include forms.apply();
 @include layout.apply();
@@ -75,6 +86,8 @@
 @include breadcrumbs.apply();
 @include pagination.apply();
 @include prose.apply();
+@include skeleton.apply();
 
 /* 5) utilities (last) */
+
 @include utilities.apply();

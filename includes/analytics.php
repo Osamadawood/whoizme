@@ -1,6 +1,134 @@
 <?php
 // includes/analytics.php
-require_once __DIR__ . '/db_map.php';
+// Optional schema mapper. Provide a sane fallback when missing.
+if (file_exists(__DIR__ . '/db_map.php')) {
+  require_once __DIR__ . '/db_map.php';
+}
+
+if (!function_exists('wz_detect_schema')) {
+  function wz_detect_schema(PDO $pdo): array {
+    return [
+      'events' => [
+        'mode'  => 'unified',
+        'table' => 'events',
+        'cols'  => [
+          'user_id'   => 'user_id',
+          'item_type' => 'item_type',
+          'item_id'   => 'item_id',
+          // Our unified events table uses column `type`; alias it to event_type
+          'event_type'=> 'type',
+          'created_at'=> 'created_at',
+        ],
+      ],
+      'links' => [
+        'table' => 'links',
+        'cols'  => [
+          'id'         => 'id',
+          'user_id'    => 'user_id',
+          'title'      => 'title',
+          'is_active'  => 'is_active',
+          'created_at' => 'created_at',
+        ],
+      ],
+      'qrcodes' => [
+        'table' => 'qrcodes',
+        'cols'  => [
+          'id'         => 'id',
+          'user_id'    => 'user_id',
+          'title'      => 'title',
+          'created_at' => 'created_at',
+        ],
+      ],
+    ];
+  }
+}
+
+/**
+ * Featured items for dashboard: latest/high‑impact items across types
+ * Returns: [ {id,type,label,slug,created_at,total,today,thumb} ]
+ */
+function wz_featured_items(PDO $pdo, int $uid, string $period='7d', int $limit=4): array {
+  // Reuse richer implementation if available via events.php
+  // Latest five links & QR by recent activity
+  [$evSQL,] = wz_unified_events_sql($pdo);
+  $days = ($period==='30d') ? 30 : (($period==='90d') ? 90 : 7);
+  $since = (new DateTime('-'.$days.' days'))->format('Y-m-d 00:00:00');
+  $sql = "SELECT item_type,item_id,
+                 SUM(1) AS total,
+                 SUM(CASE WHEN DATE(created_at)=CURDATE() THEN 1 ELSE 0 END) AS today,
+                 MIN(created_at) AS first_seen,
+                 MAX(created_at) AS last_at
+          FROM ({$evSQL}) ev
+          WHERE ev.user_id=:uid AND created_at>=:since AND item_type IN ('link','qr')
+          GROUP BY item_type,item_id
+          ORDER BY last_at DESC
+          LIMIT :lim";
+    $st=$pdo->prepare($sql);
+    $st->bindValue(':uid',$uid, PDO::PARAM_INT);
+    $st->bindValue(':since',$since);
+    $st->bindValue(':lim',$limit, PDO::PARAM_INT);
+    $st->execute();
+    $rows=$st->fetchAll(PDO::FETCH_ASSOC) ?: [];
+  // Attach label via schema map
+  $m = wz_detect_schema($pdo);
+  $linksT=$m['links']['table']; $lc=$m['links']['cols'];
+  $qrT   =$m['qrcodes']['table']; $qc=$m['qrcodes']['cols'];
+  $linkIds=[]; $qrIds=[];
+  foreach($rows as $r){ if($r['item_type']==='link') $linkIds[]=(int)$r['item_id']; if($r['item_type']==='qr') $qrIds[]=(int)$r['item_id']; }
+  $titleBy=['link'=>[],'qr'=>[]];
+  if ($linkIds){
+    $in=implode(',', array_fill(0,count($linkIds),'?'));
+    $st2=$pdo->prepare("SELECT `{$lc['id']}` id, `{$lc['title']}` title FROM `{$linksT}` WHERE `{$lc['id']}` IN ({$in})");
+    $st2->execute($linkIds);
+    foreach($st2->fetchAll(PDO::FETCH_ASSOC) as $r){ $titleBy['link'][(int)$r['id']]=$r['title']; }
+  }
+  if ($qrIds){
+    $in=implode(',', array_fill(0,count($qrIds),'?'));
+    $st2=$pdo->prepare("SELECT `{$qc['id']}` id, `{$qc['title']}` title FROM `{$qrT}` WHERE `{$qc['id']}` IN ({$in})");
+    $st2->execute($qrIds);
+    foreach($st2->fetchAll(PDO::FETCH_ASSOC) as $r){ $titleBy['qr'][(int)$r['id']]=$r['title']; }
+  }
+  foreach($rows as &$r){
+    $iid=(int)$r['item_id']; $typ=$r['item_type'];
+    $r['label']=$titleBy[$typ][$iid] ?? ($typ==='qr'?('QR #'.$iid):('Link #'.$iid));
+    $r['first_seen']=$r['first_seen'] ?? null;
+  }
+  unset($r);
+
+  // Map for API/UI
+  $items=[];
+  foreach ($rows as $r) {
+    $id=(int)($r['item_id'] ?? $r['id'] ?? 0);
+    $type=(string)($r['item_type'] ?? $r['type'] ?? 'link');
+    $label=(string)($r['label'] ?? '');
+    $created=!empty($r['first_seen']) ? (string)$r['first_seen'] : null;
+    $total=(int)($r['total'] ?? 0);
+    $today=(int)($r['today'] ?? 0);
+    $slug=strtolower($type.'-'.$id);
+
+    // Thumb for QR: prefer storage/qr/{id}.png then public/qr/{id}.png
+    $thumb='';
+    if ($type==='qr') {
+      $root = dirname(__DIR__);
+      $p1 = $root . '/storage/qr/' . $id . '.png';
+      $p2 = $root . '/public/qr/' . $id . '.png';
+      if (is_readable($p1)) $thumb = '/storage/qr/' . $id . '.png';
+      elseif (is_readable($p2)) $thumb = '/qr/' . $id . '.png';
+    }
+
+    $items[] = [
+      'id'=>$id,
+      'type'=>$type,
+      'label'=>$label,
+      'slug'=>$slug,
+      'created_at'=>$created,
+      'total'=>$total,
+      'today'=>$today,
+      'thumb'=>$thumb,
+    ];
+  }
+  return $items;
+}
 
 function wz_user_id(): ?int {
   if (isset($_SESSION['user']['id'])) return (int)$_SESSION['user']['id'];
@@ -141,6 +269,8 @@ function wz_recent_activity(PDO $pdo, int $uid, int $limit=6): array {
   return $out;
 }
 
+// Guard to avoid redeclaration if a richer implementation exists in includes/events.php
+if (!function_exists('wz_top_items')) {
 function wz_top_items(PDO $pdo, int $uid, int $limit=10): array {
   $today0 =(new DateTime('today'))->format('Y-m-d 00:00:00');
   $yest0  =(new DateTime('yesterday'))->format('Y-m-d 00:00:00');
@@ -209,4 +339,5 @@ function wz_top_items(PDO $pdo, int $uid, int $limit=10): array {
   }
   unset($r);
   return $rows;
+}
 }

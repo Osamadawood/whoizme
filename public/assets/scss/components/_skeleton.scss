@@ -1,0 +1,70 @@
+@mixin apply() {
+    .skeleton {
+        position: relative;
+        background: color-mix(in oklab, var(--surface), white 6%);
+        border-radius: 12px;
+        overflow: hidden;
+        &--line {
+            height: 12px;
+            border-radius: 6px;
+        }
+        &--circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+        &.kpi {
+            display: grid;
+            grid-template-columns: 44px 1fr;
+            gap: .8rem;
+            padding: 1.2rem;
+        }
+        &.trend {
+            height: 320px;
+            border: 1px solid var(--border);
+        }
+        &.row {
+            height: 48px;
+            border: 1px solid var(--border);
+            margin-bottom: .6rem;
+        }
+        &::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            transform: translateX(-100%);
+            background: linear-gradient(90deg, transparent, color-mix(in oklab, white, transparent 80%) 40%, transparent 80%);
+            animation: shimmer 1.2s linear infinite;
+        }
+    }
+    @keyframes shimmer {
+        100% {
+            transform: translateX(100%);
+        }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .skeleton::after {
+            animation: none;
+            background: transparent;
+        }
+    }
+    /* Loading mask hooks */
+    .dash {
+        position: relative;
+    }
+    .dash.is-loading .content--mask {
+        opacity: .35;
+        pointer-events: none;
+        transition: opacity .15s ease;
+    }
+    .dash.is-loading .skeleton {
+        display: block;
+    }
+    .dash:not(.is-loading) .skeleton {
+        display: none;
+    }
+    /* No-JS fallback */
+    .no-js .skeleton {
+        display: none !important;
+    }
+}

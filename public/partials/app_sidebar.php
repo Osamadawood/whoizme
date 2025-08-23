@@ -83,6 +83,15 @@ function render_icon(string $name): void {
           <span class="side-nav__chev" aria-hidden="true"></span>
         </a>
 
+        <a class="side-nav__link<?= $__is_active('/links') ?>" href="/links">
+          <span class="side-nav__icon" aria-hidden="true">
+            <?php render_icon('tag'); ?>
+          </span>
+          <i class="fi fi-rr-link" aria-hidden="true"></i>
+          <span class="side-nav__text">Links</span>
+          <span class="side-nav__chev" aria-hidden="true"></span>
+        </a>
+
         <a class="side-nav__link<?= $__is_active('/pages') ?>" href="/pages">
           <span class="side-nav__icon" aria-hidden="true">
             <?php render_icon('layers'); ?>
@@ -91,7 +100,6 @@ function render_icon(string $name): void {
           <span class="side-nav__text">Pages</span>
           <span class="side-nav__chev" aria-hidden="true"></span>
         </a>
-
 
         <a class="side-nav__link<?= $__is_active('/analytics') ?>" href="/analytics">
           <span class="side-nav__icon" aria-hidden="true">

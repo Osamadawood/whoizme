@@ -1,59 +1,99 @@
 @use "../core/mixins" as *;
-
 @mixin apply() {
-  .card {
-    @include card;
-    padding: 1rem;
-  }
-
-  .card--glass {
-    background: color-mix(in oklab, var(--surface), white 3%);
-    backdrop-filter: blur(6px);
-  }
+    .card {
+        @include card;
+        padding: 1rem;
+    }
+    .card--glass {
+        background: color-mix(in oklab, var(--surface), white 3%);
+        backdrop-filter: blur(6px);
+    }
 }
 
 .card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  box-shadow: var(--shadow-md);
-
-  &__body {
-    padding: 1.6rem;
-  }
-
-  &__title {
-    color: var(--text-muted);
-    font-size: 1.4rem;
-    margin-bottom: .8rem;
-  }
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadow-md);
+    &__body {
+        padding: 1.6rem;
+    }
+    &__title {
+        color: var(--text-muted);
+        font-size: 1.4rem;
+        margin-bottom: .8rem;
+    }
 }
 
 .kpis {
-  display: grid;
-  gap: 1.4rem;
-
-  @media (min-width: 740px) {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
+    display: grid;
+    gap: 1.4rem;
+    @media (min-width: 740px) {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
 }
 
 .kpi__value {
-  font-weight: 700;
-  font-size: clamp(2.2rem, 3.6vw, 2.8rem);
-  letter-spacing: -.02em;
-  color: var(--text);
+    font-weight: 700;
+    font-size: clamp(2.2rem, 3.6vw, 2.8rem);
+    letter-spacing: -.02em;
+    color: var(--text);
 }
 
 .kpi__delta {
-  font-size: 1.2rem;
+    font-size: 1.2rem;
+}
+
+// KPI icon badge (Design System)
+.kpi__icon {
+    width: clamp(3.6rem, 4vw, 4.4rem);
+    height: clamp(3.6rem, 4vw, 4.4rem);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    color: var(--text-inverse);
+    user-select: none;
+    transition: background-color .15s ease, transform .15s ease;
+    &--links {
+        background: var(--brand-blue-500);
+    }
+    &--qr {
+        background: var(--brand-purple-500);
+    }
+    &--page {
+        background: var(--brand-yellow-500);
+    }
+    &:hover {
+        filter: brightness(0.92);
+    }
+    &:active {
+        transform: translateY(1px);
+        filter: brightness(0.88);
+    }
+}
+
+// Utilities to reuse badge colors elsewhere
+.badge--brand-blue {
+    background: var(--brand-blue-500);
+    color: var(--text-inverse);
+}
+
+.badge--brand-purple {
+    background: var(--brand-purple-500);
+    color: var(--text-inverse);
+}
+
+.badge--brand-yellow {
+    background: var(--brand-yellow-500);
+    color: var(--text-inverse);
 }
 
 .twoup {
-  display: grid;
-  gap: 1.6rem;
-
-  @media (min-width: 980px) {
-    grid-template-columns: 1fr 1fr;
-  }
+    display: grid;
+    gap: 1.6rem;
+    place-items: stretch stretch;
+    @media (min-width: 980px) {
+        grid-template-columns: 1fr 1fr;
+    }
 }
