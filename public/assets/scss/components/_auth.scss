@@ -178,7 +178,7 @@
     }
     /* ===== Theme toggle ===== */
     .theme-toggle {
-        position: fixed;
+        // position: fixed;
         top: var(--sp-4);
         right: var(--sp-4);
         z-index: 100;
@@ -188,7 +188,7 @@
         padding: var(--sp-2) var(--sp-3);
         background: var(--surface);
         border: 1px solid var(--border);
-        border-radius: var(--radius-full);
+        border-radius: var(--radius-default);
         color: var(--text);
         text-decoration: none;
         font-size: 14px;
@@ -197,7 +197,7 @@
     }
     .theme-toggle:hover {
         background: var(--surface-hover);
-        border-color: var(--border-hover);
+        // border-color: var(--border-hover);
     }
     .theme-toggle:active {
         transform: translateY(1px) scale(.99);

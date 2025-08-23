@@ -221,7 +221,7 @@ if (strtolower($page_title) === 'dashboard') {
         <span class="create-card__title">Shorten a link</span>
         <span class="create-card__kbd">L</span>
       </a>
-      <a class="create-card" href="/qr/create.php">
+      <a class="create-card" href="/qr/new">
         <i class="create-card__icon fi fi-rr-qrcode" aria-hidden="true"></i>
         <span class="create-card__title">Create a QR Code</span>
         <span class="create-card__kbd">Q</span>

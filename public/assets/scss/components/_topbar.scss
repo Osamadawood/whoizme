@@ -27,7 +27,7 @@
                 justify-content: center;
                 width: 2.5rem;
                 height: 2.5rem;
-                border-radius: var(--radius-default);
+                border-radius: .564rem;
             }
             .tt__icon--sun {
                 background: var(--text);
@@ -145,8 +145,6 @@
     }
     /* Avatar smaller + light brand tints */
     .avatar {
-        width: 36px;
-        height: 36px;
         border-radius: var(--radius-default);
         overflow: hidden;
         border: 1px solid var(--border-600);
@@ -181,6 +179,7 @@
     }
     .avatar--t5 {
         background: color-mix(in oklab, var(--neutral-400) 25%, white);
+        background-color: var(--accent);
     }
     .avatar--t6 {
         background: color-mix(in oklab, var(--primary-300) 20%, white);

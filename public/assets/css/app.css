@@ -2397,7 +2397,7 @@ a[aria-disabled=true] {
   justify-content: center;
   width: 2.5rem;
   height: 2.5rem;
-  border-radius: var(--radius-default);
+  border-radius: 0.564rem;
 }
 .app-topbar .theme-toggle .tt__icon--sun {
   background: var(--text);
@@ -2511,8 +2511,6 @@ a[aria-disabled=true] {
 
 /* Avatar smaller + light brand tints */
 .avatar {
-  width: 36px;
-  height: 36px;
   border-radius: var(--radius-default);
   overflow: hidden;
   border: 1px solid var(--border-600);
@@ -2553,6 +2551,7 @@ a[aria-disabled=true] {
 
 .avatar--t5 {
   background: color-mix(in oklab, var(--neutral-400) 25%, white);
+  background-color: var(--accent);
 }
 
 .avatar--t6 {
@@ -3052,7 +3051,6 @@ Create Modal (Whoizme DS)
 }
 /* ===== Theme toggle ===== */
 .theme-toggle {
-  position: fixed;
   top: var(--sp-4);
   right: var(--sp-4);
   z-index: 100;
@@ -3062,7 +3060,7 @@ Create Modal (Whoizme DS)
   padding: var(--sp-2) var(--sp-3);
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-default);
   color: var(--text);
   text-decoration: none;
   font-size: 14px;
@@ -3072,7 +3070,6 @@ Create Modal (Whoizme DS)
 
 .theme-toggle:hover {
   background: var(--surface-hover);
-  border-color: var(--border-hover);
 }
 
 .theme-toggle:active {
