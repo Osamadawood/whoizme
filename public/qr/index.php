@@ -396,7 +396,7 @@ include __DIR__ . '/../partials/app_header.php';
                       </div>
                     </td>
                     <td class="qr-cell qr-cell--details">
-                      <a href="/qr/view.php?id=<?= $qrId ?>" class="qr-title__link" target="_self"><h3 class="qr-title__text"><?= $title ?></h3></a>
+                      <a href="/qr/view.php?id=<?= $qrId ?>" class="qr-title__link"><h3 class="qr-title__text"><?= $title ?></h3></a>
                       <div class="qr-title__meta">
                         <span class="badge badge--sm badge--primary"><?= strtoupper($type) ?></span>
                         <?php if (isset($r['is_active']) && $r['is_active'] == 0): ?><span class="badge badge--sm badge--muted">Hidden</span><?php endif; ?>
@@ -406,7 +406,7 @@ include __DIR__ . '/../partials/app_header.php';
           </td>
                     <td class="qr-cell qr-cell--actions">
                       <div class="qr-actions">
-                        <a href="/qr/view.php?id=<?= $qrId ?>" class="qr-actions__link" data-role="view" target="_self">View details</a>
+                        <a href="/qr/view.php?id=<?= $qrId ?>" class="qr-actions__link" data-role="view">View details</a>
                         <button class="btn btn--action" data-action="download-svg" data-id="<?= $qrId ?>" aria-label="Download SVG"><i class="fi fi-rr-download"></i></button>
                         <div class="qr-actions__kebab">
                           <button class="btn btn--action" data-action="menu-toggle" aria-label="More actions" aria-expanded="false" aria-controls="menu-<?= $qrId ?>"><i class="fi fi-rr-menu-dots"></i></button>

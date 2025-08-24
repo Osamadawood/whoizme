@@ -124,6 +124,13 @@
         });
 
         document.addEventListener('click', async function(e) {
+            // Force navigation for plain view-details links if anything blocks it
+            const viewLink = e.target.closest('a.qr-actions__link');
+            if (viewLink && !viewLink.hasAttribute('data-action')) {
+                e.preventDefault();
+                window.location.href = viewLink.href;
+                return;
+            }
             const a = closestAction(e.target);
             // If click is on a plain anchor without data-action, allow navigation
             if (!a) {
