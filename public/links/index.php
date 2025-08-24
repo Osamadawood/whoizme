@@ -104,12 +104,12 @@ include __DIR__ . '/../partials/app_header.php';
                   </td>
                   <td class="u-text-muted"><?= date('Y-m-d', strtotime((string)$r['created_at'])) ?></td>
                   <td>
-                    <a class="btn btn--ghost btn--sm" href="/links/view.php?id=<?= (int)$r['id'] ?>">View</a>
+                    <a class="btn btn--ghost btn--sm" href="/links/view?id=<?= (int)$r['id'] ?>">View</a>
                     <?php if (!empty($r['slug'])): ?>
                       <button class="btn btn--ghost btn--sm" data-action="copy-link" data-slug="<?= htmlspecialchars($r['slug']) ?>">Copy short link</button>
                     <?php endif; ?>
                     <a class="btn btn--ghost btn--sm" href="/links/edit.php?id=<?= (int)$r['id'] ?>">Edit</a>
-                    <form method="post" action="/links/delete.php" style="display:inline" onsubmit="return confirm('Delete this link?')">
+                    <form method="post" action="/links/delete" style="display:inline" onsubmit="return confirm('Delete this link?')">
                       <input type="hidden" name="id" value="<?= (int)$r['id'] ?>">
                       <button class="btn btn--ghost btn--sm" type="submit">Delete</button>
                     </form>

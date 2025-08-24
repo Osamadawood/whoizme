@@ -1,6 +1,8 @@
 (function() {
-    function ready(fn) { if (document.readyState !== 'loading') fn();
-        else document.addEventListener('DOMContentLoaded', fn); }
+    function ready(fn) {
+        if (document.readyState !== 'loading') fn();
+        else document.addEventListener('DOMContentLoaded', fn);
+    }
     ready(function() {
         const root = document.getElementById('linksTable');
         if (!root) return;
@@ -21,17 +23,32 @@
                     if (nt) root.replaceWith(nt);
                     if (np) { const cp = document.querySelector('.pagination-wrapper'); if (cp) cp.replaceWith(np); }
                     history.replaceState({}, '', a.href);
+                    // Rebind handlers after DOM swap
+                    setTimeout(() => { location.reload(); }, 0);
                 } catch { location.href = a.href; }
             });
         }
-        document.addEventListener('click', (e) => {
+        document.addEventListener('click', async(e) => {
             const b = e.target.closest('[data-action="copy-link"]');
             if (!b) return;
             const slug = b.getAttribute('data-slug');
             if (!slug) return;
             const url = `${location.origin}/lgo.php?c=${slug}`;
-            navigator.clipboard ? .writeText(url);
-            b.textContent = 'Copied!';
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(url);
+                } else {
+                    const ta = document.createElement('textarea');
+                    ta.value = url;
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(ta);
+                }
+                b.textContent = 'Copied!';
+            } catch (_) {
+                alert('Copy failed. You can copy this URL:\n' + url);
+            }
             setTimeout(() => b.textContent = 'Copy short link', 1200);
         });
         attachPager();

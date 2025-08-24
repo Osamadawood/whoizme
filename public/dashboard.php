@@ -184,6 +184,40 @@ include __DIR__ . '/partials/app_header.php';
               $featured = ($uid && isset($pdo)) ? (function() use($pdo,$uid,$p){
                 try { return wz_featured_items($pdo, $uid, $p, 4); } catch(Throwable $e){ return []; }
               })() : [];
+              // Fallback: show latest created items so new Links/QRs appear immediately
+              if ($uid && isset($pdo) && empty($featured)) {
+                try {
+                  $latestLinks = [];
+                  try {
+                    $sqlL = "SELECT id AS item_id, title AS label, 'link' AS type,
+                                    created_at,
+                                    COALESCE(clicks,0) AS total,
+                                    (SELECT COUNT(*) FROM link_clicks lc WHERE lc.link_id=links.id AND DATE(lc.created_at)=CURDATE()) AS today
+                             FROM links WHERE user_id=:uid ORDER BY created_at DESC LIMIT 6";
+                    $stL = $pdo->prepare($sqlL); $stL->execute([':uid'=>$uid]);
+                    $latestLinks = $stL->fetchAll(PDO::FETCH_ASSOC) ?: [];
+                  } catch (Throwable $_) { $latestLinks = []; }
+
+                  $latestQrs = [];
+                  try {
+                    $sqlQ = "SELECT q.id AS item_id,
+                                    COALESCE(NULLIF(q.title,''), CONCAT('QR #', q.id)) AS label,
+                                    'qr' AS type,
+                                    q.created_at,
+                                    (SELECT COUNT(*) FROM events e WHERE e.user_id=:uid AND e.item_type='qr' AND e.item_id=q.id) AS total,
+                                    (SELECT COUNT(*) FROM events e WHERE e.user_id=:uid AND e.item_type='qr' AND e.item_id=q.id AND DATE(e.created_at)=CURDATE()) AS today
+                             FROM qr_codes q WHERE q.user_id=:uid ORDER BY q.created_at DESC LIMIT 6";
+                    $stQ = $pdo->prepare($sqlQ); $stQ->execute([':uid'=>$uid]);
+                    $latestQrs = $stQ->fetchAll(PDO::FETCH_ASSOC) ?: [];
+                  } catch (Throwable $_) { $latestQrs = []; }
+
+                  $merged = array_merge($latestLinks, $latestQrs);
+                  usort($merged, function($a,$b){ return strcmp((string)($b['created_at']??''),(string)($a['created_at']??'')); });
+                  $featured = array_slice($merged, 0, 6);
+                } catch (Throwable $e) {
+                  // leave $featured empty
+                }
+              }
             ?>
             <ul class="featured-list" data-featured-root aria-busy="false">
               <?php if (!$featured): ?>
@@ -227,6 +261,38 @@ include __DIR__ . '/partials/app_header.php';
             </div>
             <a class="btn btn--ghost btn--sm" href="#" data-export>Export CSV</a>
           </div>
+          <?php
+            // Compose real top list from links + qr
+            $topLinks = [];
+            try {
+              $stL = $pdo->prepare("SELECT id AS item_id, title AS label, 'link' AS item_type,
+                                            COALESCE(clicks,0) AS total,
+                                            (SELECT COUNT(*) FROM link_clicks lc WHERE lc.link_id=links.id AND DATE(lc.created_at)=CURDATE()) AS today,
+                                            created_at AS first_seen
+                                     FROM links WHERE user_id=:uid");
+              $stL->execute([':uid'=>$uid]);
+              $topLinks = $stL->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            } catch (Throwable $e) { $topLinks = []; }
+
+            $topQrs = [];
+            try {
+              $stQ = $pdo->prepare("SELECT q.id AS item_id,
+                                            COALESCE(NULLIF(q.title,''), CONCAT('QR #', q.id)) AS label,
+                                            'qr' AS item_type,
+                                            (SELECT COUNT(*) FROM events e WHERE e.user_id=:uid AND e.item_type='qr' AND e.item_id=q.id) AS total,
+                                            (SELECT COUNT(*) FROM events e WHERE e.user_id=:uid AND e.item_type='qr' AND e.item_id=q.id AND DATE(e.created_at)=CURDATE()) AS today,
+                                            q.created_at AS first_seen
+                                     FROM qr_codes q WHERE q.user_id=:uid");
+              $stQ->execute([':uid'=>$uid]);
+              $topQrs = $stQ->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            } catch (Throwable $e) { $topQrs = []; }
+
+            if ($t === 'links') { $top = $topLinks; }
+            elseif ($t === 'qr') { $top = $topQrs; }
+            else { $top = array_merge($topLinks, $topQrs); }
+            usort($top, function($a,$b){ return ($b['total'] <=> $a['total']) ?: strcmp((string)($b['first_seen']??''),(string)($a['first_seen']??'')); });
+            $top = array_slice($top, 0, 10);
+          ?>
           <div class="qr-table">
             <div class="table-wrapper">
               <table class="table" role="table">
@@ -240,7 +306,6 @@ include __DIR__ . '/partials/app_header.php';
               </tr>
                 </thead>
                 <tbody data-top-table-body>
-              <?php $top = ($uid && isset($pdo)) ? wz_top_items($pdo, $uid, $t_param, $p, 10, $sort, $dir, $page, $per) : []; ?>
               <?php if (!$top): ?>
                 <tr><td colspan="5" class="muted">No items yet.</td></tr>
               <?php else: foreach ($top as $r):

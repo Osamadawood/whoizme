@@ -33,8 +33,12 @@ try {
 
 // Optional columns
 $hasUtm = false; $hasSlug = false;
+$hasActive = true; $hasCreatedAt = true; $hasUpdatedAt = true;
 try { $c = $pdo->query("SHOW COLUMNS FROM links LIKE 'utm_json'"); $hasUtm = $c && $c->rowCount()>0; } catch(Throwable $e){ $hasUtm=false; }
 try { $c = $pdo->query("SHOW COLUMNS FROM links LIKE 'slug'"); $hasSlug = $c && $c->rowCount()>0; } catch(Throwable $e){ $hasSlug=false; }
+try { $c = $pdo->query("SHOW COLUMNS FROM links LIKE 'is_active'"); $hasActive = $c && $c->rowCount()>0; } catch(Throwable $e){ $hasActive=true; }
+try { $c = $pdo->query("SHOW COLUMNS FROM links LIKE 'created_at'"); $hasCreatedAt = $c && $c->rowCount()>0; } catch(Throwable $e){ $hasCreatedAt=false; }
+try { $c = $pdo->query("SHOW COLUMNS FROM links LIKE 'updated_at'"); $hasUpdatedAt = $c && $c->rowCount()>0; } catch(Throwable $e){ $hasUpdatedAt=false; }
 
 if ($title === '' || $url === '') {
   $err = ['ok'=>false,'error'=>'Title and URL are required'];
@@ -54,9 +58,10 @@ if ($utm !== '') {
 
 try {
   if ($id > 0) {
-    $sql = 'UPDATE links SET title=:t, ' . $destCol . '=:u, is_active=:a' . ($hasUtm ? ', utm_json=:utm' : '') . ', updated_at=NOW() WHERE id=:id AND user_id=:uid';
+    $sql = 'UPDATE links SET title=:t, ' . $destCol . '=:u' . ($hasActive ? ', is_active=:a' : '') . ($hasUtm ? ', utm_json=:utm' : '') . ($hasUpdatedAt ? ', updated_at=NOW()' : '') . ' WHERE id=:id AND user_id=:uid';
     $st = $pdo->prepare($sql);
-    $params = [':t'=>$title, ':u'=>$url, ':a'=>$active, ':id'=>$id, ':uid'=>$uid];
+    $params = [':t'=>$title, ':u'=>$url, ':id'=>$id, ':uid'=>$uid];
+    if ($hasActive) $params[':a'] = $active;
     if ($hasUtm) $params[':utm'] = ($utm !== '' ? $utm : null);
     $st->execute($params);
   } else {
@@ -65,23 +70,27 @@ try {
     if ($hasSlug) {
       do { $slug = wz_generate_slug(6); $chk = $pdo->prepare('SELECT 1 FROM links WHERE slug=:s'); $chk->execute([':s'=>$slug]); } while ($chk->fetchColumn());
     }
-    $cols = ['user_id','title',$destCol,'is_active'];
-    $vals = [':uid',':t',':u',':a'];
+    $cols = ['user_id','title',$destCol];
+    $vals = [':uid',':t',':u'];
+    if ($hasActive) { $cols[]='is_active'; $vals[]=':a'; }
     if ($hasSlug) { $cols[]='slug'; $vals[]=':s'; }
     if ($hasUtm) { $cols[]='utm_json'; $vals[]=':utm'; }
-    $cols[]='created_at'; $vals[]='NOW()';
-    $cols[]='updated_at'; $vals[]='NOW()';
+    if ($hasCreatedAt) { $cols[]='created_at'; $vals[]='NOW()'; }
+    if ($hasUpdatedAt) { $cols[]='updated_at'; $vals[]='NOW()'; }
     $sql = 'INSERT INTO links ('.implode(',',$cols).') VALUES ('.implode(',',$vals).')';
     $st = $pdo->prepare($sql);
-    $params = [':uid'=>$uid, ':t'=>$title, ':u'=>$url, ':a'=>$active];
+    $params = [':uid'=>$uid, ':t'=>$title, ':u'=>$url];
+    if ($hasActive) $params[':a'] = $active;
     if ($hasSlug) $params[':s'] = $slug;
     if ($hasUtm)  $params[':utm'] = ($utm !== '' ? $utm : null);
     $st->execute($params);
     $id = (int)$pdo->lastInsertId();
   }
 } catch (Throwable $e) {
+  error_log('links/save error: '.$e->getMessage());
   if (strtolower($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'fetch') { http_response_code(500); header('Content-Type: application/json'); echo json_encode(['ok'=>false,'error'=>'DB error']); exit; }
-  flash_set('links','Database error','error'); header('Location: /links'); exit;
+  $back = $id ? "/links/edit.php?id={$id}" : '/links/new.php';
+  flash_set('links','Database error','error'); header("Location: {$back}"); exit;
 }
 
 if (strtolower($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'fetch') {

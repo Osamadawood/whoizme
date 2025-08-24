@@ -3,6 +3,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../../includes/bootstrap.php';
 require_once __DIR__ . '/../../includes/auth_guard.php';
 require_once __DIR__ . '/../../includes/helpers_links.php';
+require_once __DIR__ . '/../../includes/flash.php';
 
 $id = (int)($_GET['id'] ?? 0);
 $st = $pdo->prepare('SELECT * FROM links WHERE id=:id AND user_id=:u');
@@ -21,8 +22,11 @@ include __DIR__ . '/../partials/app_header.php';
     </div>
     <section class="maincol">
       <div class="panel"><div class="panel__body">
+        <?php if ($f = flash_get('links')): ?>
+          <div class="alert alert--<?= htmlspecialchars($f['t']) ?> u-mb-12"><i class="fi fi-rr-info" aria-hidden="true"></i><span><?= htmlspecialchars($f['m']) ?></span></div>
+        <?php endif; ?>
         <div class="panel__title">Edit link</div>
-        <form action="/links/save.php" method="post" class="form">
+        <form action="/links/save" method="post" class="form">
           <input type="hidden" name="id" value="<?= (int)$row['id'] ?>">
           <div class="form__row"><label>Title</label><input type="text" name="title" value="<?= htmlspecialchars($row['title']) ?>" required></div>
           <div class="form__row"><label>Destination URL</label><input type="url" name="destination_url" value="<?= htmlspecialchars($row['destination_url'] ?? ($row['url'] ?? ($row['destination'] ?? ''))) ?>" required></div>

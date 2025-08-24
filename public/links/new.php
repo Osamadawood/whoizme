@@ -20,7 +20,7 @@ include __DIR__ . '/../partials/app_header.php';
     <section class="maincol">
       <div class="panel"><div class="panel__body">
         <div class="panel__title">Create link</div>
-        <form action="/links/save.php" method="post" class="form">
+        <form action="/links/save" method="post" class="form">
           <div class="form__row"><label>Title</label><input type="text" name="title" required placeholder="My link"></div>
           <div class="form__row"><label>Destination URL</label><input type="url" name="destination_url" required placeholder="https://example.com"></div>
           <div class="form__row"><label>UTM (JSON, optional)</label><textarea name="utm_json" rows="3" placeholder='{"utm_source":"whoiz"}'></textarea></div>
