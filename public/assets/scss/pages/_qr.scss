@@ -643,6 +643,55 @@ html[dir="rtl"] .qr-header__top {
     outline-offset: 2px;
 }
 
+
+/* QR list card header + tabs (inside the list box) */
+
+.qr-list {
+    &.card {
+        background: var(--surface);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-md);
+        padding: 1.6rem 2.0rem;
+    }
+    &__header {
+        margin-bottom: 1.6rem;
+    }
+    &__title {
+        margin: 0 0 .8rem 0;
+        color: var(--text-strong);
+        font-weight: 800;
+        letter-spacing: -.02em;
+        font-size: clamp(1.6rem, 2.2vw, 2.2rem);
+    }
+    &__tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.2rem;
+    }
+    &__tabs .tabs__item,
+    &__tabs a[role="tab"],
+    &__tabs button[role="tab"] {
+        padding: .6rem 1.0rem;
+        border-radius: var(--radius-lg);
+        line-height: 1;
+        color: var(--text-muted);
+        background: transparent;
+        border: 1px solid transparent;
+        cursor: pointer;
+    }
+    &__tabs .is-active,
+    &__tabs [aria-selected="true"] {
+        color: var(--primary);
+        border-color: color-mix(in oklab, var(--primary) 25%, transparent);
+        background: color-mix(in oklab, var(--primary) 6%, transparent);
+        font-weight: 600;
+    }
+}
+
+[dir="rtl"] .qr-list__title {
+    text-align: start;
+}
+
 .qr-header__tabs {
     border: 1px solid var(--border);
     background: var(--surface);

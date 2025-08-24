@@ -255,33 +255,6 @@ include __DIR__ . '/../partials/app_header.php';
       <!-- Header (title + controls + tabs) -->
       <div class="qr-header u-mb-12">
         <div class="qr-header__top">
-          <div class="qr-header__lead">
-            <h1 class="qr-header__title">QR Codes</h1>
-            <?php
-              $qsType = strtolower(trim($_GET['type'] ?? 'all'));
-              // map server param to client slug
-              if ($qsType === 'stores' || $qsType === 'app') {
-                $clientActive = 'appstores';
-              } elseif ($qsType === 'image') {
-                $clientActive = 'images';
-              } else {
-                $clientActive = $qsType;
-              }
-              $clientAllowed = ['all','url','vcard','text','email','wifi','pdf','appstores','images'];
-              if (!in_array($clientActive, $clientAllowed, true)) $clientActive = 'all';
-            ?>
-            <div class="qr-list__tabs" role="tablist" aria-label="Filter by type" data-current-type="<?= htmlspecialchars($clientActive) ?>">
-              <button class="tabs__item" role="tab" data-type="all" aria-selected="<?= $clientActive==='all'?'true':'false' ?>">All</button>
-              <button class="tabs__item" role="tab" data-type="url" aria-selected="<?= $clientActive==='url'?'true':'false' ?>">URL</button>
-              <button class="tabs__item" role="tab" data-type="vcard" aria-selected="<?= $clientActive==='vcard'?'true':'false' ?>">vCard</button>
-              <button class="tabs__item" role="tab" data-type="text" aria-selected="<?= $clientActive==='text'?'true':'false' ?>">Text</button>
-              <button class="tabs__item" role="tab" data-type="email" aria-selected="<?= $clientActive==='email'?'true':'false' ?>">E‑mail</button>
-              <button class="tabs__item" role="tab" data-type="wifi" aria-selected="<?= $clientActive==='wifi'?'true':'false' ?>">Wi‑Fi</button>
-              <button class="tabs__item" role="tab" data-type="pdf" aria-selected="<?= $clientActive==='pdf'?'true':'false' ?>">PDF</button>
-              <button class="tabs__item" role="tab" data-type="appstores" aria-selected="<?= $clientActive==='appstores'?'true':'false' ?>">App Stores</button>
-              <button class="tabs__item" role="tab" data-type="images" aria-selected="<?= $clientActive==='images'?'true':'false' ?>">Images</button>
-            </div>
-          </div>
           <form class="search-pill" method="get" action="/qr-codes">
             <i class="fi fi-rr-search" aria-hidden="true"></i>
             <input type="text" name="q" value="<?= htmlspecialchars($q) ?>" placeholder="Search QR…" data-qr-search />
@@ -359,7 +332,31 @@ include __DIR__ . '/../partials/app_header.php';
       </div>
 
       <!-- Table View (default) -->
-      <div class="qr-list qr-table" id="qrTable" data-view="table">
+      <?php
+        $qsType = strtolower(trim($_GET['type'] ?? 'all'));
+        if ($qsType === 'stores' || $qsType === 'app') $clientActive = 'appstores';
+        elseif ($qsType === 'image') $clientActive = 'images';
+        else $clientActive = $qsType;
+        $clientAllowed = ['all','url','vcard','text','email','wifi','pdf','appstores','images'];
+        if (!in_array($clientActive, $clientAllowed, true)) $clientActive = 'all';
+      ?>
+      <div class="qr-list card">
+        <header class="qr-list__header">
+          <h2 class="qr-list__title">QR Codes</h2>
+          <nav class="qr-list__tabs" role="tablist" aria-label="Filter QR type" data-current-type="<?= htmlspecialchars($clientActive) ?>">
+            <button class="tabs__item" role="tab" data-type="all" aria-selected="<?= $clientActive==='all'?'true':'false' ?>">All</button>
+            <button class="tabs__item" role="tab" data-type="url" aria-selected="<?= $clientActive==='url'?'true':'false' ?>">URL</button>
+            <button class="tabs__item" role="tab" data-type="vcard" aria-selected="<?= $clientActive==='vcard'?'true':'false' ?>">vCard</button>
+            <button class="tabs__item" role="tab" data-type="text" aria-selected="<?= $clientActive==='text'?'true':'false' ?>">Text</button>
+            <button class="tabs__item" role="tab" data-type="email" aria-selected="<?= $clientActive==='email'?'true':'false' ?>">E‑mail</button>
+            <button class="tabs__item" role="tab" data-type="wifi" aria-selected="<?= $clientActive==='wifi'?'true':'false' ?>">Wi‑Fi</button>
+            <button class="tabs__item" role="tab" data-type="pdf" aria-selected="<?= $clientActive==='pdf'?'true':'false' ?>">PDF</button>
+            <button class="tabs__item" role="tab" data-type="appstores" aria-selected="<?= $clientActive==='appstores'?'true':'false' ?>">App Stores</button>
+            <button class="tabs__item" role="tab" data-type="images" aria-selected="<?= $clientActive==='images'?'true':'false' ?>">Images</button>
+          </nav>
+        </header>
+        <div class="qr-list__body">
+          <div class="qr-table" id="qrTable" data-view="table">
         <?php if (!$rows): ?>
           <div class="card">
             <div class="card__body u-ta-center">
@@ -486,6 +483,8 @@ include __DIR__ . '/../partials/app_header.php';
     </table>
   </div>
   <?php endif; ?>
+          </div>
+        </div>
       </div>
 
       <!-- Pagination -->
