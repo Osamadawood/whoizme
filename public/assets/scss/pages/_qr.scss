@@ -686,6 +686,14 @@ html[dir="rtl"] .qr-header__top {
         background: color-mix(in oklab, var(--primary) 6%, transparent);
         font-weight: 600;
     }
+    /* Empty state inside list body */
+    .qr-empty {
+        border: 1px dashed var(--border);
+        border-radius: var(--radius-lg);
+        text-align: center;
+        color: var(--text-muted);
+        margin-bottom: 1.2rem;
+    }
 }
 
 [dir="rtl"] .qr-list__title {

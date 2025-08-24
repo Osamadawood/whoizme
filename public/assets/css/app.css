@@ -1164,6 +1164,9 @@ html[dir=rtl] .qr-header__top {
 }
 
 /* QR list card header + tabs (inside the list box) */
+.qr-list {
+  /* Empty state inside list body */
+}
 .qr-list.card {
   background: var(--surface);
   border-radius: var(--radius-xl);
@@ -1199,6 +1202,13 @@ html[dir=rtl] .qr-header__top {
   border-color: color-mix(in oklab, var(--primary) 25%, transparent);
   background: color-mix(in oklab, var(--primary) 6%, transparent);
   font-weight: 600;
+}
+.qr-list .qr-empty {
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-lg);
+  text-align: center;
+  color: var(--text-muted);
+  margin-bottom: 1.2rem;
 }
 
 [dir=rtl] .qr-list__title {

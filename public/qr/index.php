@@ -357,6 +357,13 @@ include __DIR__ . '/../partials/app_header.php';
         </header>
         <div class="qr-list__body">
           <div class="qr-table" id="qrTable" data-view="table">
+            <div class="qr-empty" aria-live="polite" hidden>
+              <div class="card__body u-ta-center u-py-16">
+                <div class="h4 u-mt-0">No results for this filter</div>
+                <p class="muted">Try another tab or clear the search.</p>
+                <a class="btn btn--primary" href="/qr/new">Create QR</a>
+              </div>
+            </div>
         <?php if (!$rows): ?>
           <div class="card">
             <div class="card__body u-ta-center">

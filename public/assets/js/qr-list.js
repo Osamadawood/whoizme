@@ -49,6 +49,8 @@
             });
             const empty = root.querySelector('.qr-empty');
             if (empty) empty.hidden = any;
+            const tableWrap = root.querySelector('.table-wrapper');
+            if (tableWrap) tableWrap.style.display = any ? '' : 'none';
         }
 
         function syncUrl() {
