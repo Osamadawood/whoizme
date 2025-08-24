@@ -4057,6 +4057,36 @@ html[data-theme=dark] .theme-toggle .moon {
     gap: 12px;
   }
 }
+.analytics {
+  /* layout follows DS tokens via utilities in app.scss */
+}
+
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+@media (max-width: 1200px) {
+  .kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 640px) {
+  .kpis {
+    grid-template-columns: 1fr;
+  }
+}
+.kpi .panel__title {
+  color: var(--text-muted);
+  font: var(--font-sm);
+}
+
+.kpi .kpi__value {
+  font: var(--font-2xl);
+  font-weight: 700;
+}
+
 .skeleton {
   position: relative;
   background: color-mix(in oklab, var(--surface), white 6%);

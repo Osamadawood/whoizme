@@ -178,7 +178,7 @@ include __DIR__ . '/partials/app_header.php';
         <div class="panel">
           <div class="panel__body">
             <div class="panel__title u-flex u-ai-center u-jc-between">
-              <span>Latest links &amp; QR</span>
+              <span>Latest links &amp; QRs</span>
             </div>
             <?php
               $featured = ($uid && isset($pdo)) ? (function() use($pdo,$uid,$p){
@@ -213,7 +213,7 @@ include __DIR__ . '/partials/app_header.php';
 
                   $merged = array_merge($latestLinks, $latestQrs);
                   usort($merged, function($a,$b){ return strcmp((string)($b['created_at']??''),(string)($a['created_at']??'')); });
-                  $featured = array_slice($merged, 0, 6);
+                  $featured = array_slice($merged, 0, 4);
                 } catch (Throwable $e) {
                   // leave $featured empty
                 }
@@ -222,7 +222,11 @@ include __DIR__ . '/partials/app_header.php';
             <ul class="featured-list" data-featured-root aria-busy="false">
               <?php if (!$featured): ?>
                 <li class="featured-item"><div class="chip">★</div><div><div><strong>No highlights yet</strong></div><div class="meta">Create your first link or QR</div></div></li>
-              <?php else: foreach ($featured as $it): $href = ($it['type']==='qr'?'/qr':'/links'); ?>
+              <?php else: foreach ($featured as $it): 
+                $isQr = ($it['type']??'') === 'qr';
+                $id   = (int)($it['item_id'] ?? 0);
+                $href = $isQr ? ($id?"/qr/view.php?id={$id}":'/qr') : ($id?"/links/view.php?id={$id}":'/links');
+              ?>
                 <li class="featured-item">
                   <a class="tile" href="<?= $href ?>">
                     <?php if (!empty($it['thumb'])): ?>
@@ -262,14 +266,20 @@ include __DIR__ . '/partials/app_header.php';
             <a class="btn btn--ghost btn--sm" href="#" data-export>Export CSV</a>
           </div>
           <?php
-            // Compose real top list from links + qr
+            // Compose real top list from links + qr (with fallbacks if optional tables/columns are missing)
             $topLinks = [];
             try {
-              $stL = $pdo->prepare("SELECT id AS item_id, title AS label, 'link' AS item_type,
-                                            COALESCE(clicks,0) AS total,
-                                            (SELECT COUNT(*) FROM link_clicks lc WHERE lc.link_id=links.id AND DATE(lc.created_at)=CURDATE()) AS today,
-                                            created_at AS first_seen
-                                     FROM links WHERE user_id=:uid");
+              $hasClicksTable = false; $hasClicksCol = true;
+              try { $t = $pdo->query("SHOW TABLES LIKE 'link_clicks'"); if ($t && $t->rowCount()>0) $hasClicksTable = true; } catch (Throwable $_) { $hasClicksTable=false; }
+              try { $c = $pdo->query("SHOW COLUMNS FROM links LIKE 'clicks'"); if (!$c || $c->rowCount()===0) $hasClicksCol = false; } catch (Throwable $_) { $hasClicksCol=false; }
+              $totalExpr = $hasClicksCol ? 'COALESCE(clicks,0)' : ($hasClicksTable ? '(SELECT COUNT(*) FROM link_clicks lc WHERE lc.link_id=links.id)' : '0');
+              $todayExpr = $hasClicksTable ? '(SELECT COUNT(*) FROM link_clicks lc WHERE lc.link_id=links.id AND DATE(lc.created_at)=CURDATE())' : '0';
+              $sqlL = "SELECT id AS item_id, title AS label, 'link' AS item_type,
+                              $totalExpr AS total,
+                              $todayExpr AS today,
+                              created_at AS first_seen
+                       FROM links WHERE user_id=:uid";
+              $stL = $pdo->prepare($sqlL);
               $stL->execute([':uid'=>$uid]);
               $topLinks = $stL->fetchAll(PDO::FETCH_ASSOC) ?: [];
             } catch (Throwable $e) { $topLinks = []; }

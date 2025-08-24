@@ -34,22 +34,61 @@ $itemType = $map[$tab] ?? 'all';
 if (!isset($pdo) || !($pdo instanceof PDO)) { http_response_code(500); echo json_encode(['error'=>'db']); exit; }
 
 // Data slice
-$rows = wz_top_items($pdo, $uid, $itemType, $p, $per, $sort, $dir, $page, $per);
+// Build rows from real tables for consistency with /links and /qr views
+function load_top_links(PDO $pdo, int $uid): array {
+  try {
+    $hasClicksTable = false; $hasClicksCol = true;
+    try { $t = $pdo->query("SHOW TABLES LIKE 'link_clicks'"); if ($t && $t->rowCount()>0) $hasClicksTable = true; } catch (Throwable $_) { $hasClicksTable=false; }
+    try { $c = $pdo->query("SHOW COLUMNS FROM links LIKE 'clicks'"); if (!$c || $c->rowCount()===0) $hasClicksCol = false; } catch (Throwable $_) { $hasClicksCol=false; }
+    $totalExpr = $hasClicksCol ? 'COALESCE(l.clicks,0)' : ($hasClicksTable ? '(SELECT COUNT(*) FROM link_clicks lc WHERE lc.link_id=l.id)' : '0');
+    $todayExpr = $hasClicksTable ? '(SELECT COUNT(*) FROM link_clicks lc WHERE lc.link_id=l.id AND DATE(lc.created_at)=CURDATE())' : '0';
+    $q = "SELECT l.id AS item_id, l.title AS label, 'link' AS item_type,
+                 $totalExpr AS total,
+                 $todayExpr AS today,
+                 l.created_at AS first_seen
+          FROM links l WHERE l.user_id=:uid";
+    $st = $pdo->prepare($q); $st->execute([':uid'=>$uid]);
+    return $st->fetchAll(PDO::FETCH_ASSOC) ?: [];
+  } catch (Throwable $e) { return []; }
+}
+
+function load_top_qr(PDO $pdo, int $uid): array {
+  try {
+    $q = "SELECT q.id AS item_id,
+                 COALESCE(NULLIF(q.title,''), CONCAT('QR #', q.id)) AS label,
+                 'qr' AS item_type,
+                 (SELECT COUNT(*) FROM events e WHERE e.user_id=:uid AND e.item_type='qr' AND e.item_id=q.id) AS total,
+                 (SELECT COUNT(*) FROM events e WHERE e.user_id=:uid AND e.item_type='qr' AND e.item_id=q.id AND DATE(e.created_at)=CURDATE()) AS today,
+                 q.created_at AS first_seen
+          FROM qr_codes q WHERE q.user_id=:uid";
+    $st = $pdo->prepare($q); $st->execute([':uid'=>$uid]);
+    return $st->fetchAll(PDO::FETCH_ASSOC) ?: [];
+  } catch (Throwable $e) { return []; }
+}
+
+// Load and merge according to tab
+$arr = [];
+if ($itemType === 'link') { $arr = load_top_links($pdo, $uid); }
+elseif ($itemType === 'qr') { $arr = load_top_qr($pdo, $uid); }
+else { $arr = array_merge(load_top_links($pdo, $uid), load_top_qr($pdo, $uid)); }
+
+// Sort
+usort($arr, function($a,$b) use ($sort,$dir){
+  $cmp = 0;
+  if ($sort === 'today') { $cmp = (int)($b['today']??0) <=> (int)($a['today']??0); }
+  elseif ($sort === 'first_seen') { $cmp = strcmp((string)($a['first_seen']??''),(string)($b['first_seen']??'')); }
+  else { $cmp = (int)($b['total']??0) <=> (int)($a['total']??0); }
+  return strtolower($dir)==='asc' ? -$cmp : $cmp;
+});
+
+// Paging
+$totalRows = count($arr);
+$totalPages = (int)max(1, (int)ceil($totalRows / $per));
+$offset = max(0, ($page-1) * $per);
+$rows = array_slice($arr, $offset, $per);
 
 // Total count via grouped subquery
-$since = (new DateTime('-'.($p==='30d'?30:($p==='90d'?90:7)).' days'))->format('Y-m-d 00:00:00');
-$q = "SELECT COUNT(1) FROM (
-        SELECT item_type,item_id
-        FROM events
-        WHERE user_id=:uid AND created_at>=:since" . ($itemType!=='all' ? " AND item_type=:it" : "") .
-      " GROUP BY item_type,item_id) sub";
-$st = $pdo->prepare($q);
-$st->bindValue(':uid', $uid, PDO::PARAM_INT);
-$st->bindValue(':since', $since);
-if ($itemType!=='all') $st->bindValue(':it', $itemType);
-$st->execute();
-$totalRows = (int)$st->fetchColumn();
-$totalPages = (int)max(1, (int)ceil($totalRows / $per));
+// totalRows already computed above for merged list
 
 // Normalize row output
 $outRows = [];

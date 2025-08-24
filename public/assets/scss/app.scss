@@ -41,6 +41,7 @@
 @use "landing/footer";
 @use 'pages/dashboard';
 @use 'pages/qr';
+@use 'pages/analytics';
 @use 'components/skeleton';
 
 /* === Utilities === */
@@ -92,6 +93,7 @@
 @include table.apply();
 @include auth.apply();
 @include qr.apply();
+@include analytics.apply();
 @include skeleton.apply();
 
 /* 5) utilities (last) */
