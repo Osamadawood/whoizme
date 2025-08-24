@@ -1009,6 +1009,107 @@
   flex: 1;
 }
 
+/* List view refined layout */
+.qr-list .qr-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 16px;
+  align-items: center;
+  padding-block: 16px;
+}
+.qr-list .qr-cell--thumb {
+  width: 100px;
+}
+.qr-list .qr-thumb-container {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+}
+.qr-list .qr-thumb {
+  width: 64px;
+  height: 64px;
+}
+.qr-list .qr-title__link {
+  text-decoration: none;
+  color: var(--text);
+}
+.qr-list .qr-title__text {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin: 0 0 6px;
+}
+.qr-list .qr-title__meta {
+  display: inline-flex;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.qr-list .qr-destination__text {
+  color: var(--text-muted);
+  font-size: 1.4rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 52vw;
+}
+.qr-list .qr-meta__row {
+  margin-top: 6px;
+  color: var(--text-muted);
+  font-size: 1.3rem;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.qr-list .qr-actions {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+.qr-list .qr-actions__link {
+  color: var(--brand);
+  text-decoration: none;
+  font-weight: 600;
+}
+.qr-list .qr-actions__kebab {
+  position: relative;
+}
+.qr-list .kebab-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  min-width: 200px;
+  padding: 8px;
+  display: none;
+}
+.qr-list .kebab-menu.is-open {
+  display: block;
+}
+.qr-list .kebab-menu__item {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  text-align: left;
+  background: none;
+  border: 0;
+  color: var(--text);
+  text-decoration: none;
+}
+.qr-list .kebab-menu__item:hover {
+  background: var(--surface-hover);
+}
+
 .new__qr {
   align-items: baseline !important;
 }

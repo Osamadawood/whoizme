@@ -29,7 +29,7 @@ if (!$row) { http_response_code(404); exit('QR not found'); }
             <p class="u-mt-8"><a class="btn btn--ghost" href="/qr/">Back to list</a></p>
           </div>
           <div>
-            <canvas id="qrCanvas" width="512" height="512" style="background:#fff;padding:8px;border-radius:12px"></canvas>
+            <div id="qrBox" style="background:#fff;padding:8px;border-radius:12px;width:512px;height:512px;display:flex;align-items:center;justify-content:center"></div>
             <div class="u-mt-8">
               <a class="btn btn--primary" id="dlBtn" download="<?= htmlspecialchars($row['title']) ?>.png">Download PNG</a>
             </div>
@@ -41,12 +41,17 @@ if (!$row) { http_response_code(404); exit('QR not found'); }
 
 </main>
 
+<script src="/assets/js/qrcode.min.js"></script>
 <script>
 const payload = <?= json_encode($row['payload']) ?>;
-const canvas  = document.getElementById('qrCanvas');
-QRCode.toCanvas(canvas, payload, { width: 512, margin:1 }, function (error) {
-  if (error) console.error(error);
-  document.getElementById('dlBtn').href = canvas.toDataURL('image/png');
-});
+const box = document.getElementById('qrBox');
+try {
+  const q = new QRCode(box, { text: payload, width: 496, height: 496, correctLevel: QRCode.CorrectLevel.L });
+  // Wait a tick for canvas to be inserted
+  setTimeout(() => {
+    const canvas = box.querySelector('canvas');
+    if (canvas) document.getElementById('dlBtn').href = canvas.toDataURL('image/png');
+  }, 50);
+} catch (e) { console.error(e); }
 </script>
 <?php include __DIR__ . '/../partials/app_footer.php'; ?>

@@ -82,7 +82,7 @@ function wz_events_recent(PDO $pdo, int $userId, int $limit=6): array {
  * Top items aggregated within a period, optionally filtered by itemType.
  * Returns rows: [item_type,item_id,label,total,today,clicks,scans,opens,creates,first_seen]
  */
-function wz_top_items(PDO $pdo, int $userId, string $itemType='all', string $period='7d', int $limit=10, string $sort='total', string $dir='desc', int $page=1, int $per=10): array {
+function wz_top_items(PDO $pdo, int $userId, string $itemType='all', string $period='7d', int $limit=10, string $sort='total', string $dir='desc', int $page=1, int $per=105): array {
     $days = ($period === '30d') ? 30 : (($period === '90d') ? 90 : 7);
     $since = (new DateTime('-'. $days .' days'))->format('Y-m-d 00:00:00');
 

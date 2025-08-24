@@ -6,7 +6,9 @@ require_once __DIR__ . '/../../includes/auth_guard.php';
 $uid = (int)($_SESSION['user_id'] ?? 0);
 $q   = trim($_GET['q'] ?? '');
 $page = max(1, (int)($_GET['page'] ?? 1));
-$per  = max(1, min(50, (int)($_GET['per'] ?? 12)));
+$allowedPer = [10,25,50];
+$perReq = (int)($_GET['per'] ?? 10);
+$per  = in_array($perReq, $allowedPer, true) ? $perReq : 10;
 $off  = ($page - 1) * $per;
 
 // KPIs (simple queries; can be optimized later)
@@ -51,7 +53,7 @@ if (!$showHidden) {
     $where .= ' AND (q.is_active = 1 OR q.is_active IS NULL)';
 }
 
-if ($q !== '') { 
+if ($q !== '') {
     // Safe: default to searching id if short_code info not loaded yet
     if (isset($hasShortCode) && $hasShortCode) {
         $where .= ' AND (q.title LIKE :kw OR q.payload LIKE :kw OR q.short_code LIKE :kw)'; 
@@ -115,7 +117,7 @@ if ($hasShortCode && $hasStyleJson) {
             FROM qr_codes q
             WHERE $where
             ORDER BY q.created_at DESC
-            LIMIT :per OFFSET :off";
+        LIMIT :per OFFSET :off";
 }
 $stmt = $pdo->prepare($sql);
 foreach ($params as $k=>$v) { $stmt->bindValue($k, $v); }
@@ -227,15 +229,15 @@ include __DIR__ . '/../partials/app_header.php';
             <form class="search-pill" method="get" action="/qr-codes">
               <i class="fi fi-rr-search" aria-hidden="true"></i>
               <input type="text" name="q" value="<?= htmlspecialchars($q) ?>" placeholder="Search QR…" />
-            </form>
+      </form>
             <div class="seg-switch" role="tablist" aria-label="View">
               <a href="#" class="seg-btn is-active" data-view="table" role="tab" aria-selected="true"><i class="fi fi-rr-table"></i> <span>Table view</span> <span class="seg-count">· <?= number_format($totalRows) ?></span></a>
               <a href="#" class="seg-btn" data-view="cards" role="tab" aria-selected="false"><i class="fi fi-rr-apps"></i> <span>Cards view</span> <span class="seg-count">· <?= number_format($totalRows) ?></span></a>
             </div>
             <a class="btn btn--primary" href="/qr/new">+ New</a>
           </div>
-        </div>
-      </div>
+    </div>
+  </div>
 
       <!-- Grid View -->
       <div class="qr-grid" id="qrGrid" data-view="cards" style="display: none;">
@@ -311,21 +313,21 @@ include __DIR__ . '/../partials/app_header.php';
               <a class="btn btn--primary" href="/qr/new">Create QR</a>
             </div>
           </div>
-        <?php else: ?>
+  <?php else: ?>
           <div class="table-wrapper">
-            <table class="table">
-              <thead>
-                <tr>
+    <table class="table">
+      <thead>
+        <tr>
                   <th class="qr-thumb">QR</th>
                   <th class="qr-title">Title</th>
                   <th class="qr-destination">Destination</th>
                   <th class="qr-scans">Scans</th>
                   <th class="qr-created">Created</th>
                   <th class="qr-actions">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php foreach ($rows as $r): ?>
+        </tr>
+      </thead>
+      <tbody>
+        <?php foreach ($rows as $r): ?>
                   <?php
                     $qrId = (int)$r['id'];
                     $title = htmlspecialchars($r['title'] ?: ('QR #' . $qrId));
@@ -387,87 +389,43 @@ include __DIR__ . '/../partials/app_header.php';
                             $destinationText = $payload;
                     }
                   ?>
-                  <tr>
-                    <td class="qr-thumb">
-                      <div class="qr-thumb-container" 
-                           data-qr-id="<?= $qrId ?>"
-                           data-qr-payload="<?= htmlspecialchars($payload) ?>"
-                           data-qr-style="<?= htmlspecialchars($styleJson) ?>"
-                           data-qr-title="<?= htmlspecialchars($title) ?>">
-                        <!-- Fallback image for no-JS -->
-                        <img src="/qr/thumb.php?id=<?= $qrId ?>&v=<?= time() ?>" 
-                             alt="QR preview: <?= $title ?>"
-                             style="width: 80px; height: 80px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); padding:8px;">
+                  <tr class="qr-row" data-qr-id="<?= $qrId ?>" data-qr-payload="<?= htmlspecialchars($payload, ENT_QUOTES) ?>">
+                    <td class="qr-cell qr-cell--thumb">
+                      <div class="qr-thumb-container">
+                        <div class="qr-thumb" data-payload="<?= htmlspecialchars($payload) ?>" aria-label="QR preview: <?= $title ?>"></div>
                       </div>
                     </td>
-                    <td class="qr-title">
-                      <div class="qr-title__text"><?= $title ?></div>
+                    <td class="qr-cell qr-cell--details">
+                      <a href="/qr/view.php?id=<?= $qrId ?>" class="qr-title__link" target="_self"><h3 class="qr-title__text"><?= $title ?></h3></a>
                       <div class="qr-title__meta">
                         <span class="badge badge--sm badge--primary"><?= strtoupper($type) ?></span>
-                        <?php if (isset($r['is_active']) && $r['is_active'] == 0): ?>
-                          <span class="badge badge--sm badge--muted">Hidden</span>
-                        <?php endif; ?>
+                        <?php if (isset($r['is_active']) && $r['is_active'] == 0): ?><span class="badge badge--sm badge--muted">Hidden</span><?php endif; ?>
                       </div>
-                    </td>
-                    <td class="qr-destination">
-                      <div class="qr-destination__text" title="<?= htmlspecialchars($payload) ?>">
-                        <?= htmlspecialchars($destinationText) ?>
-                      </div>
-                    </td>
-                    <td class="qr-scans">
-                      <div class="qr-scans__count"><?= number_format($scans) ?></div>
-                    </td>
-                    <td class="qr-created">
-                      <div class="qr-created__date"><?= $created ?></div>
-                    </td>
-                    <td class="qr-actions">
-                      <div class="qr-actions__primary">
-                        <button class="btn btn--action" data-action="copy" data-id="<?= $qrId ?>" data-code="<?= htmlspecialchars($shortCode ?? '') ?>" data-link="<?= htmlspecialchars('/qrgo.php?q=' . ($shortCode ?: $qrId)) ?>" aria-label="Copy link">
-                          <i class="fi fi-rr-copy"></i>
-                        </button>
-                        <button class="btn btn--action" data-action="edit" data-id="<?= $qrId ?>" aria-label="Edit QR">
-                          <i class="fi fi-rr-edit"></i>
-                        </button>
-                      </div>
-                      <div class="qr-actions__kebab">
-                        <button class="btn btn--action" data-action="menu" aria-label="More actions" aria-expanded="false">
-                          <i class="fi fi-rr-menu-dots"></i>
-                        </button>
-                        <div class="kebab-menu" role="menu">
-                          <button class="kebab-menu__item" data-action="copy" data-id="<?= $qrId ?>" data-code="<?= htmlspecialchars($shortCode ?? '') ?>" data-link="<?= htmlspecialchars('/qrgo.php?q=' . ($shortCode ?: $qrId)) ?>">
-                            <i class="fi fi-rr-copy"></i><span>Copy link</span>
-                          </button>
-                          <button class="kebab-menu__item" data-action="download" data-id="<?= $qrId ?>">
-                            <i class="fi fi-rr-download"></i><span>Download</span>
-                          </button>
-                          <button class="kebab-menu__item" data-action="short" data-id="<?= $qrId ?>">
-                            <i class="fi fi-rr-link"></i><span>Create short link</span>
-                          </button>
-                          <button class="kebab-menu__item" data-action="duplicate" data-id="<?= $qrId ?>">
-                            <i class="fi fi-rr-copy"></i><span>Duplicate design</span>
-                          </button>
-                          <button class="kebab-menu__item" data-action="hide" data-id="<?= $qrId ?>" data-hidden="<?= isset($r['is_active']) && $r['is_active'] == 0 ? '1' : '0' ?>">
-                            <i class="fi fi-rr-<?= (isset($r['is_active']) && $r['is_active'] == 0) ? 'eye' : 'eye-crossed' ?>"></i>
-                            <span><?= (isset($r['is_active']) && $r['is_active'] == 0) ? 'Unhide' : 'Hide' ?></span>
-                          </button>
-                          <button class="kebab-menu__item" data-action="delete" data-id="<?= $qrId ?>">
-                            <i class="fi fi-rr-trash"></i><span>Delete</span>
-                          </button>
-
-                          <noscript>
-                            <form method="post" action="/qr/duplicate.php"><input type="hidden" name="id" value="<?= $qrId ?>"><button type="submit">Duplicate</button></form>
-                            <form method="post" action="/qr/toggle.php"><input type="hidden" name="id" value="<?= $qrId ?>"><button type="submit"><?= (isset($r['is_active']) && $r['is_active'] == 0) ? 'Show' : 'Hide' ?></button></form>
-                            <form method="post" action="/qr/delete.php" onsubmit="return confirm('Are you sure?')"><input type="hidden" name="id" value="<?= $qrId ?>"><button type="submit">Delete</button></form>
-                          </noscript>
+                      <div class="qr-destination__text" title="<?= htmlspecialchars($payload) ?>"><?= htmlspecialchars($destinationText) ?></div>
+                      <div class="qr-meta__row"><span class="qr-meta__item"><?= $created ?></span> · <span class="qr-meta__item"><?= number_format($scans) ?> scans</span></div>
+          </td>
+                    <td class="qr-cell qr-cell--actions">
+                      <div class="qr-actions">
+                        <a href="/qr/view.php?id=<?= $qrId ?>" class="qr-actions__link" data-role="view" target="_self">View details</a>
+                        <button class="btn btn--action" data-action="download-svg" data-id="<?= $qrId ?>" aria-label="Download SVG"><i class="fi fi-rr-download"></i></button>
+                        <div class="qr-actions__kebab">
+                          <button class="btn btn--action" data-action="menu-toggle" aria-label="More actions" aria-expanded="false" aria-controls="menu-<?= $qrId ?>"><i class="fi fi-rr-menu-dots"></i></button>
+                          <div class="kebab-menu" role="menu" id="menu-<?= $qrId ?>">
+                            <a class="kebab-menu__item" href="/qr/new?id=<?= $qrId ?>" data-action="edit"><i class="fi fi-rr-edit"></i><span>Edit</span></a>
+                            <form method="post" action="/qr/delete.php" onsubmit="return confirm('Are you sure?')">
+                              <input type="hidden" name="id" value="<?= $qrId ?>">
+                              <button type="submit" class="kebab-menu__item" data-action="delete" data-id="<?= $qrId ?>"><i class="fi fi-rr-trash"></i><span>Delete</span></button>
+                            </form>
+                          </div>
                         </div>
                       </div>
-                    </td>
-                  </tr>
-                <?php endforeach; ?>
-              </tbody>
-            </table>
-          </div>
-        <?php endif; ?>
+          </td>
+        </tr>
+        <?php endforeach; ?>
+      </tbody>
+    </table>
+  </div>
+  <?php endif; ?>
       </div>
 
       <!-- Pagination -->
@@ -507,8 +465,8 @@ include __DIR__ . '/../partials/app_header.php';
 
 <!-- Include QR code library for client-side generation -->
 <script src="/assets/js/qrcode.min.js"></script>
-<!-- Include QR list enhancement module -->
-<script src="/assets/js/qr-list.js" defer></script>
+<!-- Include QR list enhancement module (list view only) -->
+<script src="/assets/js/qr.js" defer></script>
 
 <script>
 // View switching with localStorage persistence
