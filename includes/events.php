@@ -170,3 +170,19 @@ function wz_event_series(PDO $pdo, int $userId, string $period): array {
 }
 
 
+/**
+ * Log a link click to link_clicks using server IP/UA.
+ */
+function wz_log_link_click(PDO $pdo, int $linkId, ?int $userId = null): void {
+    $ip  = $_SERVER['REMOTE_ADDR'] ?? '';
+    $ua  = $_SERVER['HTTP_USER_AGENT'] ?? '';
+    $ref = $_SERVER['HTTP_REFERER'] ?? '';
+    try {
+        $st = $pdo->prepare('INSERT INTO link_clicks (link_id, user_id, ip_address, user_agent, created_at) VALUES (:id, :uid, :ip, :ua, NOW())');
+        $st->execute([':id'=>$linkId, ':uid'=>$userId, ':ip'=>$ip, ':ua'=>$ua]);
+    } catch (Throwable $e) {
+        // swallow; clicks are best-effort
+    }
+}
+
+

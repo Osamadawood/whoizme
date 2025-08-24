@@ -6,9 +6,9 @@ require_once __DIR__ . '/../../includes/auth_guard.php';
 $uid = (int)($_SESSION['user_id'] ?? 0);
 $q   = trim($_GET['q'] ?? '');
 $page = max(1, (int)($_GET['page'] ?? 1));
-$allowedPer = [10,25,50];
-$perReq = (int)($_GET['per'] ?? 10);
-$per  = in_array($perReq, $allowedPer, true) ? $perReq : 10;
+$allowedPer = [5,10,25,50];
+$perReq = (int)($_GET['per'] ?? 5);
+$per  = in_array($perReq, $allowedPer, true) ? $perReq : 5;
 $off  = ($page - 1) * $per;
 
 // KPIs (simple queries; can be optimized later)
@@ -343,16 +343,16 @@ include __DIR__ . '/../partials/app_header.php';
       <div class="qr-list card">
         <header class="qr-list__header">
           <h2 class="qr-list__title">QR Codes</h2>
-          <nav class="qr-list__tabs" role="tablist" aria-label="Filter QR type" data-current-type="<?= htmlspecialchars($clientActive) ?>">
-            <button class="tabs__item" role="tab" data-type="all" aria-selected="<?= $clientActive==='all'?'true':'false' ?>">All</button>
-            <button class="tabs__item" role="tab" data-type="url" aria-selected="<?= $clientActive==='url'?'true':'false' ?>">URL</button>
-            <button class="tabs__item" role="tab" data-type="vcard" aria-selected="<?= $clientActive==='vcard'?'true':'false' ?>">vCard</button>
-            <button class="tabs__item" role="tab" data-type="text" aria-selected="<?= $clientActive==='text'?'true':'false' ?>">Text</button>
-            <button class="tabs__item" role="tab" data-type="email" aria-selected="<?= $clientActive==='email'?'true':'false' ?>">E‑mail</button>
-            <button class="tabs__item" role="tab" data-type="wifi" aria-selected="<?= $clientActive==='wifi'?'true':'false' ?>">Wi‑Fi</button>
-            <button class="tabs__item" role="tab" data-type="pdf" aria-selected="<?= $clientActive==='pdf'?'true':'false' ?>">PDF</button>
-            <button class="tabs__item" role="tab" data-type="appstores" aria-selected="<?= $clientActive==='appstores'?'true':'false' ?>">App Stores</button>
-            <button class="tabs__item" role="tab" data-type="images" aria-selected="<?= $clientActive==='images'?'true':'false' ?>">Images</button>
+          <nav class="qr-list__tabs filters segmented" role="tablist" aria-label="Filter by type" data-current-type="<?= htmlspecialchars($clientActive) ?>">
+            <a href="#" class="segmented__btn<?= $clientActive==='all'?' is-active':'' ?>" role="tab" data-type="all" aria-selected="<?= $clientActive==='all'?'true':'false' ?>">All</a>
+            <a href="#" class="segmented__btn<?= $clientActive==='url'?' is-active':'' ?>" role="tab" data-type="url" aria-selected="<?= $clientActive==='url'?'true':'false' ?>">URL</a>
+            <a href="#" class="segmented__btn<?= $clientActive==='vcard'?' is-active':'' ?>" role="tab" data-type="vcard" aria-selected="<?= $clientActive==='vcard'?'true':'false' ?>">vCard</a>
+            <a href="#" class="segmented__btn<?= $clientActive==='text'?' is-active':'' ?>" role="tab" data-type="text" aria-selected="<?= $clientActive==='text'?'true':'false' ?>">Text</a>
+            <a href="#" class="segmented__btn<?= $clientActive==='email'?' is-active':'' ?>" role="tab" data-type="email" aria-selected="<?= $clientActive==='email'?'true':'false' ?>">E‑mail</a>
+            <a href="#" class="segmented__btn<?= $clientActive==='wifi'?' is-active':'' ?>" role="tab" data-type="wifi" aria-selected="<?= $clientActive==='wifi'?'true':'false' ?>">Wi‑Fi</a>
+            <a href="#" class="segmented__btn<?= $clientActive==='pdf'?' is-active':'' ?>" role="tab" data-type="pdf" aria-selected="<?= $clientActive==='pdf'?'true':'false' ?>">PDF</a>
+            <a href="#" class="segmented__btn<?= $clientActive==='appstores'?' is-active':'' ?>" role="tab" data-type="appstores" aria-selected="<?= $clientActive==='appstores'?'true':'false' ?>">App Stores</a>
+            <a href="#" class="segmented__btn<?= $clientActive==='images'?' is-active':'' ?>" role="tab" data-type="images" aria-selected="<?= $clientActive==='images'?'true':'false' ?>">Images</a>
           </nav>
         </header>
         <div class="qr-list__body">
@@ -374,8 +374,8 @@ include __DIR__ . '/../partials/app_header.php';
             </div>
           </div>
   <?php else: ?>
-          <div class="table-wrapper">
-    <table class="table">
+    <div class="table-wrapper">
+    <table class="table" role="table">
       <thead>
         <tr>
                   <th class="qr-thumb">QR</th>
@@ -395,6 +395,17 @@ include __DIR__ . '/../partials/app_header.php';
                     $type = $r['type'];
                     $scans = (int)($r['scans'] ?? 0);
                     $created = date('M d, Y', strtotime((string)$r['created_at']));
+                    $typeLabel = match ($type) {
+                      'url'   => 'Website',
+                      'vcard' => 'vCard',
+                      'text'  => 'Text',
+                      'email' => 'E‑mail',
+                      'wifi'  => 'Wi‑Fi',
+                      'pdf'   => 'PDF',
+                      'app'   => 'App Stores',
+                      'image' => 'Images',
+                      default => strtoupper((string)$type),
+                    };
                     $shortCode = $r['code'] ?? null;
                     $styleJson = $r['style_json'] ?? '{}';
                     
@@ -462,18 +473,31 @@ include __DIR__ . '/../partials/app_header.php';
                     <td class="qr-cell qr-cell--details">
                       <a href="/qr/view.php?id=<?= $qrId ?>" class="qr-title__link"><h3 class="qr-title__text"><?= $title ?></h3></a>
                       <div class="qr-title__meta">
-                        <span class="badge badge--sm badge--primary"><?= strtoupper($type) ?></span>
+                        <span class="badge badge--sm badge--muted"><?= htmlspecialchars($typeLabel) ?></span>
                         <?php if (isset($r['is_active']) && $r['is_active'] == 0): ?><span class="badge badge--sm badge--muted">Hidden</span><?php endif; ?>
                       </div>
-                      <div class="qr-destination__text" title="<?= htmlspecialchars($payload) ?>"><?= htmlspecialchars($destinationText) ?></div>
-                      <div class="qr-meta__row"><span class="qr-meta__item"><?= $created ?></span> · <span class="qr-meta__item"><?= number_format($scans) ?> scans</span></div>
-          </td>
+                      <div class="qr-destination__text" title="<?= htmlspecialchars($payload) ?>">
+                        <i class="fi fi-rr-corner-down-right" aria-hidden="true"></i>
+                        <?php if ($type==='url'): ?>
+                          <a class="qr-link" href="<?= htmlspecialchars($payload) ?>" target="_blank" rel="noopener"><?= htmlspecialchars($destinationText) ?></a>
+                        <?php else: ?>
+                          <?= htmlspecialchars($destinationText) ?>
+                        <?php endif; ?>
+                      </div>
+                      <div class="qr-meta__row">
+                        <span class="qr-meta__item"><i class="fi fi-rr-activity" aria-hidden="true"></i> <?= $scans===1 ? '1 scan' : (number_format($scans).' scans') ?></span>
+                        <span class="qr-meta__item"><i class="fi fi-rr-calendar" aria-hidden="true"></i> <?= $created ?></span>
+                      </div>
+                    </td>
                     <td class="qr-cell qr-cell--actions">
                       <div class="qr-actions">
-                        <a href="/qr/view.php?id=<?= $qrId ?>" class="qr-actions__link" data-role="view">View details</a>
-                        <button class="btn btn--action" data-action="download-svg" data-id="<?= $qrId ?>" aria-label="Download SVG"><i class="fi fi-rr-download"></i></button>
-                        <div class="qr-actions__kebab">
+                        <div class="actions-group">
                           <button class="btn btn--action" data-action="menu-toggle" aria-label="More actions" aria-expanded="false" aria-controls="menu-<?= $qrId ?>"><i class="fi fi-rr-menu-dots"></i></button>
+                          <a class="btn btn--action" href="/qr/new?id=<?= $qrId ?>" aria-label="Edit"><i class="fi fi-rr-edit"></i></a>
+                          <button class="btn btn--action" data-action="download-svg" data-id="<?= $qrId ?>" aria-label="Download"><i class="fi fi-rr-download"></i></button>
+                        </div>
+                        <a href="/qr/view.php?id=<?= $qrId ?>" class="btn btn--primary" data-role="view"><i class="fi fi-rr-chart-line-up" aria-hidden="true"></i> <span>View details</span></a>
+                        <div class="qr-actions__kebab" hidden>
                           <div class="kebab-menu" role="menu" id="menu-<?= $qrId ?>">
                             <a class="kebab-menu__item" href="/qr/new?id=<?= $qrId ?>" data-action="edit"><i class="fi fi-rr-edit"></i><span>Edit</span></a>
                             <form method="post" action="/qr/delete.php" onsubmit="return confirm('Are you sure?')">
@@ -483,46 +507,39 @@ include __DIR__ . '/../partials/app_header.php';
                           </div>
                         </div>
                       </div>
-          </td>
+                    </td>
         </tr>
         <?php endforeach; ?>
       </tbody>
     </table>
-  </div>
+    </div>
   <?php endif; ?>
           </div>
+          <?php if ($totalRows > $per): ?>
+            <div class="pagination-wrapper u-mt-16">
+              <div class="pagination">
+                <?php
+                  $totalPages = ceil($totalRows / $per);
+                  $startPage = max(1, $page - 2);
+                  $endPage = min($totalPages, $page + 2);
+                ?>
+                <?php if ($page > 1): ?>
+                  <a href="?<?= http_build_query(array_merge($_GET, ['page' => $page - 1])) ?>" class="pagination__link">&laquo; Previous</a>
+                <?php endif; ?>
+                <?php for ($i = $startPage; $i <= $endPage; $i++): ?>
+                  <a href="?<?= http_build_query(array_merge($_GET, ['page' => $i])) ?>" class="pagination__link <?= $i === $page ? 'is-active' : '' ?>"><?= $i ?></a>
+                <?php endfor; ?>
+                <?php if ($page < $totalPages): ?>
+                  <a href="?<?= http_build_query(array_merge($_GET, ['page' => $page + 1])) ?>" class="pagination__link">Next &raquo;</a>
+                <?php endif; ?>
+              </div>
+              <div class="pagination-info">
+                Showing <?= number_format($off + 1) ?>-<?= number_format(min($off + $per, $totalRows)) ?> of <?= number_format($totalRows) ?> QR codes
+              </div>
+            </div>
+          <?php endif; ?>
         </div>
       </div>
-
-      <!-- Pagination -->
-      <?php if ($totalRows > $per): ?>
-        <div class="pagination-wrapper u-mt-16">
-          <div class="pagination">
-            <?php
-              $totalPages = ceil($totalRows / $per);
-              $startPage = max(1, $page - 2);
-              $endPage = min($totalPages, $page + 2);
-            ?>
-            
-            <?php if ($page > 1): ?>
-              <a href="?<?= http_build_query(array_merge($_GET, ['page' => $page - 1])) ?>" class="pagination__link">&laquo; Previous</a>
-            <?php endif; ?>
-            
-            <?php for ($i = $startPage; $i <= $endPage; $i++): ?>
-              <a href="?<?= http_build_query(array_merge($_GET, ['page' => $i])) ?>" 
-                 class="pagination__link <?= $i === $page ? 'is-active' : '' ?>"><?= $i ?></a>
-            <?php endfor; ?>
-            
-            <?php if ($page < $totalPages): ?>
-              <a href="?<?= http_build_query(array_merge($_GET, ['page' => $page + 1])) ?>" class="pagination__link">Next &raquo;</a>
-            <?php endif; ?>
-          </div>
-          
-          <div class="pagination-info">
-            Showing <?= number_format($off + 1) ?>-<?= number_format(min($off + $per, $totalRows)) ?> of <?= number_format($totalRows) ?> QR codes
-          </div>
-        </div>
-      <?php endif; ?>
 
     </section>
   </div>

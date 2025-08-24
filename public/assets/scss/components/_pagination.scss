@@ -1,29 +1,50 @@
 /* components/_pagination.scss */
+
 @mixin apply() {
-  .pagination {
-    display: inline-flex; gap: .35rem; align-items: center; flex-wrap: wrap;
-  }
-  .pagination .page,
-  .pagination .prev,
-  .pagination .next {
-    display:inline-flex; align-items:center; justify-content:center;
-    min-inline-size: 2rem; block-size: 2rem; padding-inline: .5rem;
-    border-radius: var(--radius-sm, .5rem);
-    border: 1px solid color-mix(in oklab, var(--surface, #0f172a), #fff 14%);
-    background: color-mix(in oklab, var(--surface, #0f172a), #fff 4%);
-    color: var(--text, #e5e7eb);
-    text-decoration: none; font-size: .9rem; transition: background .15s, border-color .15s;
-  }
-  .pagination .page:hover,
-  .pagination .prev:hover,
-  .pagination .next:hover {
-    background: color-mix(in oklab, var(--surface), #fff 8%);
-    border-color: color-mix(in oklab, var(--surface), #fff 18%);
-  }
-  .pagination .is-active {
-    background: var(--brand, #7c3aed);
-    border-color: color-mix(in oklab, var(--brand), #000 10%);
-    color: #fff;
-  }
-  .pagination .is-disabled { opacity: .5; pointer-events: none; }
+    .pagination {
+        display: inline-flex;
+        gap: .35rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    .pagination .page,
+    .pagination .prev,
+    .pagination .next,
+    /* unify with list pages that use pagination__link */
+    .pagination .pagination__link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-inline-size: 2rem;
+        block-size: 2rem;
+        padding-inline: .5rem;
+        border-radius: var(--radius-sm, .5rem);
+        border: 1px solid color-mix(in oklab, var(--surface, #0f172a), #fff 14%);
+        background: color-mix(in oklab, var(--surface, #0f172a), #fff 4%);
+        color: var(--text, #e5e7eb);
+        text-decoration: none;
+        font-size: .9rem;
+        transition: background .15s, border-color .15s;
+    }
+    .pagination .page:hover,
+    .pagination .prev:hover,
+    .pagination .next:hover,
+    .pagination .pagination__link:hover {
+        background: color-mix(in oklab, var(--surface), #fff 8%);
+        border-color: color-mix(in oklab, var(--surface), #fff 18%);
+    }
+    .pagination .is-active {
+        background: var(--brand, #7c3aed);
+        border-color: color-mix(in oklab, var(--brand), #000 10%);
+        color: #fff;
+    }
+    .pagination .pagination__link.is-active {
+        background: var(--brand, #7c3aed);
+        border-color: color-mix(in oklab, var(--brand), #000 10%);
+        color: #fff;
+    }
+    .pagination .is-disabled {
+        opacity: .5;
+        pointer-events: none;
+    }
 }

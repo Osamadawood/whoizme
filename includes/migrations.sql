@@ -85,3 +85,33 @@ SET @idx_exists := (
 );
 SET @sql := IF(@idx_exists=0, 'ALTER TABLE events ADD INDEX idx_events_user_created (user_id, created_at)', 'SELECT 1');
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+-- =====================
+-- Links module (core)
+-- =====================
+CREATE TABLE IF NOT EXISTS links (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  user_id BIGINT NOT NULL,
+  title VARCHAR(190) NOT NULL,
+  destination_url TEXT NOT NULL,
+  slug VARCHAR(48) UNIQUE NULL,
+  is_active TINYINT(1) DEFAULT 1,
+  utm_json JSON NULL,
+  clicks INT DEFAULT 0,
+  last_click_at DATETIME NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  KEY (user_id),
+  KEY (is_active),
+  KEY (created_at)
+);
+
+CREATE TABLE IF NOT EXISTS link_clicks (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  link_id BIGINT NOT NULL,
+  clicked_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  ip VARBINARY(16) NULL,
+  ua TEXT NULL,
+  ref TEXT NULL,
+  INDEX idx_link_clicked (link_id, clicked_at)
+);

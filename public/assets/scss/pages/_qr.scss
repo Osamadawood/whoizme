@@ -135,7 +135,7 @@
         gap: 8px;
         margin-top: .9rem;
     }
-    /* Table View - Match dashboard table exactly */
+    /* Table View - unify with dashboard */
     .qr-table .table-wrapper {
         border: 1px solid var(--border);
         border-radius: var(--radius-default);
@@ -144,27 +144,23 @@
     }
     .qr-table .table {
         width: 100%;
-        border-collapse: separate;
-        border-spacing: 0 8px;
+        border-collapse: collapse;
     }
     .qr-table .table th {
-        font-size: .8rem;
-        color: var(--muted);
+        padding: 12px;
         text-align: left;
-        padding: 10px 12px;
+        font-size: .9rem;
+        color: var(--text-muted);
+        border-bottom: 1px solid var(--border);
     }
     .qr-table .table td {
         padding: 12px;
-        border-top: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
-        border-bottom: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
-        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        background: transparent;
         color: var(--text);
-        &:first-child {
-            border-radius: var(--radius-default) 0 0 var(--radius-default);
-        }
-        &:last-child {
-            border-radius: 0 var(--radius-default) var(--radius-default) 0;
-        }
+    }
+    .qr-table .table .qr-cell--details {
+        background-color: red;
     }
     .qr-preview {
         display: flex;
@@ -528,9 +524,21 @@
         gap: 8px;
         margin-bottom: 6px;
     }
+    .chip,
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+        padding: .2rem .6rem;
+        border-radius: var(--radius-default);
+        background: color-mix(in oklab, var(--text) 8%, transparent);
+        color: var(--text-muted);
+        font-size: .8rem;
+        font-weight: 600;
+    }
     .qr-destination__text {
         color: var(--text-muted);
-        font-size: 1.4rem;
+        // font-size: 1.4rem;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -543,6 +551,18 @@
         display: flex;
         gap: 8px;
         align-items: center;
+    }
+    .qr-link {
+        color: var(--brand);
+        text-decoration: none;
+    }
+    .qr-link:hover {
+        text-decoration: underline;
+    }
+    .actions-group {
+        display: inline-flex;
+        gap: 8px;
+        margin-right: 8px;
     }
     .qr-actions {
         display: inline-flex;
@@ -614,13 +634,6 @@ html[dir="rtl"] .qr-header__top {
     letter-spacing: -.02em;
 }
 
-.qr-list__tabs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.2rem;
-    margin: .8rem 0 1.6rem;
-}
-
 .tabs__item {
     height: 3.2rem;
     padding: 0 1.2rem;
@@ -663,13 +676,12 @@ html[dir="rtl"] .qr-header__top {
         letter-spacing: -.02em;
         font-size: clamp(1.6rem, 2.2vw, 2.2rem);
     }
-    &__tabs {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1.2rem;
-    }
-    &__tabs .tabs__item,
-    &__tabs a[role="tab"],
+    // &__tabs {
+    //     display: flex;
+    //     flex-wrap: wrap;
+    //     gap: 1.2rem;
+    // }
+    &__tabs .tabs__item, // &__tabs a[role="tab"],
     &__tabs button[role="tab"] {
         padding: .6rem 1.0rem;
         border-radius: var(--radius-lg);
@@ -679,13 +691,13 @@ html[dir="rtl"] .qr-header__top {
         border: 1px solid transparent;
         cursor: pointer;
     }
-    &__tabs .is-active,
-    &__tabs [aria-selected="true"] {
-        color: var(--primary);
-        border-color: color-mix(in oklab, var(--primary) 25%, transparent);
-        background: color-mix(in oklab, var(--primary) 6%, transparent);
-        font-weight: 600;
-    }
+    // &__tabs .is-active,
+    // &__tabs [aria-selected="true"] {
+    //     color: var(--primary);
+    //     border-color: color-mix(in oklab, var(--primary) 25%, transparent);
+    //     background: color-mix(in oklab, var(--primary) 6%, transparent);
+    //     font-weight: 600;
+    // }
     /* Empty state inside list body */
     .qr-empty {
         border: 1px dashed var(--border);

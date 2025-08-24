@@ -1049,9 +1049,20 @@
   gap: 8px;
   margin-bottom: 6px;
 }
+.qr-list .chip,
+.qr-list .badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-default);
+  background: color-mix(in oklab, var(--text) 8%, transparent);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
 .qr-list .qr-destination__text {
   color: var(--text-muted);
-  font-size: 1.4rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1064,6 +1075,18 @@
   display: flex;
   gap: 8px;
   align-items: center;
+}
+.qr-list .qr-link {
+  color: var(--brand);
+  text-decoration: none;
+}
+.qr-list .qr-link:hover {
+  text-decoration: underline;
+}
+.qr-list .actions-group {
+  display: inline-flex;
+  gap: 8px;
+  margin-right: 8px;
 }
 .qr-list .qr-actions {
   display: inline-flex;
@@ -1134,13 +1157,6 @@ html[dir=rtl] .qr-header__top {
   letter-spacing: -0.02em;
 }
 
-.qr-list__tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.2rem;
-  margin: 0.8rem 0 1.6rem;
-}
-
 .tabs__item {
   height: 3.2rem;
   padding: 0 1.2rem;
@@ -1183,12 +1199,7 @@ html[dir=rtl] .qr-header__top {
   letter-spacing: -0.02em;
   font-size: clamp(1.6rem, 2.2vw, 2.2rem);
 }
-.qr-list__tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.2rem;
-}
-.qr-list__tabs .tabs__item, .qr-list__tabs a[role=tab], .qr-list__tabs button[role=tab] {
+.qr-list__tabs .tabs__item, .qr-list__tabs button[role=tab] {
   padding: 0.6rem 1rem;
   border-radius: var(--radius-lg);
   line-height: 1;
@@ -1196,12 +1207,6 @@ html[dir=rtl] .qr-header__top {
   background: transparent;
   border: 1px solid transparent;
   cursor: pointer;
-}
-.qr-list__tabs .is-active, .qr-list__tabs [aria-selected=true] {
-  color: var(--primary);
-  border-color: color-mix(in oklab, var(--primary) 25%, transparent);
-  background: color-mix(in oklab, var(--primary) 6%, transparent);
-  font-weight: 600;
 }
 .qr-list .qr-empty {
   border: 1px dashed var(--border);
@@ -2492,7 +2497,8 @@ a[aria-disabled=true] {
 
 .pagination .page,
 .pagination .prev,
-.pagination .next {
+.pagination .next,
+.pagination .pagination__link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2510,12 +2516,19 @@ a[aria-disabled=true] {
 
 .pagination .page:hover,
 .pagination .prev:hover,
-.pagination .next:hover {
+.pagination .next:hover,
+.pagination .pagination__link:hover {
   background: color-mix(in oklab, var(--surface), #fff 8%);
   border-color: color-mix(in oklab, var(--surface), #fff 18%);
 }
 
 .pagination .is-active {
+  background: var(--brand, #7c3aed);
+  border-color: color-mix(in oklab, var(--brand), #000 10%);
+  color: #fff;
+}
+
+.pagination .pagination__link.is-active {
   background: var(--brand, #7c3aed);
   border-color: color-mix(in oklab, var(--brand), #000 10%);
   color: #fff;
@@ -3666,7 +3679,7 @@ html[data-theme=dark] .theme-toggle .moon {
   margin-top: 0.9rem;
 }
 
-/* Table View - Match dashboard table exactly */
+/* Table View - unify with dashboard */
 .qr-table .table-wrapper {
   border: 1px solid var(--border);
   border-radius: var(--radius-default);
@@ -3676,29 +3689,26 @@ html[data-theme=dark] .theme-toggle .moon {
 
 .qr-table .table {
   width: 100%;
-  border-collapse: separate;
-  border-spacing: 0 8px;
+  border-collapse: collapse;
 }
 
 .qr-table .table th {
-  font-size: 0.8rem;
-  color: var(--muted);
+  padding: 12px;
   text-align: left;
-  padding: 10px 12px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
 }
 
 .qr-table .table td {
   padding: 12px;
-  border-top: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
-  border-bottom: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
-  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  background: transparent;
   color: var(--text);
 }
-.qr-table .table td:first-child {
-  border-radius: var(--radius-default) 0 0 var(--radius-default);
-}
-.qr-table .table td:last-child {
-  border-radius: 0 var(--radius-default) var(--radius-default) 0;
+
+.qr-table .table .qr-cell--details {
+  background-color: red;
 }
 
 .qr-preview {

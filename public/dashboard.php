@@ -217,10 +217,6 @@ include __DIR__ . '/partials/app_header.php';
           <style>
             .type-chip{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;border:1px solid var(--border);background:rgba(75,107,251,.08);color:var(--primary);margin-right:8px}
             .type-chip i{font-size:14px;line-height:1}
-            .pager{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-            .pager__link{min-width:36px;height:36px;padding:0 12px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:10px;background:transparent;color:var(--text);text-decoration:none}
-            .pager__link:hover{background:color-mix(in srgb, var(--primary) 8%, transparent)}
-            .pager__link.is-active{background:var(--primary);color:var(--surface);border-color:transparent}
           </style>
           <div class="u-flex u-ai-center u-jc-between u-mb-4">
             <div class="filters segmented" role="tablist" aria-label="Filter type">
@@ -231,8 +227,10 @@ include __DIR__ . '/partials/app_header.php';
             </div>
             <a class="btn btn--ghost btn--sm" href="#" data-export>Export CSV</a>
           </div>
-          <table class="table" role="table">
-            <thead>
+          <div class="qr-table">
+            <div class="table-wrapper">
+              <table class="table" role="table">
+                <thead>
               <tr>
                 <th>Title</th>
                 <th>Type</th>
@@ -240,8 +238,8 @@ include __DIR__ . '/partials/app_header.php';
                 <th>Today</th>
                 <th>Created</th>
               </tr>
-            </thead>
-            <tbody data-top-table-body>
+                </thead>
+                <tbody data-top-table-body>
               <?php $top = ($uid && isset($pdo)) ? wz_top_items($pdo, $uid, $t_param, $p, 10, $sort, $dir, $page, $per) : []; ?>
               <?php if (!$top): ?>
                 <tr><td colspan="5" class="muted">No items yet.</td></tr>
@@ -268,9 +266,13 @@ include __DIR__ . '/partials/app_header.php';
                   <td><?php echo !empty($r['first_seen']) ? date('M d', strtotime($r['first_seen'])) : '-'; ?></td>
                 </tr>
               <?php endforeach; endif; ?>
-            </tbody>
-          </table>
-          <div data-top-paging class="pager u-mt-16" role="navigation" aria-label="Top items pagination"></div>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="pagination-wrapper u-mt-16">
+            <div data-top-paging class="pagination" role="navigation" aria-label="Top items pagination"></div>
+          </div>
         </div>
       </div>
 
@@ -337,7 +339,7 @@ document.addEventListener('click', (e)=>{
     }
     const { total_pages } = j.paging||{ total_pages:1};
     const max = Math.max(1,total_pages); const curr = Math.min(page,max);
-    let html=''; const make=(n,l=n,active=false)=>`<a href="#" class="pager__link${active?' is-active':''}" data-page="${n}">${l}</a>`;
+    let html=''; const make=(n,l=n,active=false)=>`<a href="#" class="pagination__link${active?' is-active':''}" data-page="${n}">${l}</a>`;
     if (curr>1) html+=make(curr-1,'‹');
     const start=Math.max(1,curr-2), end=Math.min(max,curr+2);
     for (let i=start;i<=end;i++) html+=make(i,String(i), i===curr);
@@ -350,7 +352,7 @@ document.addEventListener('click', (e)=>{
 
   $tabs.forEach(el=>el.addEventListener('click',e=>{ e.preventDefault(); tab=el.dataset.tab; page=1; refreshAll(); }));
   $periods.forEach(el=>el.addEventListener('click',e=>{ e.preventDefault(); period=el.dataset.period; page=1; refreshAll(); }));
-  $paging?.addEventListener('click',e=>{ const b=e.target.closest('[data-page]'); if(!b) return; page=parseInt(b.dataset.page,10); refreshAll(); });
+  $paging?.addEventListener('click',e=>{ const b=e.target.closest('[data-page]'); if(!b) return; e.preventDefault(); page=parseInt(b.dataset.page,10); refreshAll(); });
   $exportBtn?.addEventListener('click',()=>{ const q=new URLSearchParams({p:period, tab, sort, dir, per:String(per), page:String(page)}); window.location.href=`/exports/top-items.php?${q.toString()}`; });
 
   window.addEventListener('DOMContentLoaded', refreshAll);
