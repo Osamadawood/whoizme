@@ -57,7 +57,7 @@ function render_icon(string $name): void {
       <!-- Brand / logo -->
       <header class="side-nav__brand">
         <a class="brand" href="/dashboard" aria-label="Whoizme Home">
-          <span class="brand__logo" aria-hidden="true"><img src="assets/img/logo.png" alt="<?= htmlspecialchars($page_title) ?>"></span>
+          <span class="brand__logo" aria-hidden="true"><img src="/assets/img/logo.png" alt="<?= htmlspecialchars($page_title) ?>"></span>
           <span class="brand__name">Whoiz.me</span>
         </a>
       </header>

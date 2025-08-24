@@ -90,7 +90,8 @@ document.getElementById('dlSvgBtn').addEventListener('click', () => {
         if (model.isDark(r,c)) d += `M${c} ${r}h1v1h-1z`;
       }
     }
-    const svg = `<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${n} ${n}" width="2048" height="2048" shape-rendering="crispEdges"><path fill="#000" d="${d}"/></svg>`;
+    // Note: omit XML declaration to avoid PHP short_open_tag conflict
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${n} ${n}" width="2048" height="2048" shape-rendering="crispEdges"><path fill="#000" d="${d}"/></svg>`;
     const blob = new Blob([svg], {type:'image/svg+xml'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a'); a.href=url; a.download=(fname||'qr')+'.svg'; a.click();

@@ -180,14 +180,6 @@ include __DIR__ . '/../partials/app_header.php';
         }
       ?>
       <?php if ($viewMode !== 'cards'): ?>
-      <header class="qr-list__header">
-        <h2 class="qr-list__title">QR Codes</h2>
-        <nav class="tabs qr-list__tabs" aria-label="Filter by type">
-          <?php foreach ($labels as $slug=>$L): $isActive = ($slug===$type); $href = ($slug==='all' ? build_qr_url(['type'=>null,'view'=>null]) : build_qr_url(['type'=>$slug,'view'=>null])); ?>
-            <a class="tabs__item <?= $isActive?'is-active':'' ?>" href="<?= htmlspecialchars($href) ?>" aria-current="<?= $isActive?'page':'false' ?>"><?= htmlspecialchars($L[$lang] ?? $L['en']) ?></a>
-          <?php endforeach; ?>
-        </nav>
-      </header>
       <?php endif; ?>
 
       <!-- KPI cards (analytics style) -->
@@ -260,23 +252,43 @@ include __DIR__ . '/../partials/app_header.php';
         </div>
       <?php endif; ?>
 
-      <!-- Header (search + view switch) -->
-      <div class="u-mb-12 qr-header">
-        <div class="header-bar">
-          <h3 class="h3 u-m-0">QR Codes</h3>
-          <div class="u-flex u-gap-12 u-ai-center">
-            <form class="search-pill" method="get" action="/qr-codes">
-              <i class="fi fi-rr-search" aria-hidden="true"></i>
-              <input type="text" name="q" value="<?= htmlspecialchars($q) ?>" placeholder="Search QR…" />
-      </form>
-            <div class="seg-switch" role="tablist" aria-label="View">
-              <a href="#" class="seg-btn is-active" data-view="table" role="tab" aria-selected="true"><i class="fi fi-rr-table"></i> <span>Table view</span> <span class="seg-count">· <?= number_format($totalRows) ?></span></a>
-              <a href="#" class="seg-btn" data-view="cards" role="tab" aria-selected="false"><i class="fi fi-rr-apps"></i> <span>Cards view</span> <span class="seg-count">· <?= number_format($totalRows) ?></span></a>
+      <!-- Header (title + controls + tabs) -->
+      <div class="qr-header u-mb-12">
+        <div class="qr-header__top">
+          <div class="qr-header__lead">
+            <h1 class="qr-header__title">QR Codes</h1>
+            <?php
+              $qsType = strtolower(trim($_GET['type'] ?? 'all'));
+              $clientActive = $qsType;
+              if ($clientActive === 'stores') $clientActive = 'app';
+              if ($clientActive === 'images') $clientActive = 'image';
+              $clientAllowed = ['all','url','vcard','text','email','wifi','pdf','app','image'];
+              if (!in_array($clientActive, $clientAllowed, true)) $clientActive = 'all';
+            ?>
+            <div class="qr-tabs" role="tablist" aria-label="Filter QR types" data-current-type="<?= htmlspecialchars($clientActive) ?>">
+              <button type="button" class="qr-tab" role="tab" data-type="all">All</button>
+              <button type="button" class="qr-tab" role="tab" data-type="url">URL</button>
+              <button type="button" class="qr-tab" role="tab" data-type="vcard">vCard</button>
+              <button type="button" class="qr-tab" role="tab" data-type="text">Text</button>
+              <button type="button" class="qr-tab" role="tab" data-type="email">E‑mail</button>
+              <button type="button" class="qr-tab" role="tab" data-type="wifi">Wi‑Fi</button>
+              <button type="button" class="qr-tab" role="tab" data-type="pdf">PDF</button>
+              <button type="button" class="qr-tab" role="tab" data-type="app">App Stores</button>
+              <button type="button" class="qr-tab" role="tab" data-type="image">Images</button>
             </div>
-            <a class="btn btn--primary" href="/qr/new">+ New</a>
           </div>
-    </div>
-  </div>
+          <form class="search-pill" method="get" action="/qr-codes">
+            <i class="fi fi-rr-search" aria-hidden="true"></i>
+            <input type="text" name="q" value="<?= htmlspecialchars($q) ?>" placeholder="Search QR…" data-qr-search />
+          </form>
+          <div class="seg-switch" role="tablist" aria-label="View">
+            <a href="#" class="seg-btn is-active" data-view="table" role="tab" aria-selected="true"><i class="fi fi-rr-table"></i> <span>Table view</span> <span class="seg-count">· <?= number_format($totalRows) ?></span></a>
+            <a href="#" class="seg-btn" data-view="cards" role="tab" aria-selected="false"><i class="fi fi-rr-apps"></i> <span>Cards view</span> <span class="seg-count">· <?= number_format($totalRows) ?></span></a>
+          </div>
+          <a class="btn btn--primary" href="/qr/new">+ New</a>
+        </div>
+        
+      </div>
 
       <!-- Grid View -->
       <div class="qr-grid" id="qrGrid" data-view="cards" style="display: none;">
@@ -428,7 +440,8 @@ include __DIR__ . '/../partials/app_header.php';
                             $destinationText = $payload;
                     }
                   ?>
-                  <tr class="qr-row" data-qr-id="<?= $qrId ?>" data-qr-payload="<?= htmlspecialchars($payload, ENT_QUOTES) ?>">
+                  <?php $clientType = ($type==='stores'?'app':($type==='images'?'image':$type)); ?>
+                  <tr class="qr-row" data-type="<?= htmlspecialchars($clientType) ?>" data-qr-id="<?= $qrId ?>" data-qr-payload="<?= htmlspecialchars($payload, ENT_QUOTES) ?>">
                     <td class="qr-cell qr-cell--thumb">
                       <div class="qr-thumb-container">
                         <div class="qr-thumb" data-payload="<?= htmlspecialchars($payload) ?>" aria-label="QR preview: <?= $title ?>"></div>
@@ -506,6 +519,7 @@ include __DIR__ . '/../partials/app_header.php';
 <script src="/assets/js/qrcode.min.js"></script>
 <!-- Include QR list enhancement module (list view only) -->
 <script src="/assets/js/qr.js" defer></script>
+<script src="/assets/js/qr-list.js" defer></script>
 
 <script>
 // View switching with localStorage persistence

@@ -590,6 +590,59 @@
     }
 }
 
+.qr-header {
+    display: grid;
+    grid-template-rows: auto auto;
+    row-gap: 1.6rem;
+}
+
+.qr-header__top {
+    display: grid;
+    grid-template-columns: 1fr auto auto auto;
+    column-gap: 1.2rem;
+    align-items: center;
+}
+
+html[dir="rtl"] .qr-header__top {
+    grid-template-columns: auto auto auto 1fr;
+}
+
+.qr-header__title {
+    font-size: 2.4rem;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -.02em;
+}
+
+.qr-header__tabs {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    padding: .8rem;
+    border-radius: 12px;
+    display: inline-flex;
+    gap: .4rem;
+}
+
+.qr-tab {
+    appearance: none;
+    border: 0;
+    padding: .8rem 1.6rem;
+    border-radius: 10px;
+    font-weight: 600;
+    color: var(--text);
+    background: transparent;
+    cursor: pointer;
+}
+
+.qr-tab:is(:hover, :focus-visible) {
+    background: color-mix(in oklab, var(--brand) 12%, transparent);
+}
+
+.qr-tab.is-active {
+    background: var(--primary);
+    color: var(--surface);
+}
+
 
 /* QR details view */
 
