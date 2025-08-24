@@ -590,6 +590,37 @@
     }
 }
 
+
+/* QR details view */
+
+.qr-view {
+    .qr-view__grid {
+        display: grid;
+        grid-template-columns: 1fr 520px;
+        gap: 16px;
+        align-items: start;
+    }
+    .qr-view__payload {
+        max-width: 680px;
+        word-break: break-word;
+        color: var(--text-muted);
+    }
+    .qr-view__qr {
+        background: var(--surface);
+        padding: 8px;
+        border-radius: 12px;
+        width: 512px;
+        height: 512px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .qr-view__actions {
+        margin-top: 8px;
+        text-align: right;
+    }
+}
+
 .new__qr {
     align-items: baseline !important;
 }
