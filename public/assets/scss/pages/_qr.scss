@@ -614,6 +614,35 @@ html[dir="rtl"] .qr-header__top {
     letter-spacing: -.02em;
 }
 
+.qr-list__tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.2rem;
+    margin: .8rem 0 1.6rem;
+}
+
+.tabs__item {
+    height: 3.2rem;
+    padding: 0 1.2rem;
+    border-radius: 12px;
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: background-color .15s ease, color .15s ease, border-color .15s ease;
+}
+
+.tabs__item[aria-selected="true"] {
+    background: var(--primary);
+    color: var(--surface);
+    border-color: var(--primary);
+}
+
+.tabs__item:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
 .qr-header__tabs {
     border: 1px solid var(--border);
     background: var(--surface);

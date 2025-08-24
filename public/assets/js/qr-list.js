@@ -1,3 +1,4 @@
+// Scoped controller for QR list tabs + search (no full reloads)
 (function() {
     function ready(fn) {
         if (document.readyState !== 'loading') fn();
@@ -13,56 +14,84 @@
     }
 
     ready(function() {
-        const tabs = document.querySelectorAll('.qr-tabs .qr-tab');
-        const rows = document.querySelectorAll('.qr-list .qr-row');
+        // Only run on the list/table view container
+        const root = document.querySelector('#qrTable') || document.querySelector('.qr-list.qr-table');
+        const tabsWrap = document.querySelector('.qr-list__tabs');
+        if (!root || !tabsWrap) return;
+
+        const tabs = Array.from(tabsWrap.querySelectorAll('.tabs__item'));
+        const rows = Array.from(root.querySelectorAll('.qr-row'));
         const search = document.querySelector('[data-qr-search]');
-        if (!rows.length || !tabs.length) return; // nothing to do
 
-        const url = new URL(window.location.href);
-        let type = (document.querySelector('.qr-tabs') ? .getAttribute('data-current-type') || url.searchParams.get('type') || 'all').toLowerCase();
-        const state = { type, q: (search ? .value || '').trim().toLowerCase() };
+        const url = new URL(location.href);
+        const urlType = (url.searchParams.get('type') || 'all').toLowerCase();
+        const initialType = urlType === 'stores' ? 'appstores' : urlType;
+        const initialQ = (url.searchParams.get('q') || '').toLowerCase();
 
-        function setActiveTab(slug) {
-            tabs.forEach(t => {
-                const on = t.dataset.type === slug;
-                t.classList.toggle('is-active', on);
-                t.setAttribute('aria-selected', on ? 'true' : 'false');
-            });
+        const state = { type: initialType, q: initialQ };
+
+        function setTabSelection() {
+            tabs.forEach(btn => btn.setAttribute('aria-selected', String(btn.dataset.type === state.type)));
         }
 
-        function applyFilter() {
-            const q = state.q;
-            rows.forEach(r => {
-                const t = (r.dataset.type || '').toLowerCase();
-                const matchesType = (state.type === 'all' || t === state.type);
-                const matchesText = !q || r.textContent.toLowerCase().includes(q);
-                r.hidden = !(matchesType && matchesText);
+        function render() {
+            const q = state.q.trim();
+            let any = false;
+            rows.forEach(row => {
+                const t = (row.dataset.type || '').trim().toLowerCase();
+                const text = (row.dataset.q || row.textContent || '').toLowerCase();
+                const matchType = state.type === 'all' || t === state.type;
+                const matchQ = !q || text.includes(q);
+                const vis = matchType && matchQ;
+                row.hidden = !vis;
+                row.style.display = vis ? '' : 'none';
+                if (vis) any = true;
             });
+            const empty = root.querySelector('.qr-empty');
+            if (empty) empty.hidden = any;
+        }
+
+        function syncUrl() {
+            const u = new URL(location.href);
+            const serverType = state.type === 'appstores' ? 'stores' : state.type;
+            if (serverType === 'all') u.searchParams.delete('type');
+            else u.searchParams.set('type', serverType);
+            if (state.q) u.searchParams.set('q', state.q);
+            else u.searchParams.delete('q');
+            history.replaceState({}, '', u);
         }
 
         tabs.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                state.type = btn.dataset.type;
-                setActiveTab(state.type);
-                applyFilter();
-                // update URL without reload
-                const u = new URL(window.location.href);
-                if (state.type === 'all') u.searchParams.delete('type');
-                else u.searchParams.set('type', state.type);
-                window.history.replaceState({}, '', u);
-            });
+            btn.addEventListener('click', () => {
+                state.type = btn.dataset.type || 'all';
+                setTabSelection();
+                syncUrl();
+                render();
+            }, { passive: true });
         });
 
         if (search) {
-            search.addEventListener('input', debounce(() => {
-                state.q = (search.value || '').trim().toLowerCase();
-                applyFilter();
-            }, 200));
+            const onInput = debounce(() => {
+                state.q = (search.value || '').toLowerCase();
+                syncUrl();
+                render();
+            }, 200);
+            search.addEventListener('input', onInput);
+            if (state.q && !search.value) search.value = state.q;
         }
 
-        // Initial
-        setActiveTab(state.type);
-        applyFilter();
+        window.addEventListener('popstate', () => {
+            const u = new URL(location.href);
+            const t = (u.searchParams.get('type') || 'all').toLowerCase();
+            state.type = t === 'stores' ? 'appstores' : t;
+            state.q = (u.searchParams.get('q') || '').toLowerCase();
+            setTabSelection();
+            if (search) search.value = state.q;
+            render();
+        });
+
+        // initial
+        setTabSelection();
+        render();
     });
 })();

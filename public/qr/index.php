@@ -259,22 +259,27 @@ include __DIR__ . '/../partials/app_header.php';
             <h1 class="qr-header__title">QR Codes</h1>
             <?php
               $qsType = strtolower(trim($_GET['type'] ?? 'all'));
-              $clientActive = $qsType;
-              if ($clientActive === 'stores') $clientActive = 'app';
-              if ($clientActive === 'images') $clientActive = 'image';
-              $clientAllowed = ['all','url','vcard','text','email','wifi','pdf','app','image'];
+              // map server param to client slug
+              if ($qsType === 'stores' || $qsType === 'app') {
+                $clientActive = 'appstores';
+              } elseif ($qsType === 'image') {
+                $clientActive = 'images';
+              } else {
+                $clientActive = $qsType;
+              }
+              $clientAllowed = ['all','url','vcard','text','email','wifi','pdf','appstores','images'];
               if (!in_array($clientActive, $clientAllowed, true)) $clientActive = 'all';
             ?>
-            <div class="qr-tabs" role="tablist" aria-label="Filter QR types" data-current-type="<?= htmlspecialchars($clientActive) ?>">
-              <button type="button" class="qr-tab" role="tab" data-type="all">All</button>
-              <button type="button" class="qr-tab" role="tab" data-type="url">URL</button>
-              <button type="button" class="qr-tab" role="tab" data-type="vcard">vCard</button>
-              <button type="button" class="qr-tab" role="tab" data-type="text">Text</button>
-              <button type="button" class="qr-tab" role="tab" data-type="email">E‑mail</button>
-              <button type="button" class="qr-tab" role="tab" data-type="wifi">Wi‑Fi</button>
-              <button type="button" class="qr-tab" role="tab" data-type="pdf">PDF</button>
-              <button type="button" class="qr-tab" role="tab" data-type="app">App Stores</button>
-              <button type="button" class="qr-tab" role="tab" data-type="image">Images</button>
+            <div class="qr-list__tabs" role="tablist" aria-label="Filter by type" data-current-type="<?= htmlspecialchars($clientActive) ?>">
+              <button class="tabs__item" role="tab" data-type="all" aria-selected="<?= $clientActive==='all'?'true':'false' ?>">All</button>
+              <button class="tabs__item" role="tab" data-type="url" aria-selected="<?= $clientActive==='url'?'true':'false' ?>">URL</button>
+              <button class="tabs__item" role="tab" data-type="vcard" aria-selected="<?= $clientActive==='vcard'?'true':'false' ?>">vCard</button>
+              <button class="tabs__item" role="tab" data-type="text" aria-selected="<?= $clientActive==='text'?'true':'false' ?>">Text</button>
+              <button class="tabs__item" role="tab" data-type="email" aria-selected="<?= $clientActive==='email'?'true':'false' ?>">E‑mail</button>
+              <button class="tabs__item" role="tab" data-type="wifi" aria-selected="<?= $clientActive==='wifi'?'true':'false' ?>">Wi‑Fi</button>
+              <button class="tabs__item" role="tab" data-type="pdf" aria-selected="<?= $clientActive==='pdf'?'true':'false' ?>">PDF</button>
+              <button class="tabs__item" role="tab" data-type="appstores" aria-selected="<?= $clientActive==='appstores'?'true':'false' ?>">App Stores</button>
+              <button class="tabs__item" role="tab" data-type="images" aria-selected="<?= $clientActive==='images'?'true':'false' ?>">Images</button>
             </div>
           </div>
           <form class="search-pill" method="get" action="/qr-codes">
@@ -286,8 +291,8 @@ include __DIR__ . '/../partials/app_header.php';
             <a href="#" class="seg-btn" data-view="cards" role="tab" aria-selected="false"><i class="fi fi-rr-apps"></i> <span>Cards view</span> <span class="seg-count">· <?= number_format($totalRows) ?></span></a>
           </div>
           <a class="btn btn--primary" href="/qr/new">+ New</a>
-        </div>
-        
+  </div>
+
       </div>
 
       <!-- Grid View -->
@@ -440,8 +445,11 @@ include __DIR__ . '/../partials/app_header.php';
                             $destinationText = $payload;
                     }
                   ?>
-                  <?php $clientType = ($type==='stores'?'app':($type==='images'?'image':$type)); ?>
-                  <tr class="qr-row" data-type="<?= htmlspecialchars($clientType) ?>" data-qr-id="<?= $qrId ?>" data-qr-payload="<?= htmlspecialchars($payload, ENT_QUOTES) ?>">
+                  <?php 
+                    $clientType = ($type==='stores'?'appstores':($type==='images'?'images':$type));
+                    $normalized_q = strtolower(trim(($r['title'] ?? '').' '.($destinationText ?? '').' '.($payload ?? '')));
+                  ?>
+                  <tr class="qr-row" data-type="<?= htmlspecialchars($clientType) ?>" data-q="<?= htmlspecialchars($normalized_q, ENT_QUOTES) ?>" data-qr-id="<?= $qrId ?>" data-qr-payload="<?= htmlspecialchars($payload, ENT_QUOTES) ?>">
                     <td class="qr-cell qr-cell--thumb">
                       <div class="qr-thumb-container">
                         <div class="qr-thumb" data-payload="<?= htmlspecialchars($payload) ?>" aria-label="QR preview: <?= $title ?>"></div>
