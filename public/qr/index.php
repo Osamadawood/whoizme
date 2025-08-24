@@ -63,6 +63,11 @@ if ($q !== '') {
     $params[':kw'] = "%$q%"; 
 }
 
+$typeParam = strtolower(trim($_GET['type'] ?? 'all'));
+$allowedTypes = ['all','url','vcard','text','email','wifi','pdf','stores','images'];
+if (!in_array($typeParam, $allowedTypes, true)) { $typeParam = 'all'; }
+if ($typeParam !== 'all') { $where .= ' AND q.type = :type'; $params[':type'] = $typeParam; }
+
 $countSql = "SELECT COUNT(*) FROM qr_codes q WHERE $where";
 $countStmt = $pdo->prepare($countSql);
 foreach ($params as $k=>$v) { $countStmt->bindValue($k, $v); }
@@ -150,6 +155,40 @@ include __DIR__ . '/../partials/app_header.php';
     </div>
 
     <section class="maincol">
+      <?php
+        // List view header + type tabs
+        $labels = [
+          'all'=>['en'=>'All','ar'=>'الكل'],
+          'url'=>['en'=>'URL','ar'=>'رابط'],
+          'vcard'=>['en'=>'vCard','ar'=>'بطاقة'],
+          'text'=>['en'=>'Text','ar'=>'نص'],
+          'email'=>['en'=>'E‑mail','ar'=>'بريد'],
+          'wifi'=>['en'=>'Wi‑Fi','ar'=>'واي فاي'],
+          'pdf'=>['en'=>'PDF','ar'=>'PDF'],
+          'stores'=>['en'=>'App Stores','ar'=>'متاجر التطبيقات'],
+          'images'=>['en'=>'Images','ar'=>'صور'],
+        ];
+        $lang = ($GLOBALS['lang'] ?? 'en');
+        $type = strtolower(trim($_GET['type'] ?? 'all'));
+        $allowedTypes = array_keys($labels);
+        if (!in_array($type, $allowedTypes, true)) { $type = 'all'; }
+        $viewMode = $_GET['view'] ?? 'table'; // default list
+        function build_qr_url(array $overrides = []) {
+          $qs = $_GET;
+          foreach ($overrides as $k=>$v) { if ($v === null) unset($qs[$k]); else $qs[$k]=$v; }
+          return '/qr' . ($qs ? ('?' . http_build_query($qs)) : '');
+        }
+      ?>
+      <?php if ($viewMode !== 'cards'): ?>
+      <header class="qr-list__header">
+        <h2 class="qr-list__title">QR Codes</h2>
+        <nav class="tabs qr-list__tabs" aria-label="Filter by type">
+          <?php foreach ($labels as $slug=>$L): $isActive = ($slug===$type); $href = ($slug==='all' ? build_qr_url(['type'=>null,'view'=>null]) : build_qr_url(['type'=>$slug,'view'=>null])); ?>
+            <a class="tabs__item <?= $isActive?'is-active':'' ?>" href="<?= htmlspecialchars($href) ?>" aria-current="<?= $isActive?'page':'false' ?>"><?= htmlspecialchars($L[$lang] ?? $L['en']) ?></a>
+          <?php endforeach; ?>
+        </nav>
+      </header>
+      <?php endif; ?>
 
       <!-- KPI cards (analytics style) -->
       <div class="kpis u-mb-16">
