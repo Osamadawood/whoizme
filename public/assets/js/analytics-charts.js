@@ -33,8 +33,8 @@
     const root = document.getElementById('analytics-charts');
     if (!root) return;
 
-    const from = root.getAttribute('data-from') || new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10);
-    const to = root.getAttribute('data-to') || new Date().toISOString().slice(0, 10);
+    let from = root.getAttribute('data-from') || new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10);
+    let to = root.getAttribute('data-to') || new Date().toISOString().slice(0, 10);
     const scope = root.getAttribute('data-scope') || 'all';
 
     const $trend = document.getElementById('chart-trend');
@@ -76,6 +76,32 @@
         renderTrend(s);
         renderDevices(d);
         renderRefs(r);
+    }
+
+    function fmtDate(dt) { return dt.toISOString().slice(0, 10); }
+
+    function setRange(kind) {
+        const now = new Date();
+        if (kind === 'today') { from = fmtDate(now);
+            to = fmtDate(now); } else if (kind === '7d') { const f = new Date(now.getTime() - 6 * 864e5);
+            from = fmtDate(f);
+            to = fmtDate(now); } else if (kind === '30d') { const f = new Date(now.getTime() - 29 * 864e5);
+            from = fmtDate(f);
+            to = fmtDate(now); } else if (kind === 'custom') {
+            const fIn = prompt('From (YYYY-MM-DD):', from) || from;
+            const tIn = prompt('To (YYYY-MM-DD):', to) || to;
+            const re = /^\d{4}-\d{2}-\d{2}$/;
+            if (re.test(fIn) && re.test(tIn)) { from = fIn;
+                to = tIn; }
+        }
+        root.setAttribute('data-from', from);
+        root.setAttribute('data-to', to);
+        // update UI active state
+        document.querySelectorAll('[data-range]').forEach(el => el.classList.remove('is-active'));
+        const active = document.querySelector(`[data-range="${kind}"]`);
+        if (active) active.classList.add('is-active');
+        const ctrl = new AbortController();
+        loadAll(ctrl).catch((e) => console.error('[analytics]', e));
     }
 
     function renderTrend(j) {
@@ -155,4 +181,13 @@
     };
     const mo = new MutationObserver(() => window.__analyticsRepaint && window.__analyticsRepaint());
     mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'dir', 'class'] });
+
+    // Range pills (Today/7D/30D/Custom)
+    document.addEventListener('click', function(e) {
+        const b = e.target && e.target.closest && e.target.closest('[data-range]');
+        if (!b) return;
+        e.preventDefault();
+        const kind = b.getAttribute('data-range');
+        if (kind) setRange(kind);
+    });
 })();

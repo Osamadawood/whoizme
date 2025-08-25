@@ -33,10 +33,10 @@ include __DIR__ . '/../partials/app_header.php';
           <div class="panel__title u-flex u-ai-center u-jc-between">
             <span>Analytics</span>
             <div class="filters segmented" role="tablist" aria-label="Date range">
-              <a href="#" class="segmented__btn is-active" data-range="today">Today</a>
-              <a href="#" class="segmented__btn" data-range="7d">7D</a>
-              <a href="#" class="segmented__btn" data-range="30d">30D</a>
-              <a href="#" class="segmented__btn" data-range="custom">Custom</a>
+              <button type="button" class="segmented__btn is-active" data-range="today">Today</button>
+              <button type="button" class="segmented__btn" data-range="7d">7D</button>
+              <button type="button" class="segmented__btn" data-range="30d">30D</button>
+              <button type="button" class="segmented__btn" data-range="custom">Custom</button>
             </div>
           </div>
 
