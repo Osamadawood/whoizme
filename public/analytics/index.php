@@ -17,6 +17,16 @@ include __DIR__ . '/../partials/app_header.php';
 <main class="dashboard">
   <?php include __DIR__ . '/../partials/app_sidebar.php'; ?>
   <div class="container dash-grid">
+    <div class="container topbar--inset" role="region" aria-label="Primary toolbar">
+      <?php
+        $breadcrumbs = [ ['label' => 'Analytics', 'href' => '/analytics'] ];
+        $topbar = [
+          'search' => [ 'enabled' => false ],
+          'actions' => [ 'theme_toggle' => true, 'language' => ['enabled'=>true,'current'=>($_SESSION['lang'] ?? 'EN'), 'options'=>['EN','AR']] ]
+        ];
+        include __DIR__ . '/../partials/app_topbar.php';
+      ?>
+    </div>
     <section class="maincol">
       <div class="panel">
         <div class="panel__body">
@@ -50,9 +60,34 @@ include __DIR__ . '/../partials/app_header.php';
           </div>
         </div>
       </div>
+
+      <section class="analytics-grid u-mt-16" id="analytics-charts" data-from="<?= htmlspecialchars(date('Y-m-d', strtotime('-30 days'))) ?>" data-to="<?= htmlspecialchars(date('Y-m-d')) ?>" data-scope="all">
+        <article class="panel">
+          <div class="panel__body">
+            <div class="panel__title">Total engagements over time</div>
+            <div class="chart-wrap"><canvas id="chart-trend" height="160" aria-label="Engagements over time" role="img"></canvas></div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel__body">
+            <div class="panel__title">Engagements by device</div>
+            <div class="chart-wrap"><canvas id="chart-devices" height="160" aria-label="Engagements by device" role="img"></canvas></div>
+          </div>
+        </article>
+
+        <article class="panel" style="grid-column: 1/-1;">
+          <div class="panel__body">
+            <div class="panel__title">Engagements by referrer</div>
+            <div class="chart-wrap"><canvas id="chart-referrers" height="200" aria-label="Engagements by referrer" role="img"></canvas></div>
+          </div>
+        </article>
+      </section>
     </section>
   </div>
 </main>
+<script src="/assets/js/vendor/chart.min.js" defer></script>
+<script src="/assets/js/analytics-charts.js" defer></script>
 <?php include __DIR__ . '/../partials/app_footer.php'; ?>
 
 

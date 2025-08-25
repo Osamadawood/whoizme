@@ -216,7 +216,7 @@ if (strtolower($page_title) === 'dashboard') {
       <button type="button" class="create-modal__close" data-close="modal" aria-label="Close">×</button>
     </div>
     <div class="create-modal__grid">
-      <a class="create-card" href="/links/create.php">
+      <a class="create-card" href="/links/new">
         <i class="create-card__icon fi fi-rr-link" aria-hidden="true"></i>
         <span class="create-card__title">Shorten a link</span>
         <span class="create-card__kbd">L</span>

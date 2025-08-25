@@ -4061,6 +4061,17 @@ html[data-theme=dark] .theme-toggle .moon {
   /* layout follows DS tokens via utilities in app.scss */
 }
 
+.analytics-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--space-4);
+}
+
+@media (max-width: 1024px) {
+  .analytics-grid {
+    grid-template-columns: 1fr;
+  }
+}
 .kpis {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
