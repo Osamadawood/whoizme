@@ -59,15 +59,33 @@ try {
     // Discover created_at column names for resilience
     $lcCreated = $hasLC ? (ana_pick_created($pdo,'link_clicks') ?: 'created_at') : null;
     $qsCreated = $hasQS ? (ana_pick_created($pdo,'qr_scans')   ?: 'created_at') : null;
+    $lcFk      = $hasLC ? (ana_pick_fk($pdo,'link_clicks',['link_id','links_id','lid'])) : null;
+    $qsFk      = $hasQS ? (ana_pick_fk($pdo,'qr_scans',['qr_id','qr_code_id'])) : null;
+    $lUser     = $hasL  ? (ana_pick_user($pdo,'links') ?: null) : null;
+    $qUser     = $hasQ  ? (ana_pick_user($pdo,'qr_codes') ?: null) : null;
+    $lcUser    = $hasLC ? (ana_pick_user($pdo,'link_clicks') ?: null) : null;
+    $qsUser    = $hasQS ? (ana_pick_user($pdo,'qr_scans') ?: null) : null;
     // Replace created_at with discovered names
     $sql = '';
     $bind = [':uid'=>$uid, ':fromTs'=>$fromTs, ':toTs'=>$toTs];
     $seg = [];
-    if (($scope==='links'||$scope==='all') && $hasLinks && $lcCreated) {
-      $seg[] = "SELECT lc.`{$lcCreated}` AS created_at FROM link_clicks lc INNER JOIN links l ON l.id=lc.link_id WHERE l.user_id=:uid AND lc.`{$lcCreated}` BETWEEN :fromTs AND :toTs";
+    if (($scope==='links'||$scope==='all') && $hasLC && $lcCreated) {
+      if ($lcFk && $hasL && $lUser) {
+        $seg[] = "SELECT lc.`{$lcCreated}` AS created_at FROM link_clicks lc INNER JOIN links l ON l.id=lc.`{$lcFk}` AND l.`{$lUser}`=:uid WHERE lc.`{$lcCreated}` BETWEEN :fromTs AND :toTs";
+      } elseif ($lcUser) {
+        $seg[] = "SELECT lc.`{$lcCreated}` AS created_at FROM link_clicks lc WHERE lc.`{$lcCreated}` BETWEEN :fromTs AND :toTs AND lc.`{$lcUser}`=:uid";
+      } elseif ($lcFk && $hasL) {
+        $seg[] = "SELECT lc.`{$lcCreated}` AS created_at FROM link_clicks lc INNER JOIN links l ON l.id=lc.`{$lcFk}` WHERE lc.`{$lcCreated}` BETWEEN :fromTs AND :toTs";
+      }
     }
-    if (($scope==='qrs'||$scope==='all') && $hasQrs && $qsCreated) {
-      $seg[] = "SELECT qs.`{$qsCreated}` AS created_at FROM qr_scans qs INNER JOIN qr_codes q ON q.id=qs.qr_id WHERE q.user_id=:uid AND qs.`{$qsCreated}` BETWEEN :fromTs AND :toTs";
+    if (($scope==='qrs'||$scope==='all') && $hasQS && $qsCreated) {
+      if ($qsFk && $hasQ && $qUser) {
+        $seg[] = "SELECT qs.`{$qsCreated}` AS created_at FROM qr_scans qs INNER JOIN qr_codes q ON q.id=qs.`{$qsFk}` AND q.`{$qUser}`=:uid WHERE qs.`{$qsCreated}` BETWEEN :fromTs AND :toTs";
+      } elseif ($qsUser) {
+        $seg[] = "SELECT qs.`{$qsCreated}` AS created_at FROM qr_scans qs WHERE qs.`{$qsCreated}` BETWEEN :fromTs AND :toTs AND qs.`{$qsUser}`=:uid";
+      } elseif ($qsFk && $hasQ) {
+        $seg[] = "SELECT qs.`{$qsCreated}` AS created_at FROM qr_scans qs INNER JOIN qr_codes q ON q.id=qs.`{$qsFk}` WHERE qs.`{$qsCreated}` BETWEEN :fromTs AND :toTs";
+      }
     }
     if ($seg) {
       $sql = implode(' UNION ALL ', $seg);
