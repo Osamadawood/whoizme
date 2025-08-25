@@ -80,19 +80,100 @@
 
     function fmtDate(dt) { return dt.toISOString().slice(0, 10); }
 
+    function writeDetails() {
+        const el = document.getElementById('range-details');
+        if (!el) return;
+        try {
+            const f = new Date((from || '').replace(/-/g, '/'));
+            const t = new Date((to || '').replace(/-/g, '/'));
+            const loc = document.dir === 'rtl' ? 'ar' : 'en';
+            const fmt = { month: 'short', day: 'numeric' };
+            el.textContent = `${f.toLocaleDateString(loc,fmt)} → ${t.toLocaleDateString(loc,fmt)} (${scope})`;
+        } catch (_) { /* ignore */ }
+    }
+
     function setRange(kind) {
         const now = new Date();
-        if (kind === 'today') { from = fmtDate(now);
-            to = fmtDate(now); } else if (kind === '7d') { const f = new Date(now.getTime() - 6 * 864e5);
+        if (kind === 'today') {
+            from = fmtDate(now);
+            to = fmtDate(now);
+        } else if (kind === '7d') {
+            const f = new Date(now.getTime() - 6 * 864e5);
             from = fmtDate(f);
-            to = fmtDate(now); } else if (kind === '30d') { const f = new Date(now.getTime() - 29 * 864e5);
+            to = fmtDate(now);
+        } else if (kind === '30d') {
+            const f = new Date(now.getTime() - 29 * 864e5);
             from = fmtDate(f);
-            to = fmtDate(now); } else if (kind === 'custom') {
-            const fIn = prompt('From (YYYY-MM-DD):', from) || from;
-            const tIn = prompt('To (YYYY-MM-DD):', to) || to;
-            const re = /^\d{4}-\d{2}-\d{2}$/;
-            if (re.test(fIn) && re.test(tIn)) { from = fIn;
-                to = tIn; }
+            to = fmtDate(now);
+        } else if (kind === 'custom') {
+            const modal = document.getElementById('dr-modal');
+            const iFrom = document.getElementById('dr-from');
+            const iTo = document.getElementById('dr-to');
+            const iCancel = document.getElementById('dr-cancel');
+            const form = document.getElementById('dr-form');
+            if (!modal || !iFrom || !iTo || !form) return;
+            iFrom.value = from;
+            iTo.value = to;
+            modal.classList.add('is-open');
+            modal.setAttribute('aria-hidden', 'false');
+            const onOverlay = (e) => { if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-modal-close')) close(); };
+            const onCancel = () => close();
+
+            function close() {
+                modal.classList.remove('is-open');
+                modal.setAttribute('aria-hidden', 'true');
+                cleanup();
+            }
+
+            function onSubmit(e) {
+                e.preventDefault();
+                const f = iFrom.value,
+                    t = iTo.value;
+                const re = /^\d{4}-\d{2}-\d{2}$/;
+                const err = document.getElementById('dr-error');
+                if (!re.test(f) || !re.test(t)) {
+                    if (err) {
+                        err.textContent = 'Please enter valid dates (YYYY-MM-DD).';
+                        err.hidden = false;
+                    }
+                    return;
+                }
+                if (new Date(f) > new Date(t)) {
+                    if (err) {
+                        err.textContent = 'From must be before To.';
+                        err.hidden = false;
+                    }
+                    return;
+                }
+                if (err) err.hidden = true;
+                from = f;
+                to = t;
+                close();
+                // update details and reload
+                const det = document.getElementById('range-details');
+                if (det) {
+                    const loc = document.dir === 'rtl' ? 'ar' : 'en';
+                    det.textContent = new Date(from.replace(/-/g, '/')).toLocaleDateString(loc, { month: 'short', day: 'numeric' }) + ' → ' + new Date(to.replace(/-/g, '/')).toLocaleDateString(loc, { month: 'short', day: 'numeric' }) + ` (${scope})`;
+                }
+                rerun();
+            }
+
+            function cleanup() {
+                form.removeEventListener('submit', onSubmit);
+                if (iCancel) iCancel.removeEventListener('click', onCancel);
+                modal.removeEventListener('click', onOverlay);
+            }
+
+            function rerun() {
+                root.setAttribute('data-from', from);
+                root.setAttribute('data-to', to);
+                const ctrl = new AbortController();
+                loadAll(ctrl).catch((e) => console.error('[analytics]', e));
+            }
+            form.addEventListener('submit', onSubmit);
+            if (iCancel) iCancel.addEventListener('click', onCancel);
+            modal.addEventListener('click', onOverlay);
+            return;
         }
         root.setAttribute('data-from', from);
         root.setAttribute('data-to', to);
@@ -100,6 +181,7 @@
         document.querySelectorAll('[data-range]').forEach(el => el.classList.remove('is-active'));
         const active = document.querySelector(`[data-range="${kind}"]`);
         if (active) active.classList.add('is-active');
+        writeDetails();
         const ctrl = new AbortController();
         loadAll(ctrl).catch((e) => console.error('[analytics]', e));
     }
@@ -108,9 +190,47 @@
         if (!j || !j.ok || !Array.isArray(j.labels)) return;
         if (!j.total || j.total === 0 || j.labels.length === 0) { emptyCard($trend, 'No data yet'); return; }
         showCanvas($trend);
-        const data = { labels: j.labels, datasets: [{ label: 'Engagements', data: j.counts || [], borderColor: palette.primary, backgroundColor: palette.primary + '26', fill: true }] };
-        const opts = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: palette.text, reverse: isRTL() } }, y: { beginAtZero: true, grid: { color: palette.grid }, ticks: { color: palette.text } } } };
-        if (!trendChart) { trendChart = new Chart($trend.getContext('2d'), { type: 'line', data, options: opts }); } else {
+        const ctx = $trend.getContext('2d');
+        const grad = ctx.createLinearGradient(0, 0, 0, $trend.height || 260);
+        grad.addColorStop(0, palette.primary + '33');
+        grad.addColorStop(1, 'rgba(0,0,0,0)');
+        const fmtLbl = (s) => {
+            if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
+                try { const d = new Date(s.replace(/-/g, '/')); return d.toLocaleDateString(document.dir === 'rtl' ? 'ar' : 'en', { month: 'short', day: 'numeric' }); } catch (_) { return s; }
+            }
+            if (/^\d{4}-\d{2}$/.test(s)) {
+                try { const d = new Date((s + '-01').replace(/-/g, '/')); return d.toLocaleDateString(document.dir === 'rtl' ? 'ar' : 'en', { month: 'short', year: 'numeric' }); } catch (_) { return s; }
+            }
+            return s;
+        };
+        const labels = (j.labels || []).map(fmtLbl);
+        const data = {
+            labels,
+            datasets: [{
+                label: 'Engagements',
+                data: j.counts || [],
+                borderColor: palette.primary,
+                backgroundColor: grad,
+                fill: true,
+                tension: 0.35,
+                pointRadius: 2.5,
+                pointHoverRadius: 4,
+                pointBackgroundColor: palette.primary,
+                pointBorderColor: palette.primary,
+                borderWidth: 2
+            }]
+        };
+        const opts = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            interaction: { mode: 'index', intersect: false },
+            scales: {
+                x: { grid: { display: false }, ticks: { color: palette.text, reverse: isRTL(), maxRotation: 0, autoSkip: true } },
+                y: { beginAtZero: true, grid: { color: palette.grid, borderDash: [4, 4], drawBorder: false }, ticks: { color: palette.text } }
+            }
+        };
+        if (!trendChart) { trendChart = new Chart(ctx, { type: 'line', data, options: opts }); } else {
             trendChart.data = data;
             trendChart.update();
         }
@@ -166,6 +286,7 @@
     function boot() {
         const controller = new AbortController();
         loadAll(controller).catch((e) => console.error('[analytics]', e));
+        writeDetails();
     }
     ensureChartJsThen(boot);
 
@@ -190,4 +311,22 @@
         const kind = b.getAttribute('data-range');
         if (kind) setRange(kind);
     });
+
+    // Reset range button (back to Today)
+    const resetBtn = document.getElementById('range-reset');
+    if (resetBtn) {
+        resetBtn.addEventListener('click', function() {
+            const today = new Date();
+            from = fmtDate(today);
+            to = fmtDate(today);
+            root.setAttribute('data-from', from);
+            root.setAttribute('data-to', to);
+            document.querySelectorAll('[data-range]').forEach(el => el.classList.remove('is-active'));
+            const pill = document.querySelector('[data-range="today"]');
+            if (pill) pill.classList.add('is-active');
+            writeDetails();
+            const ctrl = new AbortController();
+            loadAll(ctrl).catch((e) => console.error('[analytics]', e));
+        });
+    }
 })();

@@ -37,7 +37,9 @@ include __DIR__ . '/../partials/app_header.php';
               <button type="button" class="segmented__btn" data-range="7d">7D</button>
               <button type="button" class="segmented__btn" data-range="30d">30D</button>
               <button type="button" class="segmented__btn" data-range="custom">Custom</button>
+              <button type="button" class="btn btn--ghost btn--sm" id="range-reset">Reset</button>
             </div>
+            <div class="u-text-muted u-mt-8" id="range-details"></div>
           </div>
 
           <div class="kpis u-mt-12">
@@ -65,7 +67,7 @@ include __DIR__ . '/../partials/app_header.php';
         <article class="panel">
           <div class="panel__body">
             <div class="panel__title">Total engagements over time</div>
-            <div class="chart-wrap"><canvas id="chart-trend" height="160" aria-label="Engagements over time" role="img"></canvas></div>
+            <div class="chart-wrap"><canvas id="chart-trend" height="260" aria-label="Engagements over time" role="img"></canvas></div>
           </div>
         </article>
 
@@ -88,6 +90,27 @@ include __DIR__ . '/../partials/app_header.php';
 </main>
 <script src="/assets/js/vendor/chart.min.js" defer></script>
 <script src="/assets/js/analytics-charts.js" defer></script>
+<div class="modal" id="dr-modal" aria-hidden="true">
+  <div class="modal__overlay" data-modal-close></div>
+  <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="dr-title">
+    <div class="modal__title" id="dr-title">Custom date range</div>
+    <form id="dr-form">
+      <div class="u-mb-8">
+        <label for="dr-from">From</label>
+        <input type="date" id="dr-from">
+      </div>
+      <div class="u-mb-8">
+        <label for="dr-to">To</label>
+        <input type="date" id="dr-to">
+      </div>
+      <p class="u-text-danger" id="dr-error" hidden></p>
+      <div class="modal__actions">
+        <button type="button" class="btn btn--ghost" id="dr-cancel" data-modal-close>Cancel</button>
+        <button type="submit" class="btn btn--primary" id="dr-apply">Apply</button>
+      </div>
+    </form>
+  </div>
+</div>
 <?php include __DIR__ . '/../partials/app_footer.php'; ?>
 
 
