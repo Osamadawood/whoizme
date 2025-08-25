@@ -28,6 +28,36 @@ include __DIR__ . '/../partials/app_header.php';
       ?>
     </div>
     <section class="maincol">
+      <div class="panel u-mb-12">
+        <div class="panel__body">
+          <div class="analytics-filters">
+            <div class="filter-item">
+              <label for="flt-scope">Scope</label>
+              <select id="flt-scope">
+                <option value="all">All</option>
+                <option value="links">Links only</option>
+                <option value="qrs">QR codes only</option>
+              </select>
+            </div>
+            <div class="filter-item">
+              <div class="filter-label">Device</div>
+              <div class="chip-group" id="flt-device">
+                <button type="button" class="chip" data-device="desktop">Desktop</button>
+                <button type="button" class="chip" data-device="mobile">Mobile</button>
+                <button type="button" class="chip" data-device="tablet">Tablet</button>
+                <button type="button" class="chip" data-device="unknown">Unknown</button>
+              </div>
+            </div>
+            <div class="filter-item">
+              <label for="flt-ref">Referrer</label>
+              <div class="combo" id="flt-ref-combo">
+                <input type="text" id="flt-ref" placeholder="e.g. google.com" autocomplete="off" />
+                <ul class="combo__menu" id="flt-ref-list" hidden></ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="panel">
         <div class="panel__body">
           <div class="panel__title u-flex u-ai-center u-jc-between">

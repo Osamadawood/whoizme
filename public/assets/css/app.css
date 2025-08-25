@@ -4098,6 +4098,77 @@ html[data-theme=dark] .theme-toggle .moon {
   font-weight: 700;
 }
 
+/* Filters */
+.analytics-filters {
+  display: grid;
+  gap: var(--space-12);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 1024px) {
+  .analytics-filters {
+    grid-template-columns: 1fr 1fr 1fr;
+    align-items: end;
+  }
+}
+.filter-item label,
+.filter-label {
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chip {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.chip.is-active {
+  background: color-mix(in oklab, var(--primary) 12%, transparent);
+  border-color: var(--primary);
+  color: var(--text);
+}
+
+.combo {
+  position: relative;
+  max-inline-size: 360px;
+}
+
+.combo__menu {
+  position: absolute;
+  inset-inline: 0;
+  top: 100%;
+  margin-top: 0.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-2);
+  list-style: none;
+  padding: 0.25rem;
+  max-block-size: 220px;
+  overflow: auto;
+}
+
+.combo__menu li {
+  padding: 0.35rem 0.5rem;
+  cursor: pointer;
+  border-radius: 0.5rem;
+}
+
+.combo__menu li:hover {
+  background: color-mix(in oklab, var(--primary) 10%, transparent);
+}
+
 .skeleton {
   position: relative;
   background: color-mix(in oklab, var(--surface), white 6%);

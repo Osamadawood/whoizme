@@ -22,8 +22,22 @@ $from = ana_normalize_date($_GET['from'] ?? null, date('Y-m-d', strtotime('-30 d
 $to   = ana_normalize_date($_GET['to']   ?? null, date('Y-m-d'));
 $interval = $_GET['interval'] ?? 'day';
 $scope    = $_GET['scope']    ?? 'all';
+// New filters
+$deviceCsv = isset($_GET['device']) ? strtolower(trim((string)$_GET['device'])) : '';
+$refFilter = isset($_GET['ref']) ? trim((string)$_GET['ref']) : '';
 if (!in_array($interval, ['day','week','month'], true)) $interval = 'day';
 if (!in_array($scope, ['all','links','qrs'], true)) $scope = 'all';
+// Normalize device list
+$allowedDevices = ['desktop','mobile','tablet','unknown'];
+$deviceList = array_values(array_filter(array_map('trim', $deviceCsv !== '' ? explode(',', $deviceCsv) : []), function($d) use($allowedDevices){ return in_array($d, $allowedDevices, true); }));
+// Normalize ref host
+$refHost = '';
+if ($refFilter !== '') {
+  $h = parse_url((stripos($refFilter,'://')===false?'http://':'').$refFilter, PHP_URL_HOST);
+  if (!$h) { $h = preg_replace('~^[a-z]+://~i','',$refFilter); $h = preg_replace('~/.*$~','',$h); }
+  $h = strtolower(trim($h)); if (strlen($h) > 128) $h = substr($h,0,128);
+  $refHost = $h;
+}
 
 // clamp to 365 days window
 $dtFrom = new DateTime($from); $dtTo = new DateTime($to);
@@ -65,32 +79,53 @@ try {
     $qUser     = $hasQ  ? (ana_pick_user($pdo,'qr_codes') ?: null) : null;
     $lcUser    = $hasLC ? (ana_pick_user($pdo,'link_clicks') ?: null) : null;
     $qsUser    = $hasQS ? (ana_pick_user($pdo,'qr_scans') ?: null) : null;
+    $lcDev     = $hasLC ? (ana_pick_device($pdo,'link_clicks') ?: null) : null;
+    $qsDev     = $hasQS ? (ana_pick_device($pdo,'qr_scans') ?: null) : null;
+    $lcRef     = $hasLC ? (ana_pick_ref($pdo,'link_clicks')   ?: null) : null;
+    $qsRef     = $hasQS ? (ana_pick_ref($pdo,'qr_scans')      ?: null) : null;
     // Replace created_at with discovered names
     $sql = '';
     $bind = [':uid'=>$uid, ':fromTs'=>$fromTs, ':toTs'=>$toTs];
     $seg = [];
     if (($scope==='links'||$scope==='all') && $hasLC && $lcCreated) {
+      $where = "lc.`{$lcCreated}` BETWEEN :fromTs AND :toTs";
+      if ($deviceList && $lcDev) { $in = '(' . implode(',', array_fill(0, count($deviceList), '?')) . ')'; $where .= " AND LOWER(lc.`{$lcDev}`) IN {$in}"; }
+      if ($refHost !== '' && $lcRef) { $where .= " AND LOWER(SUBSTRING_INDEX(SUBSTRING_INDEX(lc.`{$lcRef}`,'//',-1),'/',1)) LIKE ?"; }
       if ($lcFk && $hasL && $lUser) {
-        $seg[] = "SELECT lc.`{$lcCreated}` AS created_at FROM link_clicks lc INNER JOIN links l ON l.id=lc.`{$lcFk}` AND l.`{$lUser}`=:uid WHERE lc.`{$lcCreated}` BETWEEN :fromTs AND :toTs";
+        $seg[] = "SELECT lc.`{$lcCreated}` AS created_at FROM link_clicks lc INNER JOIN links l ON l.id=lc.`{$lcFk}` AND l.`{$lUser}`=:uid WHERE {$where}";
       } elseif ($lcUser) {
-        $seg[] = "SELECT lc.`{$lcCreated}` AS created_at FROM link_clicks lc WHERE lc.`{$lcCreated}` BETWEEN :fromTs AND :toTs AND lc.`{$lcUser}`=:uid";
+        $seg[] = "SELECT lc.`{$lcCreated}` AS created_at FROM link_clicks lc WHERE {$where} AND lc.`{$lcUser}`=:uid";
       } elseif ($lcFk && $hasL) {
-        $seg[] = "SELECT lc.`{$lcCreated}` AS created_at FROM link_clicks lc INNER JOIN links l ON l.id=lc.`{$lcFk}` WHERE lc.`{$lcCreated}` BETWEEN :fromTs AND :toTs";
+        $seg[] = "SELECT lc.`{$lcCreated}` AS created_at FROM link_clicks lc INNER JOIN links l ON l.id=lc.`{$lcFk}` WHERE {$where}";
       }
     }
     if (($scope==='qrs'||$scope==='all') && $hasQS && $qsCreated) {
+      $where = "qs.`{$qsCreated}` BETWEEN :fromTs AND :toTs";
+      if ($deviceList && $qsDev) { $in = '(' . implode(',', array_fill(0, count($deviceList), '?')) . ')'; $where .= " AND LOWER(qs.`{$qsDev}`) IN {$in}"; }
+      if ($refHost !== '' && $qsRef) { $where .= " AND LOWER(SUBSTRING_INDEX(SUBSTRING_INDEX(qs.`{$qsRef}`,'//',-1),'/',1)) LIKE ?"; }
       if ($qsFk && $hasQ && $qUser) {
-        $seg[] = "SELECT qs.`{$qsCreated}` AS created_at FROM qr_scans qs INNER JOIN qr_codes q ON q.id=qs.`{$qsFk}` AND q.`{$qUser}`=:uid WHERE qs.`{$qsCreated}` BETWEEN :fromTs AND :toTs";
+        $seg[] = "SELECT qs.`{$qsCreated}` AS created_at FROM qr_scans qs INNER JOIN qr_codes q ON q.id=qs.`{$qsFk}` AND q.`{$qUser}`=:uid WHERE {$where}";
       } elseif ($qsUser) {
-        $seg[] = "SELECT qs.`{$qsCreated}` AS created_at FROM qr_scans qs WHERE qs.`{$qsCreated}` BETWEEN :fromTs AND :toTs AND qs.`{$qsUser}`=:uid";
+        $seg[] = "SELECT qs.`{$qsCreated}` AS created_at FROM qr_scans qs WHERE {$where} AND qs.`{$qsUser}`=:uid";
       } elseif ($qsFk && $hasQ) {
-        $seg[] = "SELECT qs.`{$qsCreated}` AS created_at FROM qr_scans qs INNER JOIN qr_codes q ON q.id=qs.`{$qsFk}` WHERE qs.`{$qsCreated}` BETWEEN :fromTs AND :toTs";
+        $seg[] = "SELECT qs.`{$qsCreated}` AS created_at FROM qr_scans qs INNER JOIN qr_codes q ON q.id=qs.`{$qsFk}` WHERE {$where}";
       }
     }
     if ($seg) {
       $sql = implode(' UNION ALL ', $seg);
       $st = $pdo->prepare($sql);
-      $st->execute($bind);
+      // bind shared params first
+      foreach ($bind as $k=>$v) { $st->bindValue($k,$v); }
+      // Append device/ref dynamic values for each segment in order
+      $dyn = [];
+      foreach ($seg as $_) {
+        if ($deviceList && (($scope!=='qrs' && strpos($_,'FROM link_clicks')!==false) || ($scope!=='links' && strpos($_,'FROM qr_scans')!==false))) {
+          foreach ($deviceList as $d) { $dyn[] = strtolower($d); }
+        }
+        if ($refHost !== '' && (strpos($_,'FROM link_clicks')!==false || strpos($_,'FROM qr_scans')!==false)) { $dyn[] = '%'.$refHost.'%'; }
+      }
+      $i = 1; foreach ($dyn as $v) { $st->bindValue($i++, $v); }
+      $st->execute();
       $rows = $st->fetchAll(PDO::FETCH_COLUMN) ?: [];
     }
   }

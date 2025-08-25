@@ -16,6 +16,9 @@ function norm_date_d(?string $s, string $fallback): string { $d = $s?DateTime::c
 $from = ana_normalize_date($_GET['from'] ?? null, date('Y-m-d', strtotime('-30 days')));
 $to   = ana_normalize_date($_GET['to']   ?? null, date('Y-m-d'));
 $scope = $_GET['scope'] ?? 'all'; if (!in_array($scope,['all','links','qrs'],true)) $scope='all';
+// New filters
+$deviceCsv = isset($_GET['device']) ? strtolower(trim((string)$_GET['device'])) : '';
+$refFilter = isset($_GET['ref']) ? trim((string)$_GET['ref']) : '';
 try { ana_window_guard($from, $to, 365); } catch (Throwable $e) { http_response_code(400); echo json_encode(['ok'=>false,'error'=>'bad_range']); exit; }
 
 $map = function($v){ $v = strtolower((string)$v); if (in_array($v,['desktop','mobile','tablet','unknown'],true)) return ucfirst($v); return 'Unknown'; };
@@ -27,24 +30,36 @@ try {
   $hasL  = ana_table_exists($pdo,'links');
   $hasQ  = ana_table_exists($pdo,'qr_codes');
   $fromTs = $from.' 00:00:00'; $toTs = $to.' 23:59:59';
+  $allowed = ['desktop','mobile','tablet','unknown'];
+  $deviceList = array_values(array_filter(array_map('trim', $deviceCsv!==''?explode(',', $deviceCsv):[]), function($d) use($allowed){ return in_array($d, $allowed, true); }));
+  $refHost = '';
+  if ($refFilter !== '') {
+    $h = parse_url((stripos($refFilter,'://')===false?'http://':'').$refFilter, PHP_URL_HOST);
+    if (!$h) { $h = preg_replace('~^[a-z]+://~i','',$refFilter); $h = preg_replace('~/.*$~','',$h); }
+    $refHost = strtolower(trim(substr($h,0,128)));
+  }
   if (($scope==='all'||$scope==='links') && $hasLC && $hasL) {
     $devCol = ana_pick_device($pdo,'link_clicks') ?: 'ua_device';
     $tsCol  = ana_pick_created($pdo,'link_clicks') ?: 'created_at';
-    $sql = "SELECT LOWER(COALESCE(lc.`{$devCol}`,'unknown')) AS d, COUNT(*) AS c
-            FROM link_clicks lc INNER JOIN links l ON l.id=lc.link_id
-            WHERE l.user_id=:uid AND lc.`{$tsCol}` BETWEEN :fromTs AND :toTs
-            GROUP BY d";
-    $st = $pdo->prepare($sql); $st->execute([':uid'=>$uid, ':fromTs'=>$fromTs, ':toTs'=>$toTs]);
+    $refCol = ana_pick_ref($pdo,'link_clicks');
+    $where = "l.user_id=:uid AND lc.`{$tsCol}` BETWEEN :fromTs AND :toTs";
+    $dyn=[]; if ($deviceList) { $where .= " AND LOWER(lc.`{$devCol}`) IN (".implode(',', array_fill(0,count($deviceList),'?')).")"; foreach($deviceList as $d){$dyn[]=$d;} }
+    if ($refHost!=='' && $refCol) { $where .= " AND LOWER(SUBSTRING_INDEX(SUBSTRING_INDEX(lc.`{$refCol}`,'//',-1),'/',1)) LIKE ?"; $dyn[]='%'.$refHost.'%'; }
+    $sql = "SELECT LOWER(COALESCE(lc.`{$devCol}`,'unknown')) AS d, COUNT(*) AS c FROM link_clicks lc INNER JOIN links l ON l.id=lc.link_id WHERE {$where} GROUP BY d";
+    $st = $pdo->prepare($sql); $st->bindValue(':uid',$uid,PDO::PARAM_INT); $st->bindValue(':fromTs',$fromTs); $st->bindValue(':toTs',$toTs); $i=1; foreach($dyn as $v){ $st->bindValue($i++,$v); }
+    $st->execute();
     foreach ($st->fetchAll(PDO::FETCH_ASSOC) as $r) { $series[$map($r['d'])] += (int)$r['c']; }
   }
   if (($scope==='all'||$scope==='qrs') && $hasQS && $hasQ) {
     $devCol = ana_pick_device($pdo,'qr_scans') ?: 'ua_device';
     $tsCol  = ana_pick_created($pdo,'qr_scans') ?: 'created_at';
-    $sql = "SELECT LOWER(COALESCE(qs.`{$devCol}`,'unknown')) AS d, COUNT(*) AS c
-            FROM qr_scans qs INNER JOIN qr_codes q ON q.id=qs.qr_id
-            WHERE q.user_id=:uid AND qs.`{$tsCol}` BETWEEN :fromTs AND :toTs
-            GROUP BY d";
-    $st = $pdo->prepare($sql); $st->execute([':uid'=>$uid, ':fromTs'=>$fromTs, ':toTs'=>$toTs]);
+    $refCol = ana_pick_ref($pdo,'qr_scans');
+    $where = "q.user_id=:uid AND qs.`{$tsCol}` BETWEEN :fromTs AND :toTs";
+    $dyn=[]; if ($deviceList) { $where .= " AND LOWER(qs.`{$devCol}`) IN (".implode(',', array_fill(0,count($deviceList),'?')).")"; foreach($deviceList as $d){$dyn[]=$d;} }
+    if ($refHost!=='' && $refCol) { $where .= " AND LOWER(SUBSTRING_INDEX(SUBSTRING_INDEX(qs.`{$refCol}`,'//',-1),'/',1)) LIKE ?"; $dyn[]='%'.$refHost.'%'; }
+    $sql = "SELECT LOWER(COALESCE(qs.`{$devCol}`,'unknown')) AS d, COUNT(*) AS c FROM qr_scans qs INNER JOIN qr_codes q ON q.id=qs.qr_id WHERE {$where} GROUP BY d";
+    $st = $pdo->prepare($sql); $st->bindValue(':uid',$uid,PDO::PARAM_INT); $st->bindValue(':fromTs',$fromTs); $st->bindValue(':toTs',$toTs); $i=1; foreach($dyn as $v){ $st->bindValue($i++,$v); }
+    $st->execute();
     foreach ($st->fetchAll(PDO::FETCH_ASSOC) as $r) { $series[$map($r['d'])] += (int)$r['c']; }
   }
   $out = [];$total=0; foreach ($series as $k=>$v){ $out[] = [$k,(int)$v]; $total += (int)$v; }

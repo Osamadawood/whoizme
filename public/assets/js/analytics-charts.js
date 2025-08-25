@@ -64,14 +64,53 @@
 
     let palette = dsPalette();
 
+    // Filter state
+    const FilterState = { scope: 'all', devices: [], ref: '' };
+
     let trendChart, devicesChart, refsChart;
 
+    function getFiltersFromURL() {
+        const u = new URL(location.href);
+        const s = (u.searchParams.get('scope') || '').toLowerCase();
+        if (['all', 'links', 'qrs'].includes(s)) FilterState.scope = s;
+        else FilterState.scope = 'all';
+        const d = (u.searchParams.get('device') || '').toLowerCase();
+        FilterState.devices = d ? d.split(',').map(x => x.trim()).filter(Boolean) : [];
+        const r = (u.searchParams.get('ref') || '').trim();
+        FilterState.ref = r;
+        const f = u.searchParams.get('from');
+        if (f) from = f;
+        const t = u.searchParams.get('to');
+        if (t) to = t;
+    }
+
+    function getFiltersFromStorage() {
+        try { const raw = localStorage.getItem('analytics:filters:v1'); if (!raw) return; const f = JSON.parse(raw); if (!f || typeof f !== 'object') return; if (['all', 'links', 'qrs'].includes(f.scope)) FilterState.scope = f.scope; if (Array.isArray(f.devices)) FilterState.devices = f.devices; if (typeof f.ref === 'string') FilterState.ref = f.ref; if (typeof f.from === 'string') from = f.from; if (typeof f.to === 'string') to = f.to; } catch (_) {}
+    }
+
+    function persistFilters() {
+        try { localStorage.setItem('analytics:filters:v1', JSON.stringify({ scope: FilterState.scope, devices: FilterState.devices, ref: FilterState.ref, from, to })); } catch (_) {}
+        const u = new URL(location.href);
+        const set = (k, v) => { if (v && ((Array.isArray(v) && v.length > 0) || (!Array.isArray(v) && v !== ''))) { u.searchParams.set(k, Array.isArray(v) ? v.join(',') : v); } else { u.searchParams.delete(k); } };
+        set('scope', FilterState.scope !== 'all' ? FilterState.scope : '');
+        set('device', FilterState.devices);
+        set('ref', FilterState.ref);
+        set('from', from);
+        set('to', to);
+        history.replaceState({}, '', u.toString());
+    }
+
     async function loadAll(ctrl) {
-        const p = new URLSearchParams({ from, to, scope });
+        const p = new URLSearchParams({ from, to, scope: FilterState.scope });
+        if (FilterState.devices.length) p.set('device', FilterState.devices.join(','));
+        if (FilterState.ref) p.set('ref', FilterState.ref);
+        showLoading($trend);
+        showLoading($devices);
+        showLoading($refs);
         const [s, d, r] = await Promise.all([
-            fetch(`/api/analytics/series.php?${p}&interval=day`, { signal: ctrl.signal }).then(x => x.json()),
-            fetch(`/api/analytics/devices.php?${p}`, { signal: ctrl.signal }).then(x => x.json()),
-            fetch(`/api/analytics/referrers.php?${p}`, { signal: ctrl.signal }).then(x => x.json()),
+            fetch(`/api/analytics/series.php?${p}&interval=day`, { signal: ctrl.signal }).then(x => x.json()).catch(() => ({ ok: false })),
+            fetch(`/api/analytics/devices.php?${p}`, { signal: ctrl.signal }).then(x => x.json()).catch(() => ({ ok: false })),
+            fetch(`/api/analytics/referrers.php?${p}`, { signal: ctrl.signal }).then(x => x.json()).catch(() => ({ ok: false })),
         ]);
         renderTrend(s);
         renderDevices(d);
@@ -88,7 +127,7 @@
             const t = new Date((to || '').replace(/-/g, '/'));
             const loc = document.dir === 'rtl' ? 'ar' : 'en';
             const fmt = { month: 'short', day: 'numeric' };
-            el.textContent = `${f.toLocaleDateString(loc,fmt)} → ${t.toLocaleDateString(loc,fmt)} (${scope})`;
+            el.textContent = `${f.toLocaleDateString(loc,fmt)} → ${t.toLocaleDateString(loc,fmt)} (${FilterState.scope})`;
         } catch (_) { /* ignore */ }
     }
 
@@ -186,8 +225,19 @@
         loadAll(ctrl).catch((e) => console.error('[analytics]', e));
     }
 
+    // Loading state (no skeleton: keep canvas mounted but hidden)
+    function showLoading(canvas) {
+        if (!canvas) return;
+        const wrap = canvas.parentElement;
+        if (!wrap) return;
+        // Keep canvas in place; just clear any placeholder content
+        wrap.innerHTML = '';
+        wrap.appendChild(canvas);
+        canvas.style.display = 'none';
+    }
+
     function renderTrend(j) {
-        if (!j || !j.ok || !Array.isArray(j.labels)) return;
+        if (!j || !j.ok || !Array.isArray(j.labels)) { emptyCard($trend, 'No data yet'); return; }
         if (!j.total || j.total === 0 || j.labels.length === 0) { emptyCard($trend, 'No data yet'); return; }
         showCanvas($trend);
         const ctx = $trend.getContext('2d');
@@ -237,7 +287,7 @@
     }
 
     function renderDevices(j) {
-        if (!j || !j.ok || !Array.isArray(j.series)) return;
+        if (!j || !j.ok || !Array.isArray(j.series)) { emptyCard($devices, 'No data yet'); return; }
         if (!j.total || j.total === 0) { emptyCard($devices, 'No data yet'); return; }
         showCanvas($devices);
         const labels = j.series.map(x => x[0]);
@@ -252,7 +302,7 @@
     }
 
     function renderRefs(j) {
-        if (!j || !j.ok || !Array.isArray(j.series)) return;
+        if (!j || !j.ok || !Array.isArray(j.series)) { emptyCard($refs, 'No data yet'); return; }
         const labels = j.series.map(x => x[0]);
         const values = j.series.map(x => x[1]);
         const any = values.some(v => (v || 0) > 0);
@@ -284,6 +334,86 @@
     }
 
     function boot() {
+        // Hydrate filters: URL → storage → defaults
+        getFiltersFromStorage();
+        getFiltersFromURL();
+        // Sync UI
+        const sel = document.getElementById('flt-scope');
+        if (sel) {
+            sel.value = FilterState.scope;
+            sel.addEventListener('change', () => {
+                FilterState.scope = sel.value;
+                persistFilters();
+                debounceFetch();
+            });
+        }
+        const chipWrap = document.getElementById('flt-device');
+        if (chipWrap) {
+            const setActive = (btn, on) => { on ? btn.classList.add('is-active') : btn.classList.remove('is-active'); };
+            chipWrap.querySelectorAll('[data-device]').forEach(btn => {
+                const v = btn.getAttribute('data-device');
+                setActive(btn, FilterState.devices.includes(v));
+                btn.addEventListener('click', () => {
+                    const val = btn.getAttribute('data-device');
+                    const i = FilterState.devices.indexOf(val);
+                    if (i >= 0) FilterState.devices.splice(i, 1);
+                    else FilterState.devices.push(val);
+                    setActive(btn, FilterState.devices.includes(val));
+                    persistFilters();
+                    debounceFetch();
+                });
+            });
+        }
+        const refInput = document.getElementById('flt-ref');
+        const refList = document.getElementById('flt-ref-list');
+        if (refInput) {
+            refInput.value = FilterState.ref || '';
+            let sugAbort;
+            refInput.addEventListener('input', async() => {
+                const q = refInput.value.trim();
+                if (refList) {
+                    if (!q) {
+                        refList.hidden = true;
+                        refList.innerHTML = '';
+                        return;
+                    }
+                    refList.hidden = false;
+                    refList.innerHTML = '<li class="u-text-muted">Loading…</li>';
+                }
+                const p = new URLSearchParams({ from, to, scope: FilterState.scope, limit: '20', list: '1' });
+                if (FilterState.devices.length) p.set('device', FilterState.devices.join(','));
+                try {
+                    if (sugAbort) sugAbort.abort();
+                    const ac = new AbortController();
+                    sugAbort = ac;
+                    const r = await fetch(`/api/analytics/referrers.php?${p.toString()}`, { signal: ac.signal });
+                    const j = await r.json();
+                    if (Array.isArray(j.hosts) && refList) { refList.innerHTML = j.hosts.filter(h => h.toLowerCase().includes(q.toLowerCase())).slice(0, 8).map(h => `<li data-host="${h}">${h}</li>`).join('') || '<li class="u-text-muted">No matches</li>'; }
+                } catch (_) {
+                    if (refList) {
+                        refList.innerHTML = '';
+                        refList.hidden = true;
+                    }
+                }
+            });
+            refList && refList.addEventListener('click', (e) => {
+                const li = e.target.closest('li[data-host]');
+                if (!li) return;
+                refInput.value = li.getAttribute('data-host');
+                FilterState.ref = refInput.value.trim();
+                refList.hidden = true;
+                persistFilters();
+                debounceFetch();
+            });
+            refInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    FilterState.ref = refInput.value.trim();
+                    persistFilters();
+                    debounceFetch();
+                }
+            });
+        }
         const controller = new AbortController();
         loadAll(controller).catch((e) => console.error('[analytics]', e));
         writeDetails();
@@ -328,5 +458,19 @@
             const ctrl = new AbortController();
             loadAll(ctrl).catch((e) => console.error('[analytics]', e));
         });
+    }
+
+    // Debounced fetch helper + persist
+    let debTimer, currentController;
+
+    function debounceFetch() {
+        clearTimeout(debTimer);
+        debTimer = setTimeout(() => {
+            persistFilters();
+            if (currentController) currentController.abort();
+            const ac = new AbortController();
+            currentController = ac;
+            loadAll(ac).catch(() => {});
+        }, 300);
     }
 })();
